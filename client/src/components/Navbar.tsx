@@ -1,66 +1,96 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X } from "lucide-react"; // Lucide icons for better performance
+import { Menu, X } from "lucide-react";
+import logo from "/Logo.png";
 
-const primaryOrange = '#ff5004';
-const primaryBlack = '#060606';
-const primaryWhite = '#ffffff';
-const darkGray = '#1a1a1a'; // A slightly lighter shade of black for hover effects
+const primaryColor = "#ff4d00";
+const whiteColor = "#ffffff";
+
+const pages = ["/", "/about", "/services", "/portfolio", "/contact"];
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
+
+    const getPageName = (path: string) => {
+        switch(path) {
+            case "/": 
+                return "Home";
+            case "/about":
+                return "About Us";
+            case "/contact":
+                return "Contact Us";
+            default:
+                return path.charAt(1).toUpperCase() + path.slice(2);
+        }
+    };
 
     return (
-        <nav style={{ backgroundColor: primaryBlack, color: primaryWhite }} className="shadow-md">
-            <div className="container mx-auto flex justify-between items-center px-6 py-4">
+        <>
+            <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-opacity-90 shadow-lg border-b border-[#ff5004]">
+                <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-10 py-4 relative">
+                    
+                    {/* Logo group - pushed further left */}
+                    <div className="flex-1 flex justify-start">
+                        <Link to="/" className="flex items-center gap-2 ml-0 sm:ml-2 md:ml-4">
+                            <img src={logo} alt="coredigitize logo" className="h-8" />
+                            <span className="text-2xl font-bold tracking-tight lowercase">
+                                <span style={{ color: primaryColor }}>core</span>
+                                <span style={{ color: whiteColor }}>digitize</span>
+                            </span>
+                        </Link>
+                    </div>
 
-                {/* Logo */}
-                <Link to="/" className="text-2xl font-bold tracking-wide" style={{ color: primaryOrange }}>
-                    Core Digitize
-                </Link>
+                    {/* Navigation items - pushed further right */}
+                    <div className="flex-1 flex justify-end">
+                        <div className="hidden md:flex space-x-8 mr-0 sm:mr-2 md:mr-4">
+                            {pages.map((path) => (
+                                <NavLink
+                                    key={path}
+                                    to={path}
+                                    className={`relative text-lg font-medium transition-all duration-300 ${
+                                        location.pathname === path ? "text-[#ff4d00]" : "text-white"
+                                    }`}
+                                >
+                                    {getPageName(path)}
+                                    {location.pathname === path && (
+                                        <div className="absolute left-0 bottom-0 w-full h-[3px] bg-[#ff4d00]" />
+                                    )}
+                                </NavLink>
+                            ))}
+                        </div>
 
-                {/* Desktop Menu */}
-                <div className="hidden md:flex space-x-6">
-                    <NavLink to="/">Home</NavLink>
-                    <NavLink to="/services">Services</NavLink>
-                    <NavLink to="/about">About</NavLink>
-                    <NavLink to="/contact">Contact</NavLink>
+                        <button 
+                            className="md:hidden focus:outline-none mr-0 sm:mr-2 md:mr-4"
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-label="Toggle menu"
+                        >
+                            {isOpen ? <X size={28} color="white" /> : <Menu size={28} color="white" />}
+                        </button>
+                    </div>
                 </div>
+            </nav>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden text-white focus:outline-none"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? <X size={28} color={primaryWhite} /> : <Menu size={28} color={primaryWhite} />}
-                </button>
+            <div className="h-[80px] md:h-[90px]"></div>
+
+            <div className={`fixed top-0 right-0 h-full w-[75%] max-w-[300px] bg-[#060606] shadow-lg border-l border-[#ff5004] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+                <div className="flex flex-col items-center justify-center h-full space-y-6">
+                    {pages.map((path) => (
+                        <NavLink
+                            key={path}
+                            to={path}
+                            className={`text-xl font-medium px-6 py-3 transition-all duration-300 rounded-lg hover:bg-gray-800 ${
+                                location.pathname === path ? "text-[#ff4d00]" : "text-white"
+                            }`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            {getPageName(path)}
+                        </NavLink>
+                    ))}
+                </div>
             </div>
-
-            {/* Mobile Menu */}
-            {isOpen && (
-                <div className="md:hidden" style={{ backgroundColor: primaryBlack }}>
-                    <MobileNavLink to="/" closeMenu={() => setIsOpen(false)}>Home</MobileNavLink>
-                    <MobileNavLink to="/services" closeMenu={() => setIsOpen(false)}>Services</MobileNavLink>
-                    <MobileNavLink to="/about" closeMenu={() => setIsOpen(false)}>About</MobileNavLink>
-                    <MobileNavLink to="/contact" closeMenu={() => setIsOpen(false)}>Contact</MobileNavLink>
-                </div>
-            )}
-        </nav>
+        </>
     );
 };
-
-// ✅ Reusable NavLink for Desktop
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <Link to={to} className="text-white hover:text-orange-500 transition duration-300">
-        {children}
-    </Link>
-);
-
-// Reusable NavLink for Mobile
-const MobileNavLink = ({ to, closeMenu, children }: { to: string; closeMenu: () => void; children: React.ReactNode }) => (
-    <Link to={to} className="block px-6 py-2 text-white hover:bg-gray-700 transition duration-300" onClick={closeMenu}>
-        {children}
-    </Link>
-);
 
 export default Navbar;
