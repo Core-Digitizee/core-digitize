@@ -13,7 +13,7 @@ const DefaultLayout = ({ children }: LayoutProps) => {
       <Navbar />
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-6 lg:px-20 py-10">
+      <main className="">
         {children}
       </main>
 
