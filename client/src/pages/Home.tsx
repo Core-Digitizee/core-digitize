@@ -170,18 +170,32 @@ function HeroSection() {
                 <div className="h-full bg-gradient-to-b from-[#ff5004]/10 to-transparent p-4">
                   {/* App Screen Animation */}
                   <div className="h-full bg-[#060606] rounded-t-[30px] overflow-hidden">
-                    <div className="animate-screenScroll" style={{ animation: 'screenScroll 15s linear infinite' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <div key={i} className="h-[500px] p-4">
-                          <div className="h-full bg-[#ffffff05] rounded-xl border border-[#ff5004]/10 p-4">
-                            <div className="flex flex-col gap-3">
-                              <div className="h-4 bg-[#ff5004]/20 rounded-full w-3/4" />
-                              <div className="h-3 bg-[#ff5004]/10 rounded-full w-full" />
-                              <div className="h-3 bg-[#ff5004]/10 rounded-full w-2/3" />
+                    <div className="relative h-full">
+                      <div 
+                        className="absolute top-0 left-0 w-full"
+                        style={{
+                          animation: `scrollContent 20s linear infinite`,
+                        }}
+                      >
+                        {[...Array(8)].map((_, i) => (
+                          <div key={i} className="h-[500px] p-4">
+                            <div className="h-full bg-[#ffffff05] rounded-xl border border-[#ff5004]/10 p-4">
+                              <div className="flex flex-col gap-3">
+                                <div className="h-4 bg-[#ff5004]/20 rounded-full w-3/4" />
+                                <div className="h-3 bg-[#ff5004]/10 rounded-full w-full" />
+                                <div className="h-3 bg-[#ff5004]/10 rounded-full w-2/3" />
+                                {/* Additional content to make scrolling more noticeable */}
+                                <div className="mt-4 h-8 bg-[#ffffff08] rounded-lg" />
+                                <div className="h-24 bg-[#ffffff03] rounded-lg mt-2" />
+                                <div className="flex gap-2 mt-3">
+                                  <div className="h-3 bg-[#ff5004]/10 rounded-full w-1/4" />
+                                  <div className="h-3 bg-[#ff5004]/10 rounded-full w-1/2" />
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -261,6 +275,18 @@ function HeroSection() {
           </div>
         ))}
       </motion.div>
+
+      {/* Add the animation style in a separate style tag */}
+      <style>{`
+        @keyframes scrollContent {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-100%);
+          }
+        }
+      `}</style>
     </section>
   );
 }
@@ -885,4 +911,3 @@ const testimonials = [
     initials: "ER"
   }
 ];
-
