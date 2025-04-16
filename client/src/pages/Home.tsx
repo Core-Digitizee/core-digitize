@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiChevronRight, FiX, FiCheck } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
   return (
@@ -32,13 +33,13 @@ export default function Home() {
 function HeroSection() {
   return (
     <section className="relative min-h-screen bg-[#060606] overflow-hidden isolate">
-      {/* Multi-layer Background */}
+      {/* Multi-layer Background (Original - Unchanged) */}
       <div className="absolute inset-0 z-0 opacity-30">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]" />
       </div>
 
-      {/* Floating Tech Elements */}
+      {/* Floating Tech Elements (Original - Unchanged) */}
       <div className="absolute inset-0 z-0">
         {[...Array(25)].map((_, i) => (
           <div
@@ -55,32 +56,44 @@ function HeroSection() {
         ))}
       </div>
 
-      {/* Main Content */}
+      {/* Main Content (Original Structure - Unchanged) */}
       <div className="relative z-10 container mx-auto px-4 py-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Content */}
+          {/* Left Column - Content (Original Structure - Unchanged) */}
           <div className="space-y-8 relative">
+
             {/* Company Identity */}
             <div className="mb-12 flex items-center gap-4">
-              <motion.div 
+              {/* Logo (As modified previously - Unchanged) */}
+              <motion.img
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                className="w-14 h-14 bg-[#ff5004] rounded-xl flex items-center justify-center"
-              >
-                <span className="text-2xl font-bold text-[#060606]">CD</span>
-              </motion.div>
-              <motion.span 
+                // --- IMPORTANT: REPLACE WITH YOUR ACTUAL LOGO PATH ---
+                src="/Logo.png" // Placeholder path - CHANGE THIS!
+                alt="Core Digitize Logo"
+                // Kept original size and shape classes for symmetry
+                className="w-14 h-14 rounded-xl object-contain"
+              />
+
+              {/* --- MODIFIED TEXT SIZE START --- */}
+              {/* Styled Company Name - Increased size */}
+              <motion.span
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-white/80 text-xl font-light"
+                // Updated classes: Changed text-xl to text-5xl for visual size matching
+                className="text-4xl font-medium" // Increased size from text-xl
               >
-                Core Digitize
+                <span className="text-[#ff5004]">core</span>
+                <span className="text-white">digitize</span> {/* Explicit white text */}
               </motion.span>
+              {/* --- MODIFIED TEXT SIZE END --- */}
+
             </div>
 
-            <motion.h1 
+            {/* Headline (Original - Unchanged) */}
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -92,7 +105,8 @@ function HeroSection() {
               </span>
             </motion.h1>
 
-            <motion.p 
+            {/* Description (Original - Unchanged) */}
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -105,17 +119,17 @@ function HeroSection() {
               Enterprise-grade technology meets measurable results.
             </motion.p>
 
-            {/* Service Indicators */}
-            <motion.div 
+            {/* Service Indicators (Original - Unchanged) */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4 mt-8"
             >
               {['SEO Optimized', 'AI-Driven', 'Cloud Native', '24/7 Support'].map((service) => (
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05 }}
-                  key={service} 
+                  key={service}
                   className="px-4 py-2 bg-[#ffffff08] rounded-full border border-[#ff5004]/20"
                 >
                   <span className="text-sm text-[#ff5004]">{service}</span>
@@ -123,8 +137,8 @@ function HeroSection() {
               ))}
             </motion.div>
 
-            {/* Enhanced CTA Section */}
-            <motion.div 
+            {/* Enhanced CTA Section (Original - Unchanged) */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -134,8 +148,8 @@ function HeroSection() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl
-                          transition-all duration-300 shadow-lg shadow-[#ff5004]/30
-                          flex items-center gap-3"
+                           transition-all duration-300 shadow-lg shadow-[#ff5004]/30
+                           flex items-center gap-3"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -146,8 +160,8 @@ function HeroSection() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
-                          font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
-                          flex items-center gap-3"
+                           font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
+                           flex items-center gap-3"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -157,10 +171,10 @@ function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right Column - Tech Visualization */}
+          {/* Right Column - Tech Visualization (Original - Unchanged) */}
           <div className="relative h-[600px] flex items-center justify-center">
             {/* Floating Phone Mockup */}
-            <motion.div 
+            <motion.div
               initial={{ rotate: 15, opacity: 0 }}
               animate={{ rotate: 15, opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -171,7 +185,7 @@ function HeroSection() {
                   {/* App Screen Animation */}
                   <div className="h-full bg-[#060606] rounded-t-[30px] overflow-hidden">
                     <div className="relative h-full">
-                      <div 
+                      <div
                         className="absolute top-0 left-0 w-full"
                         style={{
                           animation: `scrollContent 20s linear infinite`,
@@ -203,7 +217,7 @@ function HeroSection() {
             </motion.div>
 
             {/* Holographic Code Editor */}
-            <motion.div 
+            <motion.div
               initial={{ rotate: -5, opacity: 0, y: 50 }}
               animate={{ rotate: -5, opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -228,15 +242,15 @@ function HeroSection() {
             </motion.div>
 
             {/* Rotating Service Icons */}
-            <motion.div 
+            <motion.div
               initial={{ rotate: 0, opacity: 0 }}
               animate={{ rotate: 360, opacity: 1 }}
-              transition={{ 
+              transition={{
                 delay: 0.8,
-                rotate: { 
-                  repeat: Infinity, 
-                  duration: 20, 
-                  ease: "linear" 
+                rotate: {
+                  repeat: Infinity,
+                  duration: 20,
+                  ease: "linear"
                 }
               }}
               className="absolute -left-12 top-24 w-48 h-48 border-2 border-[#ff5004]/20 rounded-full"
@@ -257,8 +271,8 @@ function HeroSection() {
         </div>
       </div>
 
-      {/* Performance Metrics Footer */}
-      <motion.div 
+      {/* Performance Metrics Footer (Original - Unchanged) */}
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
@@ -276,15 +290,26 @@ function HeroSection() {
         ))}
       </motion.div>
 
-      {/* Add the animation style in a separate style tag */}
+      {/* Add the animation style in a separate style tag (Original - Unchanged) */}
       <style>{`
         @keyframes scrollContent {
           0% {
             transform: translateY(0);
           }
           100% {
-            transform: translateY(-100%);
-          }
+             /* Adjust this based on the total height of your repeated content */
+             /* If each item is 500px and you have 8 items, total height is 4000px */
+             /* If the container is 500px high, you want to scroll 3500px */
+             /* So, translate should be -(total_height - container_height) */
+             /* Or simply scroll by the height of (n-1) items */
+             transform: translateY(calc(-100% + 500px)); /* Scrolls 7 items height */
+           }
+        }
+        /* Added original float animation */
+        @keyframes float {
+          0% { transform: translate(0, 0px); }
+          50% { transform: translate(0, 15px); }
+          100% { transform: translate(0, -0px); }
         }
       `}</style>
     </section>
@@ -818,6 +843,12 @@ const TestimonialsSection = () => {
 };
 
 const CTASection = () => {
+  const navigate = useNavigate();
+
+  const handleContactClick = () => {
+    navigate("/contact"); // Make sure this path matches your routing setup
+  };
+
   return (
     <section className="relative py-32 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -846,6 +877,7 @@ const CTASection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleContactClick}
                 className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5"
               >
                 Contact Our Team
