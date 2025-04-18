@@ -11,6 +11,3 @@ app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-app.get('/api/v1/digitize', (req, res) => {
-    res.send('Digitize API is running successfully!!!');
-});
