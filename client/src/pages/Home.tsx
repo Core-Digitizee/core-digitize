@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
-import { FiArrowRight, FiChevronRight, FiX, FiCheck } from 'react-icons/fi';
+import { FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
@@ -31,15 +31,25 @@ export default function Home() {
 }
 
 function HeroSection() {
+  const navigate = useNavigate();
+
+  const handleStartJourney = () => {
+    navigate('/contact');
+  };
+
+  const handleViewPortfolio = () => {
+    navigate('/portfolio');
+  };
+
   return (
     <section className="relative min-h-screen bg-[#060606] overflow-hidden isolate">
-      {/* Multi-layer Background (Original - Unchanged) */}
+      {/* Multi-layer Background */}
       <div className="absolute inset-0 z-0 opacity-30">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]" />
       </div>
 
-      {/* Floating Tech Elements (Original - Unchanged) */}
+      {/* Floating Tech Elements */}
       <div className="absolute inset-0 z-0">
         {[...Array(25)].map((_, i) => (
           <div
@@ -56,43 +66,34 @@ function HeroSection() {
         ))}
       </div>
 
-      {/* Main Content (Original Structure - Unchanged) */}
+      {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Content (Original Structure - Unchanged) */}
+          {/* Left Column - Content */}
           <div className="space-y-8 relative">
-
             {/* Company Identity */}
             <div className="mb-12 flex items-center gap-4">
-              {/* Logo (As modified previously - Unchanged) */}
               <motion.img
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                // --- IMPORTANT: REPLACE WITH YOUR ACTUAL LOGO PATH ---
-                src="/Logo.png" // Placeholder path - CHANGE THIS!
+                src="/Logo.png"
                 alt="Core Digitize Logo"
-                // Kept original size and shape classes for symmetry
                 className="w-14 h-14 rounded-xl object-contain"
               />
 
-              {/* --- MODIFIED TEXT SIZE START --- */}
-              {/* Styled Company Name - Increased size */}
               <motion.span
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                // Updated classes: Changed text-xl to text-5xl for visual size matching
-                className="text-4xl font-medium" // Increased size from text-xl
+                className="text-4xl font-medium"
               >
                 <span className="text-[#ff5004]">core</span>
-                <span className="text-white">digitize</span> {/* Explicit white text */}
+                <span className="text-white">digitize</span>
               </motion.span>
-              {/* --- MODIFIED TEXT SIZE END --- */}
-
             </div>
 
-            {/* Headline (Original - Unchanged) */}
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -105,7 +106,7 @@ function HeroSection() {
               </span>
             </motion.h1>
 
-            {/* Description (Original - Unchanged) */}
+            {/* Description */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,7 +120,7 @@ function HeroSection() {
               Enterprise-grade technology meets measurable results.
             </motion.p>
 
-            {/* Service Indicators (Original - Unchanged) */}
+            {/* Service Indicators */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -137,16 +138,17 @@ function HeroSection() {
               ))}
             </motion.div>
 
-            {/* Enhanced CTA Section (Original - Unchanged) */}
+            {/* CTA Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="flex gap-6 mt-12"
+              className="flex flex-wrap gap-6 mt-12"
             >
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleStartJourney}
                 className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl
                            transition-all duration-300 shadow-lg shadow-[#ff5004]/30
                            flex items-center gap-3"
@@ -159,6 +161,7 @@ function HeroSection() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleViewPortfolio}
                 className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
                            font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
                            flex items-center gap-3"
@@ -171,7 +174,7 @@ function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right Column - Tech Visualization (Original - Unchanged) */}
+          {/* Right Column - Tech Visualization */}
           <div className="relative h-[600px] flex items-center justify-center">
             {/* Floating Phone Mockup */}
             <motion.div
@@ -182,7 +185,6 @@ function HeroSection() {
             >
               <div className="absolute inset-0 overflow-hidden rounded-[38px]">
                 <div className="h-full bg-gradient-to-b from-[#ff5004]/10 to-transparent p-4">
-                  {/* App Screen Animation */}
                   <div className="h-full bg-[#060606] rounded-t-[30px] overflow-hidden">
                     <div className="relative h-full">
                       <div
@@ -198,7 +200,6 @@ function HeroSection() {
                                 <div className="h-4 bg-[#ff5004]/20 rounded-full w-3/4" />
                                 <div className="h-3 bg-[#ff5004]/10 rounded-full w-full" />
                                 <div className="h-3 bg-[#ff5004]/10 rounded-full w-2/3" />
-                                {/* Additional content to make scrolling more noticeable */}
                                 <div className="mt-4 h-8 bg-[#ffffff08] rounded-lg" />
                                 <div className="h-24 bg-[#ffffff03] rounded-lg mt-2" />
                                 <div className="flex gap-2 mt-3">
@@ -271,7 +272,7 @@ function HeroSection() {
         </div>
       </div>
 
-      {/* Performance Metrics Footer (Original - Unchanged) */}
+      {/* Performance Metrics Footer */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -290,22 +291,11 @@ function HeroSection() {
         ))}
       </motion.div>
 
-      {/* Add the animation style in a separate style tag (Original - Unchanged) */}
       <style>{`
         @keyframes scrollContent {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-             /* Adjust this based on the total height of your repeated content */
-             /* If each item is 500px and you have 8 items, total height is 4000px */
-             /* If the container is 500px high, you want to scroll 3500px */
-             /* So, translate should be -(total_height - container_height) */
-             /* Or simply scroll by the height of (n-1) items */
-             transform: translateY(calc(-100% + 500px)); /* Scrolls 7 items height */
-           }
+          0% { transform: translateY(0); }
+          100% { transform: translateY(calc(-100% + 500px)); }
         }
-        /* Added original float animation */
         @keyframes float {
           0% { transform: translate(0, 0px); }
           50% { transform: translate(0, 15px); }
@@ -317,6 +307,16 @@ function HeroSection() {
 }
 
 const AboutUsSection = () => {
+  const navigate = useNavigate();
+
+  const handleLearnMore = () => {
+    navigate('/about');
+  };
+
+  const handleViewTeam = () => {
+    navigate('/team');
+  };
+
   return (
     <section className="relative py-32 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -345,7 +345,7 @@ const AboutUsSection = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl text-white/70 leading-relaxed"
             >
-              At Core Digitize, we are more than just a technology company – we are a collective of passionate innovators, strategic thinkers, and meticulous engineers dedicated to crafting exceptional digital experiences. Our mission is to empower businesses of all sizes to thrive in the digital landscape through bespoke solutions tailored to their unique needs.
+              At Core Digitize, we are more than just a technology company – we are a collective of passionate innovators, strategic thinkers, and meticulous engineers dedicated to crafting exceptional digital experiences.
             </motion.p>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -353,17 +353,18 @@ const AboutUsSection = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="text-xl text-white/70 leading-relaxed"
             >
-              Founded on the principles of quality, integrity, and client-centricity, we strive to build long-lasting partnerships that drive sustainable growth. From cutting-edge web development and impactful digital marketing to innovative mobile applications and robust cloud solutions, we offer a comprehensive suite of services designed to elevate your brand and achieve your business objectives.
+              Founded on the principles of quality, integrity, and client-centricity, we strive to build long-lasting partnerships that drive sustainable growth.
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex gap-4"
+              className="flex flex-wrap gap-4"
             >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleLearnMore}
                 className="px-6 py-3 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-lg transition-all"
               >
                 Learn More
@@ -371,6 +372,7 @@ const AboutUsSection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleViewTeam}
                 className="px-6 py-3 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-lg transition-all backdrop-blur-lg bg-white/5"
               >
                 Our Team
@@ -403,138 +405,164 @@ const AboutUsSection = () => {
 
 const OurServicesSection = () => {
   const [activeCategory, setActiveCategory] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const navigate = useNavigate();
+
+  // Throttle mouse move events for better performance
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current || !isHovering) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      mouseX.set(e.clientX - rect.left);
+      mouseY.set(e.clientY - rect.top);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isHovering, mouseX, mouseY]);
 
   const categories = [
     {
       title: "Marketing",
       services: [
-        { name: "Social Media Marketing", icon: "📱", stat: "↑ 320% ROI" },
-        { name: "Google Ads", icon: "🔍", stat: "↓ 40% CAC" },
-        { name: "Meta Ads", icon: "👍", stat: "10M+ Reach" },
-        { name: "Email Marketing", icon: "✉️", stat: "25% Open Rate" },
-        { name: "Whatsapp Marketing", icon: "💬", stat: "90% Open Rate" },
-        { name: "Performance Marketing", icon: "📊", stat: "5x Conversions" },
-        { name: "Influencer Marketing", icon: "🌟", stat: "15% Engagement" },
-        { name: "Content Marketing", icon: "🖋️", stat: "3x Retention" }
+        { name: "Social Media Marketing", icon: "📱" },
+        { name: "Google Ads", icon: "🔍" },
+        { name: "Meta Ads", icon: "👍" },
+        { name: "Email Marketing", icon: "✉️" },
+        { name: "Whatsapp Marketing", icon: "💬" },
+        { name: "Performance Marketing", icon: "📊" },
+        { name: "Influencer Marketing", icon: "🌟" },
+        { name: "Content Marketing", icon: "🖋️" }
       ]
     },
     {
       title: "Media",
       services: [
-        { name: "Videography", icon: "🎥", stat: "4K/HDR" },
-        { name: "Video Editing", icon: "✂️", stat: "60 FPS" },
-        { name: "Photography", icon: "📸", stat: "50MP RAW" },
-        { name: "Photo Editing", icon: "🎨", stat: "Retouched" },
-        { name: "Product Shoots", icon: "📦", stat: "360° Views" },
-        { name: "Commercial Shoots", icon: "💼", stat: "Cinematic" },
-        { name: "Branding", icon: "🏷️", stat: "Visual Identity" },
-        { name: "Graphic Design", icon: "✏️", stat: "Vector Art" }
+        { name: "Videography", icon: "🎥" },
+        { name: "Video Editing", icon: "✂️" },
+        { name: "Photography", icon: "📸" },
+        { name: "Photo Editing", icon: "🎨" },
+        { name: "Product Shoots", icon: "📦" },
+        { name: "Commercial Shoots", icon: "💼" },
+        { name: "Branding", icon: "🏷️" },
+        { name: "Graphic Design", icon: "✏️" }
       ]
     },
     {
       title: "Technical",
       services: [
-        { name: "Web Development", icon: "🌐", stat: "99.9% Uptime" },
-        { name: "App Development", icon: "📱", stat: "iOS/Android" },
-        { name: "Software Development", icon: "💻", stat: "Scalable" },
-        { name: "Landing Pages", icon: "🛬", stat: "↑ 200% CVR" },
-        { name: "SEO", icon: "🔎", stat: "↑ 300% Traffic" },
-        { name: "CRM", icon: "🤝", stat: "Automated" },
-        { name: "ERP", icon: "📈", stat: "Integrated" }
+        { name: "Web Development", icon: "🌐" },
+        { name: "App Development", icon: "📱" },
+        { name: "Software Development", icon: "💻" },
+        { name: "Landing Pages", icon: "🛬" },
+        { name: "SEO", icon: "🔎" },
+        { name: "CRM", icon: "🤝" },
+        { name: "ERP", icon: "📈" }
       ]
     },
     {
       title: "Animation",
       services: [
-        { name: "3D Animation", icon: "🎬", stat: "Cinematic" },
-        { name: "2D Animation", icon: "🖌️", stat: "60 FPS" },
-        { name: "3D Modeling", icon: "🧊", stat: "PBR Textures" },
-        { name: "Motion Graphics", icon: "🌀", stat: "Dynamic" },
-        { name: "CGI Video", icon: "🎞️", stat: "Realistic" },
-        { name: "VFX Video", icon: "✨", stat: "Hollywood-grade" },
-        { name: "Whiteboard Animation", icon: "📝", stat: "Explainer" }
+        { name: "3D Animation", icon: "🎬" },
+        { name: "2D Animation", icon: "🖌️" },
+        { name: "3D Modeling", icon: "🧊" },
+        { name: "Motion Graphics", icon: "🌀" },
+        { name: "CGI Video", icon: "🎞️" },
+        { name: "VFX Video", icon: "✨" },
+        { name: "Whiteboard Animation", icon: "📝" }
       ]
     }
   ];
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      mouseX.set(e.clientX - rect.left);
-      mouseY.set(e.clientY - rect.top);
-    }
+  const handleServiceClick = (serviceName: string) => {
+    navigate(`/services/${serviceName.toLowerCase().replace(/\s+/g, '-')}`);
   };
+
+  const handleRequestProposal = () => {
+    navigate('/contact?type=enterprise');
+  };
+
+  // Optimized glow position with will-change
+  const glowX = useTransform(mouseX, val => val - 300);
+  const glowY = useTransform(mouseY, val => val - 300);
 
   return (
     <section 
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="relative py-32 bg-[#060606] overflow-hidden"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      className="relative py-24 md:py-32 bg-[#060606] overflow-hidden"
     >
-      {/* 3D Parallax Grid */}
-      <div className="absolute inset-0 [background-image:radial-gradient(ellipse_at_center,transparent_65%,rgba(255,80,4,0.03)_100%)] [background-size:60px_60px]" />
+      {/* Static background elements */}
+      <div className="absolute inset-0 [background-image:radial-gradient(ellipse_at_center,transparent_65%,rgba(255,80,4,0.03)_100%)] [background-size:60px_60px] pointer-events-none" />
 
-      {/* Dynamic Glow */}
+      {/* Dynamic Glow - will-change for performance */}
       <motion.div
-        className="absolute pointer-events-none rounded-full"
+        className="absolute pointer-events-none rounded-full will-change-transform"
         style={{
-          x: useTransform(mouseX, val => val - 300),
-          y: useTransform(mouseY, val => val - 300),
+          x: glowX,
+          y: glowY,
           width: 600,
           height: 600,
           background: "radial-gradient(circle, rgba(255,80,4,0.15) 0%, transparent 70%)",
-          filter: "blur(100px)"
+          filter: "blur(100px)",
+          opacity: isHovering ? 1 : 0,
+          transition: 'opacity 0.3s ease-out'
         }}
       />
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-28">
+        <div className="text-center mb-20 md:mb-28">
           <motion.span 
             className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true, margin: "-100px" }}
           >
             DIGITAL EXCELLENCE
           </motion.span>
           <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true, margin: "-100px" }}
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Our</span>{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Services</span>
           </motion.h2>
           <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
+            className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true, margin: "-100px" }}
           >
             Cutting-edge solutions engineered for measurable business impact
           </motion.p>
         </div>
 
         {/* Enhanced Category Navigation */}
-        <div className="flex justify-center mb-16 relative">
+        <div className="flex justify-center mb-12 md:mb-16 relative">
           <div className="relative">
             {/* Background Glow */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-[#ff5004]/20 to-[#ff8c00]/20 rounded-3xl blur-2xl opacity-20" />
+            <div className="absolute -inset-4 bg-gradient-to-r from-[#ff5004]/20 to-[#ff8c00]/20 rounded-3xl blur-2xl opacity-20 pointer-events-none" />
             
             {/* Navigation Container */}
-            <div className="relative inline-flex bg-[#161616] rounded-2xl p-2 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
+            <div className="relative inline-flex bg-[#161616] rounded-2xl p-1 sm:p-2 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
               {/* Active Background */}
               <motion.div
                 className="absolute inset-0 bg-[#ffffff08] rounded-xl"
                 initial={false}
                 animate={{
                   x: `${activeCategory * 100}%`,
-                  width: '25%'
+                  width: `${100 / categories.length}%`
                 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               />
@@ -544,11 +572,11 @@ const OurServicesSection = () => {
                 <button
                   key={index}
                   onClick={() => setActiveCategory(index)}
-                  className={`relative px-8 py-4 rounded-xl font-medium transition-all z-10 ${
+                  className={`relative px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-medium transition-colors z-10 ${
                     activeCategory === index ? 'text-white' : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
                     {category.title}
                     {activeCategory === index && (
                       <motion.div
@@ -557,7 +585,7 @@ const OurServicesSection = () => {
                           transition: { duration: 1.5, repeat: Infinity }
                         }}
                       >
-                        <FiChevronRight className="w-5 h-5" />
+                        <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                       </motion.div>
                     )}
                   </span>
@@ -567,73 +595,91 @@ const OurServicesSection = () => {
           </div>
         </div>
 
-        {/* Holographic Service Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+        {/* Optimized Service Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           <AnimatePresence mode="wait">
             {categories[activeCategory].services.map((service, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -50 }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                whileHover={{ 
-                  y: -15,
-                  scale: 1.05,
-                  boxShadow: "0 30px 60px -15px rgba(255, 80, 4, 0.4)"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0,
+                  transition: { 
+                    duration: 0.4, 
+                    delay: index * 0.03,
+                    ease: [0.16, 1, 0.3, 1] 
+                  }
                 }}
-                className="relative group overflow-hidden rounded-3xl border border-[#ffffff10] bg-gradient-to-b from-[#161616] to-[#0d0d0d] hover:border-[#ff5004]/50 transition-all"
+                exit={{ opacity: 0, y: -30 }}
+                whileHover={{ 
+                  y: -8,
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+                onClick={() => handleServiceClick(service.name)}
+                className="relative group overflow-hidden rounded-2xl sm:rounded-3xl border border-[#ffffff10] bg-gradient-to-b from-[#161616] to-[#0d0d0d] hover:border-[#ff5004]/50 transition-all cursor-pointer will-change-transform"
                 style={{
                   boxShadow: "inset 0 0 20px rgba(255, 80, 4, 0.1)",
                 }}
               >
-                {/* Holographic Effect */}
-                <div className="absolute inset-0 [background:linear-gradient(135deg,transparent_0%,rgba(255,80,4,0.03)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
                 {/* Content */}
-                <div className="p-8 h-full flex flex-col relative z-10">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-2xl mb-6 text-[#ff5004] backdrop-blur-sm">
+                <div className="p-6 sm:p-8 h-full flex flex-col relative z-10">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-2xl mb-4 sm:mb-6 text-[#ff5004] backdrop-blur-sm">
                     {service.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">{service.name}</h3>
-                  <div className="px-3 py-1 bg-[#ff5004]/10 rounded-full inline-flex items-center mb-6 border border-[#ff5004]/20">
-                    <span className="text-sm font-medium text-[#ff5004]">{service.stat}</span>
-                  </div>
-                  <p className="text-gray-400 mb-8">Premium {service.name.toLowerCase()} services with measurable impact</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">{service.name}</h3>
+                  <p className="text-gray-400 text-sm sm:text-base mb-6 sm:mb-8">Premium {service.name.toLowerCase()} services with measurable impact</p>
                   <div className="mt-auto">
                     <button className="inline-flex items-center text-[#ff5004] hover:text-[#ff6120] group">
-                      <span className="relative overflow-hidden">
-                        <span className="absolute bottom-0 left-0 w-full h-px bg-[#ff5004] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+                      <span className="relative overflow-hidden text-sm sm:text-base">
+                        <span className="absolute bottom-0 left-0 w-full h-px bg-[#ff5004] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
                         Explore Service
                       </span>
-                      <FiArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                      <FiArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3 group-hover:translate-x-1 transition-transform duration-300 ease-out" />
                     </button>
                   </div>
                 </div>
                 
-                {/* Animated Holographic Border */}
-                <div className="absolute inset-0 border border-transparent group-hover:border-[#ff5004]/40 transition-all duration-500 pointer-events-none" style={{
-                  boxShadow: "inset 0 0 30px rgba(255, 80, 4, 0)"
-                }} />
+                {/* Hover effect */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <motion.div 
+                    className="absolute inset-0 [background:linear-gradient(135deg,transparent_0%,rgba(255,80,4,0.03)_50%,transparent_100%)]"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <motion.div 
+                    className="absolute inset-0 border border-transparent"
+                    initial={{ boxShadow: "inset 0 0 30px rgba(255, 80, 4, 0)" }}
+                    whileHover={{ 
+                      borderColor: "rgba(255, 80, 4, 0.4)",
+                      boxShadow: "0 20px 40px -10px rgba(255, 80, 4, 0.3)"
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
 
-        {/* Quantum CTA */}
+        {/* Optimized CTA */}
         <motion.div 
-          className="text-center mt-20"
-          initial={{ opacity: 0, y: 40 }}
+          className="text-center mt-16 md:mt-20"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          viewport={{ once: true, margin: "-100px" }}
         >
-          <div className="inline-block p-[1px] rounded-2xl bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:shadow-xl hover:shadow-[#ff5004]/30 transition-all">
-            <button className="relative overflow-hidden px-12 py-5 bg-[#060606] rounded-2xl group w-full">
-              <span className="absolute inset-0 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <span className="relative z-10 flex items-center justify-center text-lg font-bold text-white">
-                Request Enterprise Proposal
-                <FiChevronRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" />
+          <div className="inline-block p-[1px] rounded-2xl bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:shadow-lg hover:shadow-[#ff5004]/20 transition-shadow">
+            <button 
+              onClick={handleRequestProposal}
+              className="relative overflow-hidden px-8 sm:px-12 py-3 sm:py-4 md:py-5 bg-[#060606] rounded-2xl group w-full"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+              <span className="relative z-10 flex items-center justify-center text-base sm:text-lg font-bold text-white">
+                Get Custom Solution
+                <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6 ml-3 group-hover:translate-x-2 transition-transform duration-300 ease-out" />
               </span>
             </button>
           </div>
@@ -644,6 +690,16 @@ const OurServicesSection = () => {
 };
 
 const CaseStudiesSection = () => {
+  const navigate = useNavigate();
+
+  const handleViewAllProjects = () => {
+    navigate('/portfolio');
+  };
+
+  const handleCaseStudyClick = (id: string) => {
+    navigate(`/case-studies/${id}`);
+  };
+
   return (
     <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
       <div className="container mx-auto px-4">
@@ -667,6 +723,7 @@ const CaseStudiesSection = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleViewAllProjects}
               className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all"
             >
               View All Projects
@@ -680,7 +737,10 @@ const CaseStudiesSection = () => {
             transition={{ duration: 0.8 }}
             className="lg:w-1/2 relative"
           >
-            <div className="relative h-[400px] w-full bg-[#161616] rounded-3xl overflow-hidden border border-[#ffffff10]">
+            <div 
+              className="relative h-[400px] w-full bg-[#161616] rounded-3xl overflow-hidden border border-[#ffffff10] cursor-pointer"
+              onClick={() => handleCaseStudyClick('ecommerce-platform')}
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-[#ff5004]/5 to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#0a0a0a] to-transparent">
                 <h3 className="text-2xl font-medium mb-2">E-commerce Platform</h3>
@@ -703,7 +763,8 @@ const CaseStudiesSection = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+              onClick={() => handleCaseStudyClick(study.id)}
+              className="bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all cursor-pointer"
             >
               <div className="h-48 bg-gradient-to-r from-[#ff5004]/10 to-[#060606] relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
@@ -845,8 +906,12 @@ const TestimonialsSection = () => {
 const CTASection = () => {
   const navigate = useNavigate();
 
+  const handleScheduleConsultation = () => {
+    navigate('/contact?type=consultation');
+  };
+
   const handleContactClick = () => {
-    navigate("/contact"); // Make sure this path matches your routing setup
+    navigate("/contact");
   };
 
   return (
@@ -870,6 +935,7 @@ const CTASection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleScheduleConsultation}
                 className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all"
               >
                 Schedule Consultation
@@ -901,10 +967,12 @@ const CTASection = () => {
 // Data
 const caseStudies = [
   {
+    id: "fintech-platform",
     title: "FinTech Platform Modernization",
     description: "Redesigned core banking system processing 1M+ transactions daily with 99.99% uptime."
   },
   {
+    id: "healthcare-data",
     title: "Healthcare Data Integration",
     description: "Unified patient records across 50+ facilities while maintaining HIPAA compliance."
   }
