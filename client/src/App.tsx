@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout'; // Ensure correct path
 import Home from './pages/Home';
@@ -22,7 +22,7 @@ const App = () => {
   if (isInitializing) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#060606]">
-        <Loader isVisible={true} size="lg" />
+        <Loader isVisible={true} />
       </div>
     );
   }
