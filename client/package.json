@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@react-three/drei": "^10.0.6",
+    "@react-three/fiber": "^9.1.2",
     "@tailwindcss/vite": "^4.1.2",
     "@uidotdev/usehooks": "^2.4.1",
     "framer-motion": "^12.6.2",
@@ -25,7 +27,9 @@
     "react-slick": "^0.30.3",
     "react-tsparticles": "^2.12.2",
     "slick-carousel": "^1.8.1",
-    "tailwindcss": "^4.1.2"
+    "styled-components": "^6.1.17",
+    "tailwindcss": "^4.1.2",
+    "three": "^0.175.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -33,6 +37,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/react-slick": "^0.23.13",
+    "@types/three": "^0.175.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",

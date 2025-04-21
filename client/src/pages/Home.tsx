@@ -32,276 +32,1307 @@ export default function Home() {
 
 function HeroSection() {
   const navigate = useNavigate();
+  const [activeDept, setActiveDept] = useState(0);
+  const departments = ['Marketing', 'Media', 'Development', 'Animation'];
+  const [hoveredDept, setHoveredDept] = useState<number | null>(null);
 
-  const handleStartJourney = () => {
-    navigate('/contact');
-  };
+  // Color themes for each department
+  const departmentThemes = [
+    { primary: '#ff5004', secondary: '#ff732e', bg: '#161616' }, // Marketing
+    { primary: '#ff5004', secondary: '#ff9557', bg: '#161616' }, // Media
+    { primary: '#ff5004', secondary: '#ffb780', bg: '#161616' }, // Development
+    { primary: '#ff5004', secondary: '#ffd9aa', bg: '#161616' }  // Animation
+  ];
 
-  const handleViewPortfolio = () => {
-    navigate('/portfolio');
-  };
+  // Auto-rotate departments
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveDept((prev) => (prev + 1) % departments.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleStartJourney = () => navigate('/contact');
+  const handleViewPortfolio = () => navigate('/portfolio');
+  const handleScrollDown = () => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
 
   return (
-    <section className="relative min-h-screen bg-[#060606] overflow-hidden isolate">
-      {/* Multi-layer Background */}
-      <div className="absolute inset-0 z-0 opacity-30">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]" />
-      </div>
-
-      {/* Floating Tech Elements */}
+    <section className="relative h-screen bg-[#060606] overflow-hidden snap-start">
+      {/* Advanced 3D Background Elements */}
       <div className="absolute inset-0 z-0">
-        {[...Array(25)].map((_, i) => (
-          <div
+        {/* 3D Grid Pattern */}
+        <motion.div 
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: 'linear-gradient(to right, #ff5004 1px, transparent 1px), linear-gradient(to bottom, #ff5004 1px, transparent 1px)',
+            backgroundSize: '40px 40px'
+          }}
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%']
+          }}
+          transition={{
+            duration: 120,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+        />
+        
+        {/* 3D Animated Particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(80)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-[#ff5004]"
+              style={{
+                width: `${Math.random() * 8 + 2}px`,
+                height: `${Math.random() * 8 + 2}px`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: Math.random() * 0.2 + 0.05
+              }}
+              animate={{
+                y: [0, -Math.random() * 150 - 50],
+                x: [0, (Math.random() > 0.5 ? 1 : -1) * Math.random() * 50],
+                opacity: [0.1, 0.4, 0],
+                transition: {
+                  duration: Math.random() * 20 + 15,
+                  repeat: Infinity,
+                  repeatDelay: Math.random() * 8
+                }
+              }}
+            />
+          ))}
+        </div>
+
+        {/* 3D Floating Shapes */}
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#ff5004]/5 blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.15, 0.1]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#ff5004]/5 blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+
+        {/* 3D Floating Cubes */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
             key={i}
-            className="absolute border-2 border-[#ff5004]/10 rounded-lg"
+            className="absolute border border-[#ff5004]/20 rounded-lg"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
               width: `${Math.random() * 100 + 50}px`,
               height: `${Math.random() * 100 + 50}px`,
-              animation: `float ${Math.random() * 10 + 5}s infinite`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              transformStyle: 'preserve-3d',
+              transform: 'rotateX(45deg) rotateY(45deg)'
+            }}
+            animate={{
+              rotateX: [0, 360],
+              rotateY: [0, 360],
+              rotateZ: [0, 360],
+              transition: {
+                duration: Math.random() * 30 + 30,
+                repeat: Infinity,
+                ease: 'linear'
+              }
             }}
           />
         ))}
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 py-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Content */}
+      <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
+        <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
+          {/* Left Column - Static Content */}
           <div className="space-y-8 relative">
             {/* Company Identity */}
-            <div className="mb-12 flex items-center gap-4">
+            <motion.div 
+              className="mb-12 flex items-center gap-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
               <motion.img
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 src="/Logo.png"
                 alt="Core Digitize Logo"
-                className="w-14 h-14 rounded-xl object-contain"
+                className="w-16 h-16 rounded-xl object-contain"
               />
 
               <motion.span
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.3 }}
                 className="text-4xl font-medium"
               >
                 <span className="text-[#ff5004]">core</span>
                 <span className="text-white">digitize</span>
               </motion.span>
-            </div>
+            </motion.div>
 
             {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-5xl md:text-6xl font-medium text-white leading-tight"
+              transition={{ delay: 0.4 }}
+              className="text-5xl md:text-6xl font-bold text-white leading-tight"
             >
-              <span className="block mb-4">Digital Excellence</span>
+              <span className="block mb-4">Digital Transformation</span>
               <span className="bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004] bg-clip-text text-transparent">
-                Engineered
+                Powered by Innovation
               </span>
             </motion.h1>
 
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-xl text-white/70 leading-relaxed max-w-2xl"
+            {/* Dynamic Description */}
+            <motion.div 
+              key={activeDept}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="min-h-[120px]"
             >
-              Transformative solutions in
-              <span className="text-[#ff5004] font-medium"> digital marketing</span>,
-              <span className="text-[#ff5004] font-medium"> web development</span>, and
-              <span className="text-[#ff5004] font-medium"> mobile innovation</span>.
-              Enterprise-grade technology meets measurable results.
-            </motion.p>
-
-            {/* Service Indicators */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-4 mt-8"
-            >
-              {['SEO Optimized', 'AI-Driven', 'Cloud Native', '24/7 Support'].map((service) => (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  key={service}
-                  className="px-4 py-2 bg-[#ffffff08] rounded-full border border-[#ff5004]/20"
-                >
-                  <span className="text-sm text-[#ff5004]">{service}</span>
-                </motion.div>
-              ))}
+              {activeDept === 0 && (
+                <p className="text-xl text-white/80 leading-relaxed max-w-2xl">
+                  Our <span className="text-[#ff5004] font-semibold">data-driven marketing solutions</span> combine AI analytics with conversion optimization to deliver measurable business growth.
+                </p>
+              )}
+              {activeDept === 1 && (
+                <p className="text-xl text-white/80 leading-relaxed max-w-2xl">
+                  <span className="text-[#ff9557] font-semibold">High-impact media production</span> with cinematic storytelling, motion graphics, and strategic content distribution.
+                </p>
+              )}
+              {activeDept === 2 && (
+                <p className="text-xl text-white/80 leading-relaxed max-w-2xl">
+                  <span className="text-[#ffb780] font-semibold">Cutting-edge development</span> with scalable architecture, cloud-native solutions, and robust APIs.
+                </p>
+              )}
+              {activeDept === 3 && (
+                <p className="text-xl text-white/80 leading-relaxed max-w-2xl">
+                  <span className="text-[#ffd9aa] font-semibold">Immersive animations</span> that bring ideas to life through motion design, 3D modeling, and interactive experiences.
+                </p>
+              )}
             </motion.div>
 
-            {/* CTA Section */}
+            {/* Department Indicators */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-wrap gap-3 mt-6"
+            >
+              {departments.map((dept, index) => {
+                const colors = departmentThemes[index];
+                return (
+                  <motion.button
+                    key={dept}
+                    whileHover={{ 
+                      y: -3,
+                      scale: 1.05,
+                      backgroundColor: colors.primary,
+                      boxShadow: `0 8px 20px -5px ${colors.primary}80`
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    onMouseEnter={() => setHoveredDept(index)}
+                    onMouseLeave={() => setHoveredDept(null)}
+                    onClick={() => setActiveDept(index)}
+                    className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
+                      activeDept === index
+                        ? `text-white`
+                        : 'bg-[#ffffff08] text-white/80 hover:bg-[#ffffff15]'
+                    }`}
+                    style={{
+                      backgroundColor: activeDept === index ? colors.primary : undefined,
+                      boxShadow: activeDept === index ? `0 8px 20px -5px ${colors.primary}80` : 'none',
+                      transformStyle: 'preserve-3d',
+                      transform: hoveredDept === index ? 'translateZ(10px)' : 'translateZ(0)'
+                    }}
+                  >
+                    {dept === 'Marketing' && (
+                      <motion.svg 
+                        className="w-5 h-5" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        animate={{
+                          rotateY: hoveredDept === index ? 360 : 0
+                        }}
+                        transition={{
+                          duration: 0.6
+                        }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </motion.svg>
+                    )}
+                    {dept === 'Media' && (
+                      <motion.svg 
+                        className="w-5 h-5" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        animate={{
+                          rotateY: hoveredDept === index ? 360 : 0
+                        }}
+                        transition={{
+                          duration: 0.6
+                        }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </motion.svg>
+                    )}
+                    {dept === 'Development' && (
+                      <motion.svg 
+                        className="w-5 h-5" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        animate={{
+                          rotateY: hoveredDept === index ? 360 : 0
+                        }}
+                        transition={{
+                          duration: 0.6
+                        }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </motion.svg>
+                    )}
+                    {dept === 'Animation' && (
+                      <motion.svg 
+                        className="w-5 h-5" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        animate={{
+                          rotateY: hoveredDept === index ? 360 : 0
+                        }}
+                        transition={{
+                          duration: 0.6
+                        }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      </motion.svg>
+                    )}
+                    {dept}
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.8 }}
               className="flex flex-wrap gap-6 mt-12"
             >
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: '0 10px 25px -5px rgba(255, 80, 4, 0.5)',
+                  transform: 'translateZ(10px)'
+                }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleStartJourney}
-                className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl
+                className="px-8 py-4 bg-gradient-to-r from-[#ff5004] to-[#ff732e] hover:from-[#ff6120] hover:to-[#ff8440] text-white font-semibold rounded-xl
                            transition-all duration-300 shadow-lg shadow-[#ff5004]/30
-                           flex items-center gap-3"
+                           flex items-center gap-3 group"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Start Digital Journey
+                <motion.span
+                  animate={{
+                    x: [0, 5, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity
+                  }}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </motion.span>
+                Start Your Digital Journey
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: '0 10px 25px -5px rgba(255, 80, 4, 0.2)',
+                  transform: 'translateZ(10px)'
+                }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleViewPortfolio}
                 className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
                            font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
-                           flex items-center gap-3"
+                           flex items-center gap-3 group"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                <svg className="w-6 h-6 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                View Portfolio
+                View Our Portfolio
               </motion.button>
             </motion.div>
           </div>
 
-          {/* Right Column - Tech Visualization */}
-          <div className="relative h-[600px] flex items-center justify-center">
-            {/* Floating Phone Mockup */}
+          {/* Right Column - 3D Professional Department Visualizations */}
+          <div className="relative h-[600px] flex items-center justify-center overflow-hidden perspective-1000">
+            {/* Marketing - Advanced Analytics Dashboard */}
             <motion.div
-              initial={{ rotate: 15, opacity: 0 }}
-              animate={{ rotate: 15, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="absolute w-72 h-[500px] bg-[#161616] rounded-[40px] border-2 border-[#ffffff10] shadow-2xl"
+              className={`absolute w-full max-w-2xl ${activeDept !== 0 ? 'opacity-0 pointer-events-none' : ''}`}
+              initial={{ opacity: 0, x: 20, rotateY: 90 }}
+              animate={{ 
+                opacity: activeDept === 0 ? 1 : 0, 
+                x: activeDept === 0 ? 0 : 20,
+                rotateY: activeDept === 0 ? 0 : 90
+              }}
+              transition={{ duration: 0.5 }}
+              style={{
+                transformStyle: 'preserve-3d'
+              }}
             >
-              <div className="absolute inset-0 overflow-hidden rounded-[38px]">
-                <div className="h-full bg-gradient-to-b from-[#ff5004]/10 to-transparent p-4">
-                  <div className="h-full bg-[#060606] rounded-t-[30px] overflow-hidden">
-                    <div className="relative h-full">
-                      <div
-                        className="absolute top-0 left-0 w-full"
-                        style={{
-                          animation: `scrollContent 20s linear infinite`,
-                        }}
-                      >
-                        {[...Array(8)].map((_, i) => (
-                          <div key={i} className="h-[500px] p-4">
-                            <div className="h-full bg-[#ffffff05] rounded-xl border border-[#ff5004]/10 p-4">
-                              <div className="flex flex-col gap-3">
-                                <div className="h-4 bg-[#ff5004]/20 rounded-full w-3/4" />
-                                <div className="h-3 bg-[#ff5004]/10 rounded-full w-full" />
-                                <div className="h-3 bg-[#ff5004]/10 rounded-full w-2/3" />
-                                <div className="mt-4 h-8 bg-[#ffffff08] rounded-lg" />
-                                <div className="h-24 bg-[#ffffff03] rounded-lg mt-2" />
-                                <div className="flex gap-2 mt-3">
-                                  <div className="h-3 bg-[#ff5004]/10 rounded-full w-1/4" />
-                                  <div className="h-3 bg-[#ff5004]/10 rounded-full w-1/2" />
-                                </div>
-                              </div>
-                            </div>
+              <div className="relative h-[540px] bg-[#161616] rounded-2xl border border-[#ff5004]/20 overflow-hidden shadow-2xl transform-style-preserve-3d">
+                {/* 3D Dashboard Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-[#ff5004]/5 rounded-2xl"
+                  style={{
+                    transform: 'translateZ(-20px)',
+                    boxShadow: '0 0 50px rgba(255, 80, 4, 0.3)'
+                  }}
+                  animate={{
+                    opacity: [0.1, 0.2, 0.1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity
+                  }}
+                />
+                
+                {/* Dashboard Header */}
+                <div className="p-4 border-b border-[#ff5004]/10 flex justify-between items-center bg-[#0e0e0e]">
+                  <div className="text-[#ff5004] font-medium flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Marketing Analytics Dashboard
+                  </div>
+                  <div className="text-xs text-white/50 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#00ff88] rounded-full"></div>
+                    Live Data
+                  </div>
+                </div>
+                
+                {/* Dashboard Content */}
+                <div className="p-4 grid grid-cols-2 gap-4 h-[calc(100%-56px)] overflow-auto">
+                  {/* Campaign Performance */}
+                  <div className="col-span-2 bg-[#0a0a0a] p-4 rounded-xl border border-[#ff5004]/10 transform-style-preserve-3d">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="text-[#ff5004] text-sm font-medium">Campaign Performance</div>
+                      <div className="text-xs text-white/50">Last 30 Days</div>
+                    </div>
+                    <div className="h-48 relative">
+                      {/* 3D Chart Bars */}
+                      {[
+                        { name: 'Impressions', color: '#ff5004', values: [40, 60, 80, 65, 90, 110, 95, 120, 110, 130] },
+                        { name: 'Clicks', color: '#ff9557', values: [20, 30, 45, 40, 60, 75, 65, 85, 70, 90] },
+                        { name: 'Conversions', color: '#ffd9aa', values: [5, 10, 15, 12, 20, 25, 22, 30, 27, 35] }
+                      ].map((metric, mi) => (
+                        <div key={metric.name} className="absolute bottom-0 left-0 right-0">
+                          {metric.values.map((val, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute bottom-0 w-2 rounded-t-sm"
+                              style={{ 
+                                left: `${i * 9 + 2}%`,
+                                backgroundColor: metric.color,
+                                zIndex: 3 - mi,
+                                transformOrigin: 'bottom',
+                                transformStyle: 'preserve-3d'
+                              }}
+                              initial={{ height: 0, rotateX: 90 }}
+                              animate={{ height: `${val}px`, rotateX: 0 }}
+                              transition={{ duration: 0.8, delay: i * 0.05 + mi * 0.1 }}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                      
+                      {/* X-axis labels */}
+                      <div className="absolute bottom-0 left-0 right-0 flex justify-between text-[8px] text-white/50">
+                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'].map((month, i) => (
+                          <div key={month} style={{ left: `${i * 9 + 2}%` }} className="absolute transform -translate-x-1/2">
+                            {month}
                           </div>
                         ))}
                       </div>
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="flex justify-center gap-4 mt-4">
+                      {['Impressions', 'Clicks', 'Conversions'].map((item, i) => (
+                        <motion.div 
+                          key={item} 
+                          className="flex items-center gap-1.5"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{
+                            backgroundColor: i === 0 ? '#ff5004' : i === 1 ? '#ff9557' : '#ffd9aa'
+                          }} />
+                          <span className="text-xs text-white/70">{item}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* ROI Metrics */}
+                  <div className="bg-[#0a0a0a] p-4 rounded-xl border border-[#ff5004]/10 transform-style-preserve-3d">
+                    <div className="text-[#ff5004] text-sm font-medium mb-3">ROI Metrics</div>
+                    <div className="space-y-4">
+                      {[
+                        { name: 'CTR', value: '3.2%', change: '+12%', positive: true },
+                        { name: 'Conversion', value: '1.8%', change: '+5%', positive: true },
+                        { name: 'CPA', value: '$24.50', change: '-8%', positive: false },
+                        { name: 'ROAS', value: '4.2x', change: '+15%', positive: true }
+                      ].map((metric, i) => (
+                        <motion.div 
+                          key={metric.name}
+                          className="flex justify-between items-center"
+                          initial={{ opacity: 0, x: -10, rotateX: 90 }}
+                          animate={{ opacity: 1, x: 0, rotateX: 0 }}
+                          transition={{ delay: 0.3 + i * 0.1 }}
+                        >
+                          <span className="text-xs text-white/70">{metric.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-white">{metric.value}</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${metric.positive ? 'bg-[#00ff88]/10 text-[#00ff88]' : 'bg-[#ff0000]/10 text-[#ff0000]'}`}>
+                              {metric.change}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Audience Demographics */}
+                  <div className="bg-[#0a0a0a] p-4 rounded-xl border border-[#ff5004]/10 transform-style-preserve-3d">
+                    <div className="text-[#ff5004] text-sm font-medium mb-3">Audience</div>
+                    <div className="h-36 flex items-end justify-center gap-1">
+                      {[
+                        { age: '18-24', value: 35, color: '#ff5004' },
+                        { age: '25-34', value: 60, color: '#ff732e' },
+                        { age: '35-44', value: 45, color: '#ff9557' },
+                        { age: '45-54', value: 30, color: '#ffb780' },
+                        { age: '55+', value: 20, color: '#ffd9aa' }
+                      ].map((demo, i) => (
+                        <div key={demo.age} className="flex flex-col items-center">
+                          <motion.div
+                            className="w-6 rounded-t-sm"
+                            style={{ backgroundColor: demo.color }}
+                            initial={{ height: 0, rotateX: 90 }}
+                            animate={{ height: `${demo.value}%`, rotateX: 0 }}
+                            transition={{ duration: 0.8, delay: i * 0.1 }}
+                          />
+                          <span className="text-[8px] text-white/50 mt-1">{demo.age}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Top Channels */}
+                  <div className="col-span-2 bg-[#0a0a0a] p-4 rounded-xl border border-[#ff5004]/10 transform-style-preserve-3d">
+                    <div className="text-[#ff5004] text-sm font-medium mb-3">Top Performing Channels</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { channel: 'Google Ads', value: '$24,500', percent: 42 },
+                        { channel: 'Facebook', value: '$18,200', percent: 31 },
+                        { channel: 'Instagram', value: '$9,800', percent: 17 },
+                        { channel: 'LinkedIn', value: '$3,500', percent: 6 },
+                        { channel: 'Twitter', value: '$2,100', percent: 4 }
+                      ].map((channel, i) => (
+                        <motion.div
+                          key={channel.channel}
+                          className="col-span-1"
+                          initial={{ opacity: 0, y: 10, rotateX: 90 }}
+                          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                          transition={{ delay: 0.4 + i * 0.1 }}
+                        >
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="text-white/70">{channel.channel}</span>
+                            <span className="text-white">{channel.value}</span>
+                          </div>
+                          <div className="w-full bg-[#ffffff10] h-1 rounded-full overflow-hidden">
+                            <motion.div
+                              className="h-full rounded-full"
+                              style={{ backgroundColor: i === 0 ? '#ff5004' : i === 1 ? '#ff9557' : i === 2 ? '#ffb780' : '#ffd9aa' }}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${channel.percent}%` }}
+                              transition={{ duration: 0.8, delay: 0.5 + i * 0.05 }}
+                            />
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Holographic Code Editor */}
+            {/* Media - Professional Video Production Suite */}
             <motion.div
-              initial={{ rotate: -5, opacity: 0, y: 50 }}
-              animate={{ rotate: -5, opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="absolute right-0 bottom-24 w-96 h-64 bg-[#ffffff03] rounded-xl border border-[#ff5004]/20 backdrop-blur-lg"
+              className={`absolute w-full max-w-2xl ${activeDept !== 1 ? 'opacity-0 pointer-events-none' : ''}`}
+              initial={{ opacity: 0, x: 20, rotateY: 90 }}
+              animate={{ 
+                opacity: activeDept === 1 ? 1 : 0, 
+                x: activeDept === 1 ? 0 : 20,
+                rotateY: activeDept === 1 ? 0 : 90
+              }}
+              transition={{ duration: 0.5 }}
+              style={{
+                transformStyle: 'preserve-3d'
+              }}
             >
-              <div className="p-4 h-full font-mono text-sm">
-                <div className="text-[#ff5004] mb-4">// core-digitize-app.js</div>
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <span className="text-[#ff5004]">function</span>
-                    <span className="text-white">optimize()</span>
+              <div className="relative h-[540px] bg-[#161616] rounded-2xl border border-[#ff9557]/20 overflow-hidden shadow-2xl">
+                {/* 3D Editor Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-[#ff9557]/5 rounded-2xl"
+                  style={{
+                    transform: 'translateZ(-20px)',
+                    boxShadow: '0 0 50px rgba(255, 149, 87, 0.3)'
+                  }}
+                  animate={{
+                    opacity: [0.1, 0.2, 0.1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity
+                  }}
+                />
+                
+                {/* Editor Header */}
+                <div className="p-4 border-b border-[#ff9557]/10 flex justify-between items-center bg-[#0e0e0e]">
+                  <div className="text-[#ff9557] font-medium flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Video Production Suite
                   </div>
-                  <div className="pl-4">
-                    <span className="text-white">const</span>
-                    <span className="text-[#ff5004] ml-2">results</span>
-                    <span className="text-white">=</span>
-                    <span className="text-[#ff5004]">AI.analyze</span>
-                    <span className="text-white">(metrics);</span>
+                  <div className="text-xs text-white/50 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#00ff88] rounded-full"></div>
+                    Recording
+                  </div>
+                </div>
+                
+                {/* 3D Preview Monitor */}
+                <div className="m-4 bg-black rounded-xl overflow-hidden relative h-64 border border-[#ff9557]/20 transform-style-preserve-3d">
+                  {/* Video Preview */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#ff9557]/10 to-[#161616]">
+                    <motion.div 
+                      className="w-24 h-24 bg-[#ff9557] rounded-full flex items-center justify-center text-3xl shadow-xl"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        boxShadow: ['0 0 0 0 rgba(255, 149, 87, 0.4)', '0 0 0 10px rgba(255, 149, 87, 0)', '0 0 0 0 rgba(255, 149, 87, 0)'],
+                        rotateY: [0, 180, 360]
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeOut'
+                      }}
+                    >
+                      ▶
+                    </motion.div>
+                  </div>
+                  
+                  {/* Camera Indicators */}
+                  <div className="absolute top-3 left-3 flex gap-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <div className="text-xs text-white">REC</div>
+                  </div>
+                  
+                  {/* Timecode */}
+                  <div className="absolute bottom-3 left-3 text-xs text-white font-mono bg-black/50 px-2 py-1 rounded">
+                    01:23:45:12
+                  </div>
+                  
+                  {/* Audio Levels */}
+                  <div className="absolute bottom-3 right-3 w-20 h-6 bg-[#00000080] backdrop-blur-sm rounded border border-[#ff9557]/30 p-1 flex items-end gap-0.5">
+                    {[...Array(10)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 rounded-sm bg-[#ff9557]"
+                        style={{ height: `${Math.random() * 80 + 20}%` }}
+                        animate={{ height: [`${Math.random() * 20 + 10}%`, `${Math.random() * 80 + 20}%`] }}
+                        transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* 3D Timeline */}
+                <div className="m-4 bg-[#0a0a0a] rounded-xl border border-[#ff9557]/10 p-3 transform-style-preserve-3d">
+                  <div className="relative h-10">
+                    {/* Track */}
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-[#ffffff20] transform -translate-y-1/2"></div>
+                    
+                    {/* Clips */}
+                    <div className="absolute top-0 bottom-0 left-0 right-0 flex">
+                      {[
+                        { name: 'Intro', color: '#ff5004', duration: 15 },
+                        { name: 'Interview', color: '#ff9557', duration: 45 },
+                        { name: 'B-Roll', color: '#ffb780', duration: 30 },
+                        { name: 'Outro', color: '#ffd9aa', duration: 15 }
+                      ].map((clip, i) => (
+                        <motion.div
+                          key={clip.name}
+                          className="h-full flex items-center justify-center text-xs overflow-hidden"
+                          style={{ 
+                            width: `${clip.duration}%`,
+                            backgroundColor: `${clip.color}20`,
+                            borderRight: '1px solid #ffffff10',
+                            transformStyle: 'preserve-3d'
+                          }}
+                          initial={{ opacity: 0, rotateX: 90 }}
+                          animate={{ opacity: 1, rotateX: 0 }}
+                          transition={{ delay: 0.2 + i * 0.1 }}
+                        >
+                          <span className="text-white/70">{clip.name}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                    
+                    {/* Playhead */}
+                    <motion.div 
+                      className="absolute top-0 bottom-0 w-0.5 bg-[#ff9557]"
+                      initial={{ left: '0%' }}
+                      animate={{ left: '100%' }}
+                      transition={{ 
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    >
+                      <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-[#ff9557] rounded-full"></div>
+                    </motion.div>
+                  </div>
+                </div>
+                
+                {/* 3D Controls */}
+                <div className="m-4 flex justify-between items-center transform-style-preserve-3d">
+                  <div className="flex gap-3">
+                    {['⏮', '⏪', '⏸', '⏩', '⏭'].map((control, i) => (
+                      <motion.button
+                        key={i}
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-xl bg-[#0a0a0a] border border-[#ff9557]/20 hover:border-[#ff9557] text-[#ff9557]"
+                        whileHover={{ scale: 1.1, rotateY: 20 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {control}
+                      </motion.button>
+                    ))}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    {['🎚️', '🎛️', '🎚️'].map((tool, i) => (
+                      <motion.button
+                        key={i}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-sm bg-[#0a0a0a] border border-[#ff9557]/20 hover:border-[#ff9557] text-[#ff9557]"
+                        whileHover={{ scale: 1.05, rotateY: 20 }}
+                      >
+                        {tool}
+                      </motion.button>
+                    ))}
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Rotating Service Icons */}
+            {/* Development - 3D Code Editor with Live Preview */}
             <motion.div
-              initial={{ rotate: 0, opacity: 0 }}
-              animate={{ rotate: 360, opacity: 1 }}
-              transition={{
-                delay: 0.8,
-                rotate: {
-                  repeat: Infinity,
-                  duration: 20,
-                  ease: "linear"
-                }
+              className={`absolute w-full max-w-2xl ${activeDept !== 2 ? 'opacity-0 pointer-events-none' : ''}`}
+              initial={{ opacity: 0, x: 20, rotateY: 90 }}
+              animate={{ 
+                opacity: activeDept === 2 ? 1 : 0, 
+                x: activeDept === 2 ? 0 : 20,
+                rotateY: activeDept === 2 ? 0 : 90
               }}
-              className="absolute -left-12 top-24 w-48 h-48 border-2 border-[#ff5004]/20 rounded-full"
+              transition={{ duration: 0.5 }}
+              style={{
+                transformStyle: 'preserve-3d'
+              }}
             >
-              {['🛠', '📱', '📈', '🌐'].map((icon, i) => (
-                <div
-                  key={i}
-                  className="absolute w-12 h-12 bg-[#ffffff08] rounded-full flex items-center justify-center text-2xl border border-[#ff5004]/20"
+              <div className="relative h-[540px] bg-[#161616] rounded-2xl border border-[#ffb780]/20 overflow-hidden shadow-2xl">
+                {/* 3D Editor Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-[#ffb780]/5 rounded-2xl"
                   style={{
-                    transform: `rotate(${i * 90}deg) translate(60px) rotate(-${i * 90}deg)`,
+                    transform: 'translateZ(-20px)',
+                    boxShadow: '0 0 50px rgba(255, 183, 128, 0.3)'
                   }}
-                >
-                  {icon}
+                  animate={{
+                    opacity: [0.1, 0.2, 0.1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity
+                  }}
+                />
+                
+                {/* Editor Tabs */}
+                <div className="p-2 border-b border-[#ffb780]/10 flex bg-[#0e0e0e]">
+                  {["app.js", "styles.css", "package.json", "terminal"].map((file, i) => (
+                    <motion.div 
+                      key={file}
+                      className={`px-4 py-1.5 text-xs rounded-md mr-1 flex items-center gap-1 ${
+                        i === 0 ? 'bg-[#ffb780]/10 text-[#ffb780]' : 'text-white/50 hover:text-white/80'
+                      }`}
+                      whileHover={{ backgroundColor: '#ffffff08', rotateY: 20 }}
+                    >
+                      {file === 'app.js' && (
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                      )}
+                      {file}
+                      {i < 2 && <span className="ml-1 text-white/30">●</span>}
+                    </motion.div>
+                  ))}
                 </div>
-              ))}
+                
+                {/* Editor Content */}
+                <div className="flex h-[calc(100%-40px)] transform-style-preserve-3d">
+                  {/* 3D Line Numbers */}
+                  <div className="w-10 bg-[#0a0a0a] text-right text-xs text-white/30 font-mono p-1 border-r border-[#ffb780]/10">
+                    {[...Array(20)].map((_, i) => (
+                      <motion.div 
+                        key={i} 
+                        className="h-5 leading-5"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.02 }}
+                      >
+                        {i + 1}
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  {/* 3D Code */}
+                  <div className="flex-1 overflow-auto font-mono text-sm p-2">
+                    <div className="text-[#ffb780] mb-2">// core-digitize-app.js</div>
+                    
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ staggerChildren: 0.1 }}
+                    >
+                      <motion.div 
+                        className="text-[#569cd6]"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                      >
+                        <span className="text-[#9cdcfe]">import</span> React <span className="text-[#9cdcfe]">from</span> <span className="text-[#ce9178]">'react'</span>;
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#569cd6]"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <span className="text-[#9cdcfe]">import</span> { '{' } <span className="text-[#9cdcfe]">useState</span>, <span className="text-[#9cdcfe]">useEffect</span> { '}' } <span className="text-[#9cdcfe]">from</span> <span className="text-[#ce9178]">'react'</span>;
+                      </motion.div>
+                      <div className="h-4"></div>
+                      <motion.div 
+                        className="text-[#569cd6]"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <span className="text-[#9cdcfe]">const</span> <span className="text-[#4ec9b0]">CoreDigitize</span> = () = { '{' }
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-4"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <span className="text-[#569cd6]">const</span> [<span className="text-[#9cdcfe]">data</span>, <span className="text-[#9cdcfe]">setData</span>] = <span className="text-[#dcdcaa]">useState</span>(<span className="text-[#569cd6]">null</span>);
+                      </motion.div>
+                      <div className="h-2"></div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-4"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <span className="text-[#569cd6]">useEffect</span>(() = { '{' }
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-8"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <span className="text-[#569cd6]">const</span> <span className="text-[#dcdcaa]">fetchData</span> = <span className="text-[#569cd6]">async</span> () = { '{' }
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.6 }}
+                      >
+                        <span className="text-[#569cd6]">try</span> { '{' }
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        <span className="text-[#569cd6]">const</span> <span className="text-[#9cdcfe]">response</span> = <span className="text-[#569cd6]">await</span> <span className="text-[#dcdcaa]">fetch</span>(<span className="text-[#ce9178]">'/api/data'</span>);
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.8 }}
+                      >
+                        <span className="text-[#569cd6]">const</span> <span className="text-[#9cdcfe]">jsonData</span> = <span className="text-[#569cd6]">await</span> <span className="text-[#9cdcfe]">response</span>.<span className="text-[#dcdcaa]">json</span>();
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 0.9 }}
+                      >
+                        <span className="text-[#dcdcaa]">setData</span>(<span className="text-[#9cdcfe]">jsonData</span>);
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.0 }}
+                      >
+                        <span className="text-[#569cd6]"> catch</span> (<span className="text-[#9cdcfe]">error</span>) { '{' }
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.1 }}
+                      >
+                        <span className="text-[#dcdcaa]">console</span>.<span className="text-[#dcdcaa]">error</span>(<span className="text-[#ce9178]">'Error fetching data:'</span>, <span className="text-[#9cdcfe]">error</span>);
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.2 }}
+                      >
+                        {'}'}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-8"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.3 }}
+                      >
+                        {'}'};
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-8"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.4 }}
+                      >
+                        <span className="text-[#dcdcaa]">fetchData</span>();
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-4"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.5 }}
+                      >
+                        {'}'}, []);
+                      </motion.div>
+                      <div className="h-2"></div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-4"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.6 }}
+                      >
+                        <span className="text-[#569cd6]">return</span> (
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-8"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.7 }}
+                      >
+                        {`<div className="app">`}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.8 }}
+                      >
+                        {`<h1>Digital Solutions</h1>`}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 1.9 }}
+                      >
+                        {"{data} ? ("}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.0 }}
+                      >
+                        {"<DataDisplay data={data} />"}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.1 }}
+                      >
+                        {") : ("}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-16"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.2 }}
+                      >
+                        {"<LoadingSpinner />"}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-12"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.3 }}
+                      >
+                        {")"}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-8"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.4 }}
+                      >
+                        {"</div>"}
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#9cdcfe] ml-4"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.5 }}
+                      >
+                        );
+                      </motion.div>
+                      <motion.div 
+                        className="text-[#569cd6]"
+                        initial={{ x: -20, rotateX: 90 }}
+                        animate={{ x: 0, rotateX: 0 }}
+                        transition={{ delay: 2.6 }}
+                      >
+                        {'}'};
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                </div>
+                
+                {/* 3D Terminal */}
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-[#0a0a0a] border-t border-[#ffb780]/10 p-2 transform-style-preserve-3d">
+                  <div className="flex items-center mb-1">
+                    <div className="w-3 h-3 bg-[#ffb780] rounded-full mr-2"></div>
+                    <div className="text-xs text-[#ffb780]">Terminal</div>
+                  </div>
+                  <div className="font-mono text-xs h-16 overflow-auto">
+                    <div className="text-[#ffb780]">$ npm start</div>
+                    <div className="text-white"> core-digitize-app@1.0.0 start</div>
+                    <div className="text-white"> react-scripts start</div>
+                    <div className="text-white mt-1">ℹ ｢wds｣: Project is running at http://192.168.1.100/</div>
+                    <div className="text-white">ℹ ｢wds｣: webpack output is served from /</div>
+                    <div className="text-[#00ff88]">ℹ ｢wdm｣: Compiled successfully.</div>
+                    <motion.div 
+                      className="flex items-center mt-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 3 }}
+                    >
+                      <div className="text-[#ffb780]">$ </div>
+                      <motion.div
+                        className="ml-1 bg-[#ffb780] h-4"
+                        style={{ width: 8 }}
+                        animate={{ 
+                          opacity: [0, 1, 0],
+                        }}
+                        transition={{ 
+                          duration: 1,
+                          repeat: Infinity
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Animation - 3D Animation Studio */}
+            <motion.div
+              className={`absolute w-full max-w-2xl ${activeDept !== 3 ? 'opacity-0 pointer-events-none' : ''}`}
+              initial={{ opacity: 0, x: 20, rotateY: 90 }}
+              animate={{ 
+                opacity: activeDept === 3 ? 1 : 0, 
+                x: activeDept === 3 ? 0 : 20,
+                rotateY: activeDept === 3 ? 0 : 90
+              }}
+              transition={{ duration: 0.5 }}
+              style={{
+                transformStyle: 'preserve-3d'
+              }}
+            >
+              <div className="relative h-[540px] bg-[#161616] rounded-2xl border border-[#ffd9aa]/20 overflow-hidden shadow-2xl">
+                {/* 3D Animation Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-[#ffd9aa]/5 rounded-2xl"
+                  style={{
+                    transform: 'translateZ(-20px)',
+                    boxShadow: '0 0 50px rgba(255, 217, 170, 0.3)'
+                  }}
+                  animate={{
+                    opacity: [0.1, 0.2, 0.1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity
+                  }}
+                />
+                
+                {/* Tool Header */}
+                <div className="p-4 border-b border-[#ffd9aa]/10 flex justify-between items-center bg-[#0e0e0e]">
+                  <div className="text-[#ffd9aa] font-medium flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                    Animation Studio
+                  </div>
+                  <div className="text-xs text-white/50 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#00ff88] rounded-full"></div>
+                    Rendering
+                  </div>
+                </div>
+                
+                {/* 3D Animation Canvas */}
+                <div className="m-4 h-64 bg-gradient-to-br from-[#ffd9aa]/10 to-[#161616] rounded-xl overflow-hidden relative border border-[#ffd9aa]/20 transform-style-preserve-3d">
+                  {/* Animated Character */}
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32"
+                    animate={{
+                      rotateY: [0, 180, 360],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    {/* Character Head */}
+                    <motion.div 
+                      className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-[#ff5004] rounded-full"
+                      animate={{
+                        y: [0, -10, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      {/* Eyes */}
+                      <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-white rounded-full"></div>
+                      <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-white rounded-full"></div>
+                    </motion.div>
+                    
+                    {/* Character Body */}
+                    <motion.div 
+                      className="absolute top-16 left-1/2 transform -translate-x-1/2 w-12 h-16 bg-[#ff9557] rounded-b-lg"
+                      animate={{
+                        scaleY: [1, 0.9, 1]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      {/* Arms */}
+                      <motion.div 
+                        className="absolute top-2 -left-4 w-4 h-8 bg-[#ffb780] rounded-lg"
+                        animate={{
+                          rotateZ: [0, 30, 0, -30, 0]
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <motion.div 
+                        className="absolute top-2 -right-4 w-4 h-8 bg-[#ffb780] rounded-lg"
+                        animate={{
+                          rotateZ: [0, -30, 0, 30, 0]
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  </motion.div>
+                  
+                  {/* Animation Timeline */}
+                  <div className="absolute bottom-2 left-2 right-2 h-8 bg-[#00000090] backdrop-blur-sm rounded-lg p-1 flex items-center transform-style-preserve-3d">
+                    <motion.div 
+                      className="h-6 bg-[#ffd9aa] rounded-full w-2 absolute"
+                      animate={{
+                        left: ['0%', '100%', '0%']
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="h-full w-px bg-[#ffffff30] mx-1"></div>
+                    ))}
+                  </div>
+                  
+                  {/* Animation Controls */}
+                  <div className="absolute top-2 left-2 bg-[#00000090] backdrop-blur-sm rounded-lg p-1 shadow-sm transform-style-preserve-3d">
+                    {['▶️', '⏸️', '⏹️', '🔄'].map((tool, i) => (
+                      <motion.button
+                        key={i}
+                        className="w-8 h-8 flex items-center justify-center text-sm m-1 rounded hover:bg-[#ffffff20]"
+                        whileHover={{ scale: 1.1, rotateY: 20 }}
+                      >
+                        {tool}
+                      </motion.button>
+                    ))}
+                  </div>
+                  
+                  {/* Keyframe Panel */}
+                  <div className="absolute top-2 right-2 w-24 bg-[#00000090] backdrop-blur-sm rounded-lg p-2 shadow-sm transform-style-preserve-3d">
+                    <div className="text-xs font-medium mb-1 text-[#ffd9aa]">Keyframes</div>
+                    {['Position', 'Rotation', 'Scale', 'Opacity'].map((frame, i) => (
+                      <motion.div
+                        key={frame}
+                        className="text-xs py-1 px-1 rounded hover:bg-[#ffffff20] cursor-pointer flex items-center"
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 + i * 0.05 }}
+                      >
+                        <div className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: i === 0 ? '#ff5004' : i === 1 ? '#ff9557' : i === 2 ? '#ffb780' : '#ffd9aa' }} />
+                        {frame}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* 3D Animation Properties */}
+                <div className="m-4 bg-[#0a0a0a] rounded-xl border border-[#ffd9aa]/10 p-3 transform-style-preserve-3d">
+                  <div className="text-xs text-[#ffd9aa] mb-2">Animation Properties</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { name: 'Duration', value: '2.5s' },
+                      { name: 'Easing', value: 'easeInOut' },
+                      { name: 'Delay', value: '0s' },
+                      { name: 'Iterations', value: 'Infinite' }
+                    ].map((prop, i) => (
+                      <motion.div
+                        key={prop.name}
+                        className="col-span-1 text-xs text-white/80 bg-[#ffffff05] p-2 rounded-lg"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                      >
+                        <div className="text-[#ffd9aa]">{prop.name}</div>
+                        <div>{prop.value}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Performance Metrics Footer */}
+      {/* 3D Scroll Down Indicator */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-8 text-center"
+        transition={{ delay: 1.5 }}
+        onClick={handleScrollDown}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-10"
+        style={{
+          transformStyle: 'preserve-3d'
+        }}
       >
-        {[
-          { value: '300+', label: 'Projects Delivered' },
-          { value: '99.9%', label: 'Client Satisfaction' },
-          { value: '4.9/5', label: 'Average Rating' },
-        ].map((metric, i) => (
-          <div key={i} className="text-[#ff5004]">
-            <div className="text-2xl font-medium">{metric.value}</div>
-            <div className="text-sm text-white/60">{metric.label}</div>
-          </div>
-        ))}
+        <motion.div
+          animate={{ 
+            y: [0, 10, 0],
+            rotateX: [0, 20, 0]
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity 
+          }}
+          className="flex flex-col items-center"
+        >
+          <span className="text-sm text-[#ff5004] mb-1">Explore More</span>
+          <motion.svg 
+            className="w-6 h-6 text-[#ff5004]" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            animate={{
+              y: [0, 5, 0],
+              opacity: [0.6, 1, 0.6],
+              rotateX: [0, 180, 360]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity
+            }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </motion.svg>
+        </motion.div>
       </motion.div>
-
-      <style>{`
-        @keyframes scrollContent {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(calc(-100% + 500px)); }
-        }
-        @keyframes float {
-          0% { transform: translate(0, 0px); }
-          50% { transform: translate(0, 15px); }
-          100% { transform: translate(0, -0px); }
-        }
-      `}</style>
     </section>
   );
 }
