@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion';
-import { FiArrowRight, FiChevronRight, FiAward, FiUsers, FiGlobe, FiLayers } from 'react-icons/fi';
+import { useState, useRef, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import { FiArrowRight, FiChevronRight, FiX, FiCheck, FiAward, FiUsers, FiGlobe, FiLayers } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 export default function About() {
   return (
@@ -7,34 +9,41 @@ export default function About() {
       {/* Hero Section */}
       <AboutHeroSection />
 
-      {/* Our Story Section */}
-      <OurStorySection />
-
       {/* Core Values Section */}
       <CoreValuesSection />
+
+      {/* Our Story Section */}
+      <OurStorySection />
 
       {/* Leadership Section */}
       <LeadershipSection />
 
-      {/* Global Presence Section */}
-      <GlobalPresenceSection />
+      {/* Culture Section */}
+      <CultureSection />
 
       {/* Milestones Section */}
       <MilestonesSection />
 
-      {/* Culture Section */}
-      <CultureSection />
-
       {/* CTA Section */}
-      <AboutCTASection />
+      <CTASection />
     </div>
   );
 }
 
-const AboutHeroSection = () => {
+function AboutHeroSection() {
+  const navigate = useNavigate();
+
+  const handleContactClick = () => {
+    navigate('/contact');
+  };
+
+  const handleTeamClick = () => {
+    navigate('/team');
+  };
+
   return (
     <section className="relative min-h-[80vh] bg-[#060606] overflow-hidden isolate">
-      {/* Multi-layer Background */}
+      {/* Animated Background Elements */}
       <div className="absolute inset-0 z-0 opacity-30">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]" />
@@ -42,7 +51,7 @@ const AboutHeroSection = () => {
 
       {/* Floating Tech Elements */}
       <div className="absolute inset-0 z-0">
-        {[...Array(25)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
             className="absolute border-2 border-[#ff5004]/10 rounded-lg"
@@ -58,134 +67,285 @@ const AboutHeroSection = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Content */}
-          <div className="space-y-8 relative">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-12 flex items-center gap-4"
+      <div className="relative z-10 container mx-auto px-4 py-32 flex flex-col justify-center h-full">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-8"
+          >
+            About Core Digitize
+          </motion.div>
+          
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Engineering</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Digital Excellence</span>
+          </motion.h1>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed"
+          >
+            We are a collective of passionate innovators, strategic thinkers, and meticulous engineers dedicated to crafting exceptional digital experiences that drive measurable business impact.
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-wrap justify-center gap-6"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleContactClick}
+              className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl
+                         transition-all duration-300 shadow-lg shadow-[#ff5004]/30
+                         flex items-center gap-3"
             >
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                className="w-14 h-14 bg-[#ff5004] rounded-xl flex items-center justify-center"
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Contact Us
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleTeamClick}
+              className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
+                         font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
+                         flex items-center gap-3"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Meet Our Team
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Performance Metrics */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-8 text-center"
+      >
+        {[
+          { value: '300+', label: 'Projects Delivered', icon: <FiLayers className="w-6 h-6 mx-auto mb-2" /> },
+          { value: '99.9%', label: 'Client Satisfaction', icon: <FiCheck className="w-6 h-6 mx-auto mb-2" /> },
+          { value: '50+', label: 'Team Members', icon: <FiUsers className="w-6 h-6 mx-auto mb-2" /> },
+          { value: '4.9/5', label: 'Average Rating', icon: <FiAward className="w-6 h-6 mx-auto mb-2" /> }
+        ].map((metric, i) => (
+          <motion.div 
+            key={i} 
+            className="text-[#ff5004]"
+            whileHover={{ y: -5 }}
+          >
+            <div className="text-[#ff5004]">{metric.icon}</div>
+            <div className="text-2xl font-medium">{metric.value}</div>
+            <div className="text-sm text-white/60">{metric.label}</div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      <style>{`
+        @keyframes float {
+          0% { transform: translate(0, 0px); }
+          50% { transform: translate(0, 15px); }
+          100% { transform: translate(0, -0px); }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+const CoreValuesSection = () => {
+  const [activeValue, setActiveValue] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const values = [
+    {
+      title: "Innovation",
+      description: "We challenge conventional thinking to develop groundbreaking solutions that drive digital transformation.",
+      icon: "💡"
+    },
+    {
+      title: "Excellence",
+      description: "We pursue perfection in every deliverable, ensuring our work exceeds industry standards and client expectations.",
+      icon: "🏆"
+    },
+    {
+      title: "Integrity",
+      description: "We maintain transparency, honesty, and ethical practices in all our business relationships and operations.",
+      icon: "🤝"
+    },
+    {
+      title: "Collaboration",
+      description: "We believe in the power of teamwork, both internally and with our clients, to achieve extraordinary results.",
+      icon: "🧩"
+    },
+    {
+      title: "Impact",
+      description: "We measure success by the tangible business outcomes and value we create for our clients.",
+      icon: "📈"
+    }
+  ];
+
+  return (
+    <section ref={containerRef} className="relative py-32 overflow-hidden bg-gradient-to-b from-[#060606] to-[#0a0a0a]">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-20">
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6"
+          >
+            Our Foundation
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold mb-6"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Core</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Values</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="max-w-3xl mx-auto text-xl text-white/70"
+          >
+            The principles that guide our decisions, shape our culture, and define our approach to delivering exceptional results
+          </motion.p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Values Navigation */}
+          <div className="space-y-4">
+            {values.map((value, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ x: 10 }}
+                onClick={() => setActiveValue(index)}
+                className={`p-6 rounded-2xl cursor-pointer transition-all ${
+                  activeValue === index
+                    ? 'bg-gradient-to-r from-[#ff5004]/10 to-[#ff5004]/5 border border-[#ff5004]/30'
+                    : 'bg-[#161616] hover:bg-[#1e1e1e] border border-[#ffffff10]'
+                }`}
               >
-                <span className="text-2xl font-bold text-[#060606]">CD</span>
+                <div className="flex items-center gap-4">
+                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-3xl ${
+                    activeValue === index ? 'bg-[#ff5004]/20 text-[#ff5004]' : 'bg-[#ffffff08] text-white/70'
+                  }`}>
+                    {value.icon}
+                  </div>
+                  <h3 className={`text-xl font-semibold ${
+                    activeValue === index ? 'text-white' : 'text-white/80'
+                  }`}>
+                    {value.title}
+                  </h3>
+                </div>
+                {activeValue === index && (
+                  <motion.p 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-4 text-white/70 pl-20"
+                  >
+                    {value.description}
+                  </motion.p>
+                )}
               </motion.div>
-              <span className="text-white/80 text-xl font-light">Core Digitize</span>
-            </motion.div>
-
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-5xl md:text-6xl font-medium text-white leading-tight"
-            >
-              <span className="block mb-4">Engineering Digital</span>
-              <span className="bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004] bg-clip-text text-transparent">
-                Transformation
-              </span>
-            </motion.h1>
-
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-xl text-white/70 leading-relaxed max-w-2xl"
-            >
-              We are a collective of visionary technologists, creative strategists, and digital artisans committed to redefining what's possible in the digital landscape.
-            </motion.p>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-4 mt-8"
-            >
-              {['ISO Certified', 'AI-First', 'Global Team', 'Enterprise Grade'].map((service) => (
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  key={service} 
-                  className="px-4 py-2 bg-[#ffffff08] rounded-full border border-[#ff5004]/20"
-                >
-                  <span className="text-sm text-[#ff5004]">{service}</span>
-                </motion.div>
-              ))}
-            </motion.div>
+            ))}
           </div>
 
-          {/* Right Column - Visualization */}
+          {/* Visual Representation */}
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="relative h-[500px] flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="relative h-[500px]"
           >
-            {/* Holographic Globe */}
-            <motion.div 
+            {/* Animated Orb */}
+            <motion.div
               animate={{
-                rotateY: [0, 360],
+                rotate: [0, 360],
                 transition: {
-                  duration: 30,
+                  duration: 20,
                   repeat: Infinity,
                   ease: "linear"
                 }
               }}
-              className="absolute w-64 h-64 rounded-full border-2 border-[#ff5004]/20 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <div className="absolute w-full h-full rounded-full bg-[#ff5004]/5 backdrop-blur-sm"></div>
-              <div className="absolute w-32 h-32 rounded-full bg-[#ff5004]/10 backdrop-blur-sm"></div>
-              <div className="absolute w-16 h-16 rounded-full bg-[#ff5004]/20 backdrop-blur-sm"></div>
-              <FiGlobe className="w-32 h-32 text-[#ff5004]/30" />
+              <div className="relative w-80 h-80">
+                {/* Core */}
+                <div className="absolute inset-0 bg-[#ff5004]/10 rounded-full blur-xl"></div>
+                <div className="absolute inset-4 bg-gradient-to-br from-[#ff5004]/20 to-[#ff5004]/5 rounded-full border border-[#ff5004]/20"></div>
+                
+                {/* Floating Value Indicators */}
+                {values.map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-12 h-12 bg-[#ffffff08] rounded-full flex items-center justify-center text-xl border border-[#ff5004]/20"
+                    initial={{ 
+                      x: 0,
+                      y: 0,
+                      opacity: 0
+                    }}
+                    animate={{ 
+                      x: Math.cos(i * (2 * Math.PI / values.length)) * 140,
+                      y: Math.sin(i * (2 * Math.PI / values.length)) * 140,
+                      opacity: 1,
+                      transition: { 
+                        delay: i * 0.2,
+                        type: 'spring',
+                        stiffness: 100,
+                        damping: 10
+                      }
+                    }}
+                    whileHover={{ 
+                      scale: 1.2,
+                      backgroundColor: 'rgba(255, 80, 4, 0.2)',
+                      transition: { duration: 0.2 }
+                    }}
+                  >
+                    {values[i].icon}
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
 
-            {/* Floating Team Members */}
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{
-                  delay: 0.7 + i * 0.1,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 10
-                }}
-                className="absolute w-16 h-16 bg-[#161616] rounded-full border-2 border-[#ff5004]/30 flex items-center justify-center text-xl"
-                style={{
-                  top: `${Math.random() * 60 + 20}%`,
-                  left: `${Math.random() * 60 + 20}%`,
-                }}
-              >
-                <span className="text-[#ff5004]">👩‍💻</span>
-              </motion.div>
-            ))}
-
-            {/* Floating Projects */}
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{
-                  delay: 1.2 + i * 0.1,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 10
-                }}
-                className="absolute w-24 h-24 bg-[#161616] rounded-xl border-2 border-[#ff5004]/20 flex items-center justify-center"
-                style={{
-                  top: `${Math.random() * 60 + 20}%`,
-                  left: `${Math.random() * 60 + 20}%`,
-                }}
-              >
-                <FiLayers className="w-8 h-8 text-[#ff5004]" />
-              </motion.div>
-            ))}
+            {/* Active Value Highlight */}
+            <motion.div
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-[#161616] rounded-2xl p-6 border border-[#ffffff10]"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-xl bg-[#ff5004]/20 flex items-center justify-center text-2xl text-[#ff5004]">
+                  {values[activeValue].icon}
+                </div>
+                <h3 className="text-2xl font-bold text-white">{values[activeValue].title}</h3>
+              </div>
+              <p className="text-white/70">{values[activeValue].description}</p>
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -194,27 +354,71 @@ const AboutHeroSection = () => {
 };
 
 const OurStorySection = () => {
+  const navigate = useNavigate();
+
+  const handleReadMore = () => {
+    navigate('/journey');
+  };
+
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Image */}
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div className="rounded-3xl overflow-hidden shadow-lg border border-[#ffffff10]">
-              <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" 
-                alt="Our Team" 
-                className="w-full h-auto object-cover" 
-                style={{ minHeight: '500px' }} 
-              />
+          {/* Left Column - Timeline */}
+          <div className="relative">
+            {/* Vertical Line */}
+            <div className="absolute left-8 top-0 h-full w-px bg-gradient-to-b from-[#ff5004] via-[#ff5004]/30 to-transparent"></div>
+            
+            {/* Timeline Items */}
+            <div className="space-y-12">
+              {[
+                {
+                  year: "2018",
+                  title: "Foundation",
+                  description: "Core Digitize was founded by a team of digital experts with a vision to bridge the gap between enterprise technology and measurable business impact."
+                },
+                {
+                  year: "2019",
+                  title: "First Major Client",
+                  description: "Secured our first Fortune 500 client, delivering a comprehensive digital transformation that increased their online revenue by 150%."
+                },
+                {
+                  year: "2020",
+                  title: "Technology Expansion",
+                  description: "Expanded our service offerings to include AI-driven solutions and cloud-native development, positioning us as innovators in the digital space."
+                },
+                {
+                  year: "2022",
+                  title: "Team Growth",
+                  description: "Grew our team to 50+ specialists across development, design, and digital marketing, enabling us to take on more complex projects."
+                },
+                {
+                  year: "2023",
+                  title: "Current Focus",
+                  description: "Pioneering next-gen solutions in Web3, AI integration, and performance marketing while maintaining our commitment to excellence."
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative pl-20"
+                >
+                  {/* Year Marker */}
+                  <div className="absolute left-0 top-1 w-16 h-16 rounded-full bg-gradient-to-br from-[#ff5004] to-[#ff8c00] flex items-center justify-center text-white font-bold">
+                    {item.year}
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="bg-[#161616] rounded-2xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all">
+                    <h3 className="text-2xl font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-white/70">{item.description}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#ff5004]/10 rounded-full filter blur-[80px] opacity-50 z-0"></div>
-          </motion.div>
+          </div>
 
           {/* Right Column - Content */}
           <div className="space-y-8">
@@ -222,161 +426,53 @@ const OurStorySection = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4"
+              className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full"
             >
               Our Journey
             </motion.span>
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl font-medium mb-6"
+              className="text-4xl md:text-5xl font-bold"
             >
-              From Vision to <span className="text-[#ff5004]">Global Impact</span>
+              From Vision to <span className="text-[#ff5004]">Industry Leader</span>
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-white/70 leading-relaxed"
+              className="text-xl text-white/70"
             >
-              Founded in 2015, Core Digitize began as a small team of passionate technologists with a shared vision: to bridge the gap between cutting-edge technology and real-world business needs. What started as a boutique digital agency has since evolved into a global technology partner for enterprises and startups alike.
+              What began as a small team of passionate technologists has grown into a premier digital solutions provider trusted by industry leaders.
             </motion.p>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-xl text-white/70 leading-relaxed"
+              className="text-xl text-white/70"
             >
-              Our journey has been marked by continuous innovation, strategic partnerships, and an unwavering commitment to delivering exceptional results. From our first project—a local business website—to our current work with Fortune 500 companies, our core philosophy remains unchanged: technology should serve as an enabler of human potential.
+              Our journey reflects our commitment to innovation, quality, and client success at every stage of growth.
             </motion.p>
-            
-            {/* Timeline */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-12 space-y-6"
+              className="pt-6"
             >
-              {[
-                { year: "2015", event: "Founded in San Francisco with 5 team members" },
-                { year: "2017", event: "Expanded to European market with Berlin office" },
-                { year: "2019", event: "Launched AI/ML division with 20+ experts" },
-                { year: "2021", event: "Recognized as Top 100 Tech Companies by Forbes" },
-                { year: "2023", event: "Global team of 150+ serving clients in 12 countries" },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-6">
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full bg-[#ff5004]/10 flex items-center justify-center border border-[#ff5004]/20">
-                      <span className="text-[#ff5004] font-medium">{item.year}</span>
-                    </div>
-                    {i < 4 && (
-                      <div className="w-px h-full bg-[#ff5004]/20"></div>
-                    )}
-                  </div>
-                  <div className="pt-1 pb-6">
-                    <p className="text-white/90">{item.event}</p>
-                  </div>
-                </div>
-              ))}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleReadMore}
+                className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
+                           font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5
+                           flex items-center gap-3"
+              >
+                Explore Our Full Journey
+                <FiArrowRight className="w-5 h-5" />
+              </motion.button>
             </motion.div>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const CoreValuesSection = () => {
-  return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            OUR PHILOSOPHY
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Core</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Values</span>
-          </motion.h2>
-          <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            The principles that guide every decision we make and every solution we deliver
-          </motion.p>
-        </motion.div>
-
-        {/* Values Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Innovation First",
-              description: "We challenge conventional thinking to create breakthrough solutions that redefine industries.",
-              icon: "🚀"
-            },
-            {
-              title: "Relentless Quality",
-              description: "We settle for nothing less than excellence in every line of code and every pixel we create.",
-              icon: "🏆"
-            },
-            {
-              title: "Client-Centric",
-              description: "Your success is our success. We measure our achievements by the impact we create for you.",
-              icon: "🤝"
-            },
-            {
-              title: "Data-Driven",
-              description: "Every decision is backed by rigorous analysis and measurable outcomes.",
-              icon: "📊"
-            },
-            {
-              title: "Transparent Integrity",
-              description: "We build trust through open communication, ethical practices, and accountability.",
-              icon: "🔍"
-            },
-            {
-              title: "Continuous Growth",
-              description: "We foster a culture of learning, adaptation, and perpetual evolution.",
-              icon: "🌱"
-            }
-          ].map((value, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{ 
-                y: -10,
-                boxShadow: "0 20px 40px -10px rgba(255, 80, 4, 0.3)"
-              }}
-              className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
-            >
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-3xl mb-6 backdrop-blur-sm">
-                {value.icon}
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{value.title}</h3>
-              <p className="text-gray-400">{value.description}</p>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>
@@ -384,140 +480,153 @@ const CoreValuesSection = () => {
 };
 
 const LeadershipSection = () => {
+  const navigate = useNavigate();
+
+  const handleViewTeam = () => {
+    navigate('/team');
+  };
+
+  const leaders = [
+    {
+      name: "Alex Johnson",
+      role: "Founder & CEO",
+      bio: "Visionary leader with 15+ years in digital transformation and enterprise technology.",
+      img: "/team/alex.jpg"
+    },
+    {
+      name: "Sarah Chen",
+      role: "CTO",
+      bio: "Technology strategist specializing in scalable architectures and AI integration.",
+      img: "/team/sarah.jpg"
+    },
+    {
+      name: "Michael Rodriguez",
+      role: "Head of Product",
+      bio: "Product development expert focused on user-centric design and measurable outcomes.",
+      img: "/team/michael.jpg"
+    },
+    {
+      name: "Emma Williams",
+      role: "Head of Growth",
+      bio: "Growth hacker with a proven track record in scaling digital businesses.",
+      img: "/team/emma.jpg"
+    }
+  ];
+
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden bg-gradient-to-b from-[#0a0a0a] to-[#060606]">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
+        <div className="text-center mb-20">
           <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6"
           >
-            MEET THE TEAM
+            Leadership
           </motion.span>
           <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold mb-6"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Executive</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Strategic</span>{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Leadership</span>
           </motion.h2>
           <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="max-w-3xl mx-auto text-xl text-white/70"
           >
-            Visionary leaders driving our strategic direction and technological innovation
+            Our executive team combines decades of industry experience with forward-thinking vision to drive digital excellence.
           </motion.p>
-        </motion.div>
+        </div>
 
-        {/* Leadership Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {[
-            {
-              name: "Alexandra Chen",
-              title: "CEO & Founder",
-              bio: "Serial entrepreneur with 15+ years in digital transformation. Former Google Product Lead.",
-              image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80"
-            },
-            {
-              name: "James Rodriguez",
-              title: "CTO",
-              bio: "Ex-Microsoft architect specializing in cloud-native solutions and AI infrastructure.",
-              image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-            },
-            {
-              name: "Sarah Johnson",
-              title: "CRO",
-              bio: "Growth strategist with expertise in scaling tech companies globally.",
-              image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=761&q=80"
-            },
-            {
-              name: "Michael Park",
-              title: "VP of Engineering",
-              bio: "Led engineering teams at Uber and Airbnb. Expert in scalable architectures.",
-              image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-            },
-            {
-              name: "Priya Patel",
-              title: "VP of Design",
-              bio: "Human-centered design expert with Apple and IDEO background.",
-              image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80"
-            },
-            {
-              name: "David Kim",
-              title: "VP of AI Research",
-              bio: "PhD in Machine Learning. Former OpenAI researcher.",
-              image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-            }
-          ].map((leader, i) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {leaders.map((leader, index) => (
             <motion.div
-              key={i}
+              key={index}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="group relative overflow-hidden rounded-3xl border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -10 }}
+              className="relative group overflow-hidden rounded-3xl"
             >
+              {/* Leader Image */}
               <div className="relative h-80 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                <div className="absolute inset-0 bg-[#ff5004]/10 mix-blend-overlay z-10"></div>
                 <img 
-                  src={leader.image} 
+                  src={leader.img} 
                   alt={leader.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-8">
+              
+              {/* Leader Info */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
                 <h3 className="text-2xl font-bold text-white mb-1">{leader.name}</h3>
-                <p className="text-[#ff5004] mb-4">{leader.title}</p>
-                <p className="text-white/80 mb-6">{leader.bio}</p>
-                <button className="inline-flex items-center text-[#ff5004] hover:text-[#ff6120] group">
-                  <span className="relative overflow-hidden">
-                    <span className="absolute bottom-0 left-0 w-full h-px bg-[#ff5004] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
-                    View Profile
-                  </span>
-                  <FiArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
-                </button>
+                <p className="text-[#ff5004] mb-3">{leader.role}</p>
+                <p className="text-white/80 text-sm">{leader.bio}</p>
               </div>
+              
+              {/* Hover Effect */}
+              <div className="absolute inset-0 border-2 border-[#ff5004]/30 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.div>
           ))}
         </div>
 
-        {/* Team CTA */}
-        <motion.div 
-          className="text-center mt-20"
-          initial={{ opacity: 0, y: 40 }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-center mt-16"
         >
-          <div className="inline-block p-[1px] rounded-2xl bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:shadow-xl hover:shadow-[#ff5004]/30 transition-all">
-            <button className="relative overflow-hidden px-12 py-5 bg-[#060606] rounded-2xl group w-full">
-              <span className="absolute inset-0 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <span className="relative z-10 flex items-center justify-center text-lg font-bold text-white">
-                Meet Our Full Team
-                <FiChevronRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" />
-              </span>
-            </button>
-          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleViewTeam}
+            className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl
+                       transition-all duration-300 shadow-lg shadow-[#ff5004]/30
+                       flex items-center gap-3 mx-auto"
+          >
+            <FiUsers className="w-5 h-5" />
+            Meet Our Full Team
+          </motion.button>
         </motion.div>
       </div>
     </section>
   );
 };
 
-const GlobalPresenceSection = () => {
+const CultureSection = () => {
+  const culturePillars = [
+    {
+      title: "Continuous Learning",
+      description: "We invest in our team's growth with regular training, conferences, and access to cutting-edge resources.",
+      icon: "📚"
+    },
+    {
+      title: "Collaborative Environment",
+      description: "Cross-functional teamwork and knowledge sharing are at the heart of our problem-solving approach.",
+      icon: "🤝"
+    },
+    {
+      title: "Work-Life Harmony",
+      description: "Flexible schedules and remote options ensure our team can do their best work while maintaining balance.",
+      icon: "⚖️"
+    },
+    {
+      title: "Innovation Time",
+      description: "Dedicated hours each week for team members to explore new technologies and creative ideas.",
+      icon: "💡"
+    }
+  ];
+
   return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
+    <section className="relative py-32 overflow-hidden bg-[#060606]">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Content */}
@@ -526,208 +635,172 @@ const GlobalPresenceSection = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4"
+              className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full"
             >
-              Worldwide Reach
+              Our Culture
             </motion.span>
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl font-medium mb-6"
+              className="text-4xl md:text-5xl font-bold"
             >
-              Global <span className="text-[#ff5004]">Footprint</span>
+              Where <span className="text-[#ff5004]">Talent</span> Thrives
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-white/70 leading-relaxed"
+              className="text-xl text-white/70"
             >
-              With offices across three continents and team members in 12 countries, we combine global perspective with local expertise to deliver solutions that transcend borders.
+              We've built an environment that fosters creativity, collaboration, and professional growth.
             </motion.p>
-            
-            {/* Stats */}
-            <motion.div 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="grid grid-cols-2 gap-8 mt-12"
+              className="text-xl text-white/70"
             >
-              {[
-                { value: "150+", label: "Team Members", icon: <FiUsers className="w-6 h-6" /> },
-                { value: "12", label: "Countries", icon: <FiGlobe className="w-6 h-6" /> },
-                { value: "5", label: "Global Offices", icon: <FiAward className="w-6 h-6" /> },
-                { value: "24/7", label: "Support Coverage", icon: <FiLayers className="w-6 h-6" /> }
-              ].map((stat, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-[#ff5004]">
-                    {stat.icon}
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">{stat.value}</div>
-                    <div className="text-white/60">{stat.label}</div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+              Our culture is our competitive advantage, attracting top talent who share our passion for digital excellence.
+            </motion.p>
           </div>
 
-          {/* Right Column - Map */}
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative h-[500px]"
-          >
-            <div className="absolute inset-0 bg-[#161616] rounded-3xl overflow-hidden border border-[#ffffff10] flex items-center justify-center">
-              {/* Simplified World Map with Office Locations */}
-              <div className="relative w-full h-full">
-                {/* World Map Background */}
-                <div className="absolute inset-0 opacity-20 [background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1200px-World_map_-_low_resolution.svg.png')] bg-contain bg-center bg-no-repeat"></div>
-                
-                {/* Office Locations */}
-                {[
-                  { top: "30%", left: "20%", city: "San Francisco" },
-                  { top: "35%", left: "50%", city: "Berlin" },
-                  { top: "55%", left: "75%", city: "Singapore" },
-                  { top: "70%", left: "55%", city: "Sydney" },
-                  { top: "25%", left: "75%", city: "Tokyo" }
-                ].map((location, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    transition={{ delay: 0.5 + i * 0.1 }}
-                    className="absolute w-6 h-6 rounded-full bg-[#ff5004] flex items-center justify-center text-white font-bold text-xs"
-                    style={{ top: location.top, left: location.left }}
-                  >
-                    {i+1}
-                    <motion.div 
-                      className="absolute -z-10 w-16 h-16 rounded-full bg-[#ff5004]/20"
-                      animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#ff5004]/5 rounded-full filter blur-[80px] z-0"></div>
-          </motion.div>
+          {/* Right Column - Culture Pillars */}
+          <div className="grid sm:grid-cols-2 gap-6">
+            {culturePillars.map((pillar, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="bg-[#161616] rounded-2xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+              >
+                <div className="w-14 h-14 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-2xl mb-4 text-[#ff5004]">
+                  {pillar.icon}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{pillar.title}</h3>
+                <p className="text-white/70">{pillar.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
+
+        {/* Team Photo Grid */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+            <motion.div
+              key={item}
+              whileHover={{ scale: 1.05 }}
+              className="relative aspect-square overflow-hidden rounded-xl"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10"></div>
+              <img 
+                src={`/team/team-${item}.jpg`} 
+                alt={`Team member ${item}`} 
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
 };
 
 const MilestonesSection = () => {
+  const milestones = [
+    {
+      year: "2018",
+      title: "Company Founded",
+      description: "Launched with 5 team members and a vision for digital excellence"
+    },
+    {
+      year: "2019",
+      title: "First Enterprise Client",
+      description: "Secured Fortune 500 client, validating our enterprise approach"
+    },
+    {
+      year: "2020",
+      title: "AI Division Launched",
+      description: "Expanded into artificial intelligence and machine learning services"
+    },
+    {
+      year: "2021",
+      title: "50 Projects Delivered",
+      description: "Reached milestone of 50 successful client engagements"
+    },
+    {
+      year: "2022",
+      title: "Team Growth",
+      description: "Expanded to 50+ specialists across multiple disciplines"
+    },
+    {
+      year: "2023",
+      title: "300+ Projects",
+      description: "Delivered over 300 successful digital solutions to clients"
+    }
+  ];
+
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
+        <div className="text-center mb-20">
           <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6"
           >
-            OUR ACHIEVEMENTS
+            Our Progress
           </motion.span>
           <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold mb-6"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Key</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Milestones</span>
+            Key <span className="text-[#ff5004]">Milestones</span>
           </motion.h2>
           <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="max-w-3xl mx-auto text-xl text-white/70"
           >
-            Celebrating the moments that define our journey and shape our future
+            Our journey of growth, innovation, and impact through the years
           </motion.p>
-        </motion.div>
+        </div>
 
-        {/* Timeline */}
         <div className="relative">
-          {/* Center Line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[#ff5004]/20 transform -translate-x-1/2"></div>
+          {/* Horizontal Timeline Line */}
+          <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[#ff5004] to-transparent z-0"></div>
           
           {/* Milestones */}
-          <div className="space-y-24">
-            {[
-              {
-                year: "2023",
-                title: "Forbes Tech 100 Recognition",
-                description: "Named among the top 100 most innovative tech companies by Forbes",
-                icon: "🏆"
-              },
-              {
-                year: "2022",
-                title: "AI Research Breakthrough",
-                description: "Published groundbreaking research in neural network optimization",
-                icon: "🧠"
-              },
-              {
-                year: "2021",
-                title: "Global Expansion",
-                description: "Opened offices in Singapore and Sydney to serve APAC markets",
-                icon: "🌏"
-              },
-              {
-                year: "2020",
-                title: "Enterprise Platform Launch",
-                description: "Released our flagship enterprise digital transformation platform",
-                icon: "🚀"
-              },
-              {
-                year: "2019",
-                title: "ISO 27001 Certification",
-                description: "Achieved highest standards for information security management",
-                icon: "🔒"
-              }
-            ].map((milestone, i) => (
+          <div className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 z-10">
+            {milestones.map((milestone, index) => (
               <motion.div
-                key={i}
+                key={index}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`relative flex ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} items-center`}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="text-center"
               >
-                {/* Date */}
-                <div className={`w-1/2 px-12 ${i % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                  <motion.div 
-                    whileHover={{ scale: 1.05 }}
-                    className="inline-block"
-                  >
-                    <div className="text-2xl font-bold text-[#ff5004] mb-2">{milestone.year}</div>
-                  </motion.div>
-                </div>
-                
-                {/* Center Dot */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-[#ff5004] flex items-center justify-center text-white z-10 border-4 border-[#060606]">
-                  {milestone.icon}
+                {/* Year Marker */}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#ff5004] to-[#ff8c00] flex items-center justify-center text-white font-bold mx-auto mb-6 relative">
+                  {milestone.year}
+                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-[#ff5004] to-transparent"></div>
                 </div>
                 
                 {/* Content */}
-                <div className={`w-1/2 px-12 ${i % 2 === 0 ? 'text-left' : 'text-right'}`}>
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
-                  >
-                    <h3 className="text-2xl font-bold text-white mb-3">{milestone.title}</h3>
-                    <p className="text-white/70">{milestone.description}</p>
-                  </motion.div>
+                <div className="bg-[#161616] rounded-2xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all h-full">
+                  <h3 className="text-xl font-bold text-white mb-3">{milestone.title}</h3>
+                  <p className="text-white/70">{milestone.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -738,108 +811,17 @@ const MilestonesSection = () => {
   );
 };
 
-const CultureSection = () => {
-  return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Image */}
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div className="rounded-3xl overflow-hidden shadow-lg border border-[#ffffff10]">
-              <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" 
-                alt="Our Culture" 
-                className="w-full h-auto object-cover" 
-                style={{ minHeight: '600px' }} 
-              />
-            </div>
-            <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#ff5004]/10 rounded-full filter blur-[80px] opacity-50 z-0"></div>
-          </motion.div>
+const CTASection = () => {
+  const navigate = useNavigate();
 
-          {/* Right Column - Content */}
-          <div className="space-y-8">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4"
-            >
-              Our Culture
-            </motion.span>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl font-medium mb-6"
-            >
-              Where <span className="text-[#ff5004]">Brilliance</span> Thrives
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-white/70 leading-relaxed"
-            >
-              At Core Digitize, we've cultivated an environment where exceptional talent can do their best work. Our culture is built on collaboration, continuous learning, and a shared passion for solving complex challenges.
-            </motion.p>
-            
-            {/* Culture Highlights */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="space-y-6 mt-12"
-            >
-              {[
-                {
-                  title: "Continuous Learning",
-                  description: "Annual $5,000 education budget for each team member and weekly knowledge-sharing sessions",
-                  icon: "📚"
-                },
-                {
-                  title: "Work-Life Harmony",
-                  description: "Flexible hours, unlimited PTO, and remote-first policy to support diverse lifestyles",
-                  icon: "⚖️"
-                },
-                {
-                  title: "Innovation Time",
-                  description: "20% of work time dedicated to passion projects and experimental initiatives",
-                  icon: "💡"
-                },
-                {
-                  title: "Global Retreats",
-                  description: "Annual company-wide gatherings in inspiring locations worldwide",
-                  icon: "✈️"
-                }
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ y: -5 }}
-                  className="flex gap-6 p-6 bg-[#161616] rounded-xl border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
-                >
-                  <div className="w-16 h-16 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-2xl shrink-0">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                    <p className="text-white/70">{item.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+  const handleScheduleConsultation = () => {
+    navigate('/contact?type=consultation');
+  };
 
-const AboutCTASection = () => {
+  const handleContactClick = () => {
+    navigate("/contact");
+  };
+
   return (
     <section className="relative py-32 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -852,25 +834,27 @@ const AboutCTASection = () => {
           <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
           <div className="relative z-10 text-center">
             <h2 className="text-3xl md:text-4xl font-medium mb-6">
-              Join Our <span className="text-[#ff5004]">Mission</span>
+              Ready to <span className="text-[#ff5004]">Partner</span> With Us?
             </h2>
             <p className="max-w-2xl mx-auto text-xl text-white/70 mb-10">
-              Whether you're looking to collaborate or join our team, we'd love to hear from you.
+              Let's discuss how we can help you achieve your digital transformation goals
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleScheduleConsultation}
                 className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all"
               >
-                Explore Careers
+                Schedule Consultation
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleContactClick}
                 className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5"
               >
-                Contact Leadership
+                Contact Our Team
               </motion.button>
             </div>
           </div>
