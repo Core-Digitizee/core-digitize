@@ -3,34 +3,81 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-mo
 import { FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
+
+// Custom scrollbar styles in a global style component
+const GlobalStyles = () => (
+  <style>{`
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #ff5004, #ff732e);
+      border-radius: 5px;
+      border: 2px solid #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #ff6120, #ff8440);
+    }
+    ::-webkit-scrollbar-corner {
+      background: #0a0a0a;
+    }
+  `}</style>
+);
+
 export default function Home() {
+  const [fullScrollEnabled, setFullScrollEnabled] = useState(false);
+  const aboutUsRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  const handleExplore = () => {
+    setFullScrollEnabled(true);
+    document.body.style.overflow = 'auto';
+    
+    // Scroll to the About Us section smoothly
+    setTimeout(() => {
+      aboutUsRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
+
+
   return (
-    <div className="bg-[#060606] text-white overflow-hidden">
+    <div className="bg-[#060606] text-white">
+      <GlobalStyles />
+    
       {/* Hero Section */}
-      <HeroSection />
+      <div ref={heroRef} className="overflow-y-auto">
+        <HeroSection 
+          onExplore={handleExplore} 
+          showScrollButton={!fullScrollEnabled} 
+        />
+      </div>
 
-      {/* About Us Section */}
-      <AboutUsSection />
 
-      {/* Our Services Section */}
-      <OurServicesSection />
-
-      {/* Case Studies Section */}
-      <CaseStudiesSection />
-
-      {/* Technology Stack Section */}
-      <TechStackSection />
-
-      {/* Testimonials Section */}
-      <TestimonialsSection />
-
-      {/* CTA Section */}
-      <CTASection />
+      {/* Rest of the content - conditionally shown based on scroll state */}
+      <div style={{ display: fullScrollEnabled ? 'block' : 'none' }}>
+        <div ref={aboutUsRef}>
+          <AboutUsSection />
+        </div>
+        <OurServicesSection />
+        <CaseStudiesSection />
+        <TechStackSection />
+        <TestimonialsSection />
+        <CTASection />
+      </div>
     </div>
   );
 }
 
-function HeroSection() {
+function HeroSection({ onExplore, showScrollButton }: { onExplore: () => void; showScrollButton: boolean }) {
   const navigate = useNavigate();
   const [activeDept, setActiveDept] = useState(0);
   const departments = ['Marketing', 'Media', 'Development', 'Animation'];
@@ -54,10 +101,9 @@ function HeroSection() {
 
   const handleStartJourney = () => navigate('/contact');
   const handleViewPortfolio = () => navigate('/portfolio');
-  const handleScrollDown = () => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
 
   return (
-    <section className="relative h-screen bg-[#060606] overflow-hidden snap-start">
+    <section className="relative h-screen bg-[#060606] overflow-hidden">
       {/* Advanced 3D Background Elements */}
       <div className="absolute inset-0 z-0">
         {/* 3D Grid Pattern */}
@@ -1291,51 +1337,133 @@ function HeroSection() {
         </div>
       </div>
 
-      {/* 3D Scroll Down Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
-        onClick={handleScrollDown}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-10"
-        style={{
-          transformStyle: 'preserve-3d'
-        }}
-      >
+      {/* Premium Scroll Down Indicator - conditionally rendered */}
+      {showScrollButton && (
         <motion.div
-          animate={{ 
-            y: [0, 10, 0],
-            rotateX: [0, 20, 0]
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+          onClick={onExplore}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-20"
+          style={{
+            transformStyle: 'preserve-3d',
+            perspective: '1000px'
           }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity 
-          }}
-          className="flex flex-col items-center"
         >
-          <span className="text-sm text-[#ff5004] mb-1">Explore More</span>
-          <motion.svg 
-            className="w-6 h-6 text-[#ff5004]" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+          <motion.div
+            className="flex flex-col items-center"
             animate={{
-              y: [0, 5, 0],
-              opacity: [0.6, 1, 0.6],
-              rotateX: [0, 180, 360]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity
+              y: [0, 15, 0],
+              transition: {
+                duration: 2.5,
+                repeat: Infinity,
+                repeatType: 'loop',
+                ease: "easeInOut"
+              }
             }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </motion.svg>
+            <motion.div
+              className="relative group"
+              whileHover="hover"
+              whileTap="tap"
+              variants={{
+                hover: { y: -5 },
+                tap: { scale: 0.95 }
+              }}
+            >
+              {/* Main button with gradient border */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#ff5004] to-[#ff8c00] blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <motion.button
+                className="relative px-8 py-3 rounded-full bg-gradient-to-b from-[#161616] to-[#0a0a0a] border border-transparent group-hover:border-[#ff5004]/50 backdrop-blur-lg overflow-hidden"
+                variants={{
+                  hover: { 
+                    boxShadow: '0 10px 30px -5px rgba(255, 80, 4, 0.4)',
+                  }
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Animated gradient overlay */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-[#ff5004]/10 to-[#ff8c00]/10 opacity-0 group-hover:opacity-100"
+                  initial={{ x: '-100%' }}
+                  variants={{
+                    hover: { 
+                      x: '100%',
+                      transition: {
+                        duration: 1.5,
+                        ease: "linear"
+                      }
+                    }
+                  }}
+                />
+                
+                {/* Content */}
+                <div className="relative flex items-center justify-center gap-3">
+                  <span className="text-[#ff5004] font-medium text-sm sm:text-base tracking-wide">
+                    Discover More
+                  </span>
+                  <motion.div
+                    animate={{
+                      y: [0, 5, 0],
+                      transition: {
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }
+                    }}
+                  >
+                    <svg 
+                      className="w-5 h-5 text-[#ff5004]" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <motion.path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                        initial={{ pathLength: 0 }}
+                        animate={{
+                          pathLength: [0, 1, 0],
+                          opacity: [0.8, 1, 0.8],
+                          transition: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }
+                        }}
+                      />
+                    </svg>
+                  </motion.div>
+                </div>
+              </motion.button>
+            </motion.div>
+
+            {/* Subtle pulsing dot */}
+            <motion.div
+              className="w-2 h-2 mt-2 rounded-full bg-[#ff5004]"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.6, 1, 0.6],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
         </motion.div>
       </motion.div>
+      )}
     </section>
+    
   );
 }
+
+// Rest of your components (AboutUsSection, OurServicesSection, etc.) remain exactly the same
+// ... [Keep all other components unchanged]
 
 const AboutUsSection = () => {
   const navigate = useNavigate();
