@@ -3,28 +3,41 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-mo
 import { FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
-
 // Custom scrollbar styles in a global style component
 const GlobalStyles = () => (
   <style>{`
-    /* Custom scrollbar */
+    /* Premium Custom Scrollbar */
     ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0a0a0a;
+      background: rgba(10, 10, 10, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 80, 4, 0.1);
     }
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, #ff5004, #ff732e);
-      border-radius: 5px;
-      border: 2px solid #0a0a0a;
+      background: linear-gradient(45deg, #ff5004, #ff732e);
+      border-radius: 10px;
+      border: 1px solid rgba(10, 10, 10, 0.3);
+      transition: all 0.3s ease;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(to bottom, #ff6120, #ff8440);
+      background: linear-gradient(45deg, #ff6120, #ff8440);
+      width: 10px;
     }
     ::-webkit-scrollbar-corner {
-      background: #0a0a0a;
+      background: rgba(10, 10, 10, 0.8);
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Initial scroll lock */
+    body.scroll-lock {
+      overflow: hidden;
     }
   `}</style>
 );
@@ -33,12 +46,21 @@ export default function Home() {
   const [fullScrollEnabled, setFullScrollEnabled] = useState(false);
   const aboutUsRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Set initial styles when component mounts
+  useEffect(() => {
+    document.body.classList.add('scroll-lock');
+    return () => {
+      document.body.classList.remove('scroll-lock');
+    };
+  }, []);
 
   const handleExplore = () => {
     setFullScrollEnabled(true);
-    document.body.style.overflow = 'auto';
+    document.body.classList.remove('scroll-lock');
     
-    // Scroll to the About Us section smoothly
+    // Smooth scroll to About Us section with slight delay
     setTimeout(() => {
       aboutUsRef.current?.scrollIntoView({
         behavior: 'smooth',
@@ -47,20 +69,30 @@ export default function Home() {
     }, 100);
   };
 
+  // Make hero section exactly viewport height
+  useEffect(() => {
+    const setHeroHeight = () => {
+      if (heroRef.current) {
+        heroRef.current.style.height = `${window.innerHeight}px`;
+      }
+    };
 
+    setHeroHeight();
+    window.addEventListener('resize', setHeroHeight);
+    return () => window.removeEventListener('resize', setHeroHeight);
+  }, []);
 
   return (
-    <div className="bg-[#060606] text-white">
+    <div ref={containerRef} className="bg-[#060606] text-white relative">
       <GlobalStyles />
     
-      {/* Hero Section */}
-      <div ref={heroRef} className="overflow-y-auto">
+      {/* Hero Section - Fixed height to viewport */}
+      <div ref={heroRef} className="overflow-hidden relative">
         <HeroSection 
           onExplore={handleExplore} 
           showScrollButton={!fullScrollEnabled} 
         />
       </div>
-
 
       {/* Rest of the content - conditionally shown based on scroll state */}
       <div style={{ display: fullScrollEnabled ? 'block' : 'none' }}>
@@ -73,6 +105,52 @@ export default function Home() {
         <TestimonialsSection />
         <CTASection />
       </div>
+
+      {/* Subtle scroll indicator (only when full scroll isn't enabled) */}
+      {!fullScrollEnabled && (
+        <motion.div 
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ 
+            opacity: [0, 1, 0],
+            y: [0, 15, 30]
+          }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            repeatType: 'loop',
+            ease: "easeInOut"
+          }}
+          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none"
+        >
+          <div className="flex flex-col items-center">
+            <motion.div
+              className="w-6 h-6 border-r-2 border-b-2 border-[#ff5004] transform rotate-45 mb-1"
+              animate={{
+                y: [0, 5, 0],
+                opacity: [0.8, 1, 0.8]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <motion.div
+              className="w-3 h-3 border-r-2 border-b-2 border-[#ff5004] transform rotate-45"
+              animate={{
+                y: [0, 5, 0],
+                opacity: [0.6, 0.8, 0.6]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.3
+              }}
+            />
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -103,7 +181,7 @@ function HeroSection({ onExplore, showScrollButton }: { onExplore: () => void; s
   const handleViewPortfolio = () => navigate('/portfolio');
 
   return (
-    <section className="relative h-screen bg-[#060606] overflow-hidden">
+    <section className="relative h-full bg-[#060606] overflow-hidden">
       {/* Advanced 3D Background Elements */}
       <div className="absolute inset-0 z-0">
         {/* 3D Grid Pattern */}
@@ -215,24 +293,7 @@ function HeroSection({ onExplore, showScrollButton }: { onExplore: () => void; s
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <motion.img
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                src="/Logo.png"
-                alt="Core Digitize Logo"
-                className="w-16 h-16 rounded-xl object-contain"
-              />
 
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-4xl font-medium"
-              >
-                <span className="text-[#ff5004]">core</span>
-                <span className="text-white">digitize</span>
-              </motion.span>
             </motion.div>
 
             {/* Headline */}
@@ -1344,7 +1405,7 @@ function HeroSection({ onExplore, showScrollButton }: { onExplore: () => void; s
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.8 }}
           onClick={onExplore}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-20"
+          className="absolute bottom-15 left-1/2 transform -translate-x-1/2 cursor-pointer z-20"
           style={{
             transformStyle: 'preserve-3d',
             perspective: '1000px'
@@ -1458,12 +1519,8 @@ function HeroSection({ onExplore, showScrollButton }: { onExplore: () => void; s
       </motion.div>
       )}
     </section>
-    
   );
 }
-
-// Rest of your components (AboutUsSection, OurServicesSection, etc.) remain exactly the same
-// ... [Keep all other components unchanged]
 
 const AboutUsSection = () => {
   const navigate = useNavigate();
@@ -1997,9 +2054,9 @@ const TechStackSection = () => {
           {/* Animated tech orb */}
           <motion.div 
             animate={{
-              x: [0, 20, 0],
-              y: [0, -20, 0],
-              transition: { duration: 10, repeat: Infinity, ease: "easeInOut" }
+              x: [0, 20, 0, -20, 0],
+              y: [0, -20, 0, 20, 0],
+              transition: { duration: 15, repeat: Infinity, ease: "easeInOut" }
             }}
             className="absolute -right-40 -top-40 w-80 h-80 rounded-full bg-[#ff5004]/10 filter blur-[100px] opacity-30"
           />

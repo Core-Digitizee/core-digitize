@@ -1,329 +1,243 @@
-import { useState, useRef, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
-import { FiArrowRight, FiChevronRight, FiX, FiCheck, FiAward, FiUsers, FiGlobe, FiClock } from 'react-icons/fi';
-import Head from 'next/head';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useAnimation } from 'framer-motion';
+import { FiArrowRight, FiChevronRight, FiMail, FiPhone, FiUser, FiCheck, FiClock, FiBarChart2, FiDollarSign } from 'react-icons/fi';
+import { useForm } from 'react-hook-form';
+import { Tab } from '@headlessui/react';
+
+// Custom scrollbar styles in a global style component
+const GlobalStyles = () => (
+  <style>{`
+    /* Premium Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(10, 10, 10, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 80, 4, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #ff5004, #ff732e);
+      border-radius: 10px;
+      border: 1px solid rgba(10, 10, 10, 0.3);
+      transition: all 0.3s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #ff6120, #ff8440);
+      width: 12px;
+    }
+    ::-webkit-scrollbar-corner {
+      background: rgba(10, 10, 10, 0.8);
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+  `}</style>
+);
+
+type FormData = {
+  name: string;
+  email: string;
+  phone: string;
+  service: string;
+  message: string;
+  department: string;
+  budget: string;
+  timeline: string;
+};
 
 export default function Services() {
-  const [activeDepartment, setActiveDepartment] = useState('Marketing');
-  const [hoveredService, setHoveredService] = useState<number | null>(null);
-  const [expandedService, setExpandedService] = useState<number | null>(null);
+  const [activeDepartment, setActiveDepartment] = useState('marketing');
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+  
+  // Parallax effects for background elements
+  const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  const opacityBg = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      mouseX.set(e.clientX - rect.left);
-      mouseY.set(e.clientY - rect.top);
+  const departments = [
+    { id: 'marketing', name: 'Marketing', color: '#ff5004', icon: '📈' },
+    { id: 'media', name: 'Media', color: '#ff9557', icon: '🎥' },
+    { id: 'technical', name: 'Technical', color: '#ffb780', icon: '💻' },
+    { id: 'animation', name: 'Animation', color: '#ffd9aa', icon: '🎬' }
+  ];
+
+  const handleDepartmentChange = (department: string) => {
+    setActiveDepartment(department);
+    const element = document.getElementById(department);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
-  const toggleServiceExpansion = (index: number) => {
-    if (expandedService === index) {
-      setExpandedService(null);
-    } else {
-      setExpandedService(index);
-    }
+  const scrollToForm = (service?: string) => {
+    if (service) setSelectedService(service);
+    setIsFormVisible(true);
+    setTimeout(() => {
+      document.getElementById('inquiry-form')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   return (
-    <div className="bg-[#060606] text-white overflow-hidden" ref={containerRef} onMouseMove={handleMouseMove}>
-      <Head>
-        <title>Our Services | Core Digitize - Digital Transformation Experts</title>
-        <meta name="description" content="Discover our comprehensive suite of digital services across Marketing, Media, Technical, and Animation departments." />
-      </Head>
+    <div ref={containerRef} className="bg-[#060606] text-white relative overflow-hidden">
+      <GlobalStyles />
+      
+      {/* Floating background elements */}
+      <motion.div 
+        className="fixed inset-0 pointer-events-none"
+        style={{ y: yBg, opacity: opacityBg }}
+      >
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#ff5004]/5 blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#ff5004]/5 blur-3xl"></div>
+      </motion.div>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-[#060606] overflow-hidden isolate">
-        {/* Animated Background */}
-        <div className="absolute inset-0 z-0 opacity-30">
-          <div className="absolute inset-0 [background:radial-gradient(circle_at_center,rgba(255,80,4,0.1)_0%,transparent_70%)]" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
-        </div>
-
-        {/* Dynamic Glow */}
-        <motion.div
-          className="absolute pointer-events-none rounded-full"
-          style={{
-            x: useTransform(mouseX, val => val - 300),
-            y: useTransform(mouseY, val => val - 300),
-            width: 600,
-            height: 600,
-            background: "radial-gradient(circle, rgba(255,80,4,0.15) 0%, transparent 70%)",
-            filter: "blur(100px)"
-          }}
-        />
-
-        {/* Main Content */}
-        <div className="relative z-10 container mx-auto px-4 py-32 h-full flex flex-col justify-center">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Column */}
-            <div className="space-y-8">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="flex items-center gap-4 mb-8"
-              >
-                <div className="w-14 h-14 bg-[#ff5004] rounded-xl flex items-center justify-center">
-                  <span className="text-2xl font-bold text-[#060606]">CD</span>
-                </div>
-                <span className="text-white/80 text-xl font-light">Core Digitize</span>
-              </motion.div>
-
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-5xl md:text-6xl font-medium text-white leading-tight"
-              >
-                <span className="block mb-4">Departmental Services</span>
-                <span className="bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004] bg-clip-text text-transparent">
-                  Specialized Solutions
-                </span>
-              </motion.h1>
-
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-xl text-white/70 leading-relaxed"
-              >
-                Our services are organized into specialized departments, each with deep expertise in their domain. 
-                From digital marketing campaigns to cutting-edge animation, we deliver comprehensive solutions tailored to your needs.
-              </motion.p>
-
-              {/* Department Navigation */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12"
-              >
-                {departsments.map((dept, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => setActiveDepartment(dept.name)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`relative px-4 py-3 rounded-xl text-center transition-all ${activeDepartment === dept.name ? 'bg-[#ff5004] text-white' : 'bg-[#161616] hover:bg-[#222222]'}`}
-                  >
-                    <div className="flex flex-col items-center">
-                      <span className="text-2xl mb-2">{dept.icon}</span>
-                      <span className="text-sm font-medium">{dept.name}</span>
-                    </div>
-                  </motion.button>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Right Column - Interactive Visualization */}
-            <div className="relative h-[600px] hidden lg:block">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8 }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <div className="relative w-full h-full">
-                  {/* Department Nodes */}
-                  {departmentsData.map((dept, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ 
-                        opacity: activeDepartment === dept.name ? 1 : 0.3,
-                        scale: activeDepartment === dept.name ? 1.2 : 0.8
-                      }}
-                      transition={{ delay: i * 0.1, type: 'spring' }}
-                      className={`absolute w-20 h-20 rounded-full flex items-center justify-center cursor-pointer transition-all
-                        ${activeDepartment === dept.name ? 'bg-[#ff5004] shadow-lg' : 'bg-[#ffffff10]'}`}
-                      style={{
-                        top: `${dept.position.top}%`,
-                        left: `${dept.position.left}%`,
-                      }}
-                      onClick={() => setActiveDepartment(dept.name)}
-                    >
-                      <span className="text-3xl">{dept.icon}</span>
-                      {activeDepartment === dept.name && (
-                        <motion.div 
-                          layoutId="activeDept"
-                          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-[#ff5004] rounded-full"
-                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        />
-                      )}
-                    </motion.div>
-                  ))}
-
-                  {/* Connection Lines */}
-                  <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                    {[
-                      { x1: "20%", y1: "30%", x2: "40%", y2: "50%" },
-                      { x1: "80%", y1: "30%", x2: "60%", y2: "50%" },
-                      { x1: "30%", y1: "70%", x2: "40%", y2: "50%" },
-                      { x1: "70%", y1: "70%", x2: "60%", y2: "50%" },
-                    ].map((line, i) => (
-                      <line
-                        key={i}
-                        x1={line.x1}
-                        y1={line.y1}
-                        x2={line.x2}
-                        y2={line.y2}
-                        stroke="#ff5004"
-                        strokeWidth="2"
-                        strokeDasharray="5,5"
-                        opacity="0.3"
-                      />
-                    ))}
-                  </svg>
-
-                  {/* Floating Card */}
-                  <AnimatePresence>
-                    <motion.div 
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -50 }}
-                      className="absolute bottom-0 right-0 w-80 bg-[#161616] rounded-2xl p-6 border border-[#ffffff10] shadow-lg"
-                    >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-[#ff5004]/10 flex items-center justify-center">
-                          <span className="text-xl">
-                            {departmentsData.find(d => d.name === activeDepartment)?.icon}
-                          </span>
-                        </div>
-                        <h3 className="font-medium">{activeDepartment} Department</h3>
-                      </div>
-                      <p className="text-sm text-white/70 mb-4">
-                        {departmentsData.find(d => d.name === activeDepartment)?.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {departmentsData.find(d => d.name === activeDepartment)?.services.slice(0, 3).map((service, j) => (
-                          <span key={j} className="px-3 py-1 bg-[#ffffff08] rounded-full text-xs text-white/80">
-                            {service}
-                          </span>
-                        ))}
-                        {(departmentsData.find(d => d.name === activeDepartment)?.services ?? []).length > 3 && (
-                          <span className="px-3 py-1 bg-[#ffffff08] rounded-full text-xs text-white/80">
-                            +{(departmentsData.find(d => d.name === activeDepartment)?.services?.length ?? 0) - 3} more
-                          </span>
-                        )}
-                      </div>
-                      <button className="text-sm text-[#ff5004] hover:text-[#ff6120] flex items-center gap-1">
-                        View all services <FiArrowRight className="w-4 h-4" />
-                      </button>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Department Services Section */}
-      <section className="relative py-20 bg-[#0a0a0a] overflow-hidden">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+      <section className="relative pt-40 pb-28">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">
-              <span className="text-[#ff5004]">{activeDepartment}</span> Services
-            </h2>
-            <p className="max-w-2xl mx-auto text-xl text-white/70">
-              {departmentsData.find(d => d.name === activeDepartment)?.fullDescription}
+            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              OUR EXPERTISE
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Comprehensive</span>{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Digital Services</span>
+            </h1>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
+              End-to-end digital solutions tailored to your business needs, delivered with precision and innovation
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services[activeDepartment as keyof typeof services]?.map((service: { icon: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; shortDescription: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; complexity: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; startingPrice: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; features: any[]; deliveryTime: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; successRate: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, i: Key | null | undefined) => (
+          {/* Department Navigation */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="flex justify-center mb-16 relative"
+          >
+            <div className="relative">
+              {/* Background Glow */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#ff5004]/20 to-[#ff8c00]/20 rounded-3xl blur-2xl opacity-20 pointer-events-none" />
+              
+              {/* Navigation Container */}
+              <div className="relative inline-flex bg-[#161616] rounded-2xl p-1 sm:p-2 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
+                {/* Active Background */}
+                <motion.div
+                  className="absolute inset-0 bg-[#ffffff08] rounded-xl"
+                  layoutId="activeDepartment"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  style={{
+                    backgroundColor: departments.find(d => d.id === activeDepartment)?.color + '20',
+                    width: `${100 / departments.length}%`,
+                    left: `${departments.findIndex(d => d.id === activeDepartment) * (100 / departments.length)}%`
+                  }}
+                />
+                
+                {/* Navigation Items */}
+                {departments.map((department) => (
+                  <button
+                    key={department.id}
+                    onClick={() => handleDepartmentChange(department.id)}
+                    className={`relative px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-medium transition-colors z-10 ${
+                      activeDepartment === department.id ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                      <span className="text-lg mr-1">{department.icon}</span>
+                      {department.name}
+                      {activeDepartment === department.id && (
+                        <motion.div
+                          animate={{
+                            rotate: [0, 15, -15, 0],
+                            transition: { duration: 1.5, repeat: Infinity }
+                          }}
+                        >
+                          <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </motion.div>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="relative py-20 bg-[#0a0a0a]">
+        <div className="container mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              OUR PROCESS
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+              How We Deliver <span className="text-[#ff5004]">Exceptional Results</span>
+            </h2>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
+              A proven methodology that ensures quality, efficiency, and measurable impact
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-4 gap-8 relative">
+            {/* Process Line */}
+            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] transform -translate-y-1/2 z-0"></div>
+            
+            {[
+              {
+                title: "Discovery",
+                description: "In-depth analysis of your needs and objectives",
+                icon: <FiBarChart2 className="w-8 h-8" />
+              },
+              {
+                title: "Planning",
+                description: "Strategic roadmap with milestones and deliverables",
+                icon: <FiCheck className="w-8 h-8" />
+              },
+              {
+                title: "Execution",
+                description: "Agile implementation with continuous feedback",
+                icon: <FiClock className="w-8 h-8" />
+              },
+              {
+                title: "Delivery",
+                description: "Quality assurance and performance optimization",
+                icon: <FiDollarSign className="w-8 h-8" />
+              }
+            ].map((step, index) => (
               <motion.div
-                key={i}
+                key={index}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: (typeof i === 'number' ? i : 0) * 0.1 }}
-                className="relative group overflow-hidden rounded-2xl border border-[#ffffff10] bg-[#161616] hover:border-[#ff5004]/30 transition-all"
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="relative z-10 bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#ff5004]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative z-10 p-6 h-full flex flex-col">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#ffffff08] flex items-center justify-center text-2xl">
-                      {service.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-white mt-1">{service.name}</h3>
-                  </div>
-                  
-                  <div className="flex-grow">
-                    <p className="text-white/70 mb-4 text-sm">{service.shortDescription}</p>
-                    
-                    <div className="mb-4">
-                      <div className="flex justify-between items-center text-xs text-white/60 mb-1">
-                        <span>Complexity</span>
-                        <span>{service.complexity}/5</span>
-                      </div>
-                      <div className="w-full bg-[#ffffff10] rounded-full h-1.5">
-                        <div 
-                          className="bg-[#ff5004] h-1.5 rounded-full" 
-                          style={{ width: `${typeof service.complexity === 'number' ? service.complexity * 20 : 0}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center mt-auto pt-4 border-t border-[#ffffff10]">
-                    <div className="text-sm font-medium">
-                      <span className="text-[#ff5004]">from</span> ${service.startingPrice}
-                    </div>
-                    <button 
-                      onClick={() => toggleServiceExpansion(i as number)}
-                      className="text-sm text-[#ff5004] hover:text-[#ff6120] flex items-center gap-1"
-                    >
-                      {expandedService === i ? 'Less details' : 'More details'} 
-                      <FiChevronRight className={`w-4 h-4 transition-transform ${expandedService === i ? 'rotate-90' : ''}`} />
-                    </button>
-                  </div>
-                  
-                  <AnimatePresence>
-                    {expandedService === i && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-4 pt-4 border-t border-[#ffffff10]">
-                          <h4 className="text-sm font-medium mb-2">Service Includes:</h4>
-                          <ul className="space-y-2 text-sm text-white/70">
-                            {service.features.map((feature: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, j: Key | null | undefined) => (
-                              <li key={j} className="flex items-start gap-2">
-                                <FiCheck className="text-[#ff5004] mt-0.5 flex-shrink-0" />
-                                <span>{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-                          
-                          <div className="mt-4 grid grid-cols-2 gap-2">
-                            <div className="bg-[#ffffff05] p-2 rounded-lg">
-                              <div className="text-xs text-white/60">Delivery Time</div>
-                              <div className="font-medium">{service.deliveryTime}</div>
-                            </div>
-                            <div className="bg-[#ffffff05] p-2 rounded-lg">
-                              <div className="text-xs text-white/60">Success Rate</div>
-                              <div className="font-medium">{service.successRate}%</div>
-                            </div>
-                          </div>
-                          
-                          <button className="w-full mt-4 px-4 py-2 bg-[#ff5004]/10 hover:bg-[#ff5004]/20 text-[#ff5004] rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2">
-                            Request Service <FiArrowRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                <div className="w-16 h-16 mb-6 rounded-full bg-gradient-to-br from-[#ff5004] to-[#ff8c00] flex items-center justify-center text-white">
+                  {step.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                <p className="text-white/70">{step.description}</p>
+                <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-[#ff5004] flex items-center justify-center text-xs font-bold">
+                  {index + 1}
                 </div>
               </motion.div>
             ))}
@@ -331,190 +245,380 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Department Comparison */}
-      <section className="relative py-20 bg-gradient-to-b from-[#0a0a0a] to-[#060606] overflow-hidden">
-        <div className="container mx-auto px-4">
-          <motion.div 
+      {/* Marketing Department Section */}
+      <DepartmentSection
+        id="marketing"
+        title="Marketing Services"
+        description="Data-driven marketing strategies that deliver measurable results and maximize ROI"
+        color="#ff5004"
+        services={marketingServices}
+        active={activeDepartment === 'marketing'}
+        scrollToForm={scrollToForm}
+      />
+
+      {/* Media Department Section */}
+      <DepartmentSection
+        id="media"
+        title="Media Production Services"
+        description="High-quality visual content creation that tells your brand story and engages your audience"
+        color="#ff9557"
+        services={mediaServices}
+        active={activeDepartment === 'media'}
+        scrollToForm={scrollToForm}
+      />
+
+      {/* Technical Department Section */}
+      <DepartmentSection
+        id="technical"
+        title="Technical Services"
+        description="Cutting-edge development solutions that power your digital presence and operations"
+        color="#ffb780"
+        services={technicalServices}
+        active={activeDepartment === 'technical'}
+        scrollToForm={scrollToForm}
+      />
+
+      {/* Animation Department Section */}
+      <DepartmentSection
+        id="animation"
+        title="Animation Services"
+        description="Creative motion graphics and animation that brings your ideas to life"
+        color="#ffd9aa"
+        services={animationServices}
+        active={activeDepartment === 'animation'}
+        scrollToForm={scrollToForm}
+      />
+
+      {/* Pricing Section */}
+      <section className="relative py-20 bg-[#0a0a0a]">
+        <div className="container mx-auto px-4 sm:px-6">
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              Our Departments
+            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              FLEXIBLE OPTIONS
             </span>
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">
-              Comprehensive <span className="text-[#ff5004]">Digital Solutions</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+              Transparent <span className="text-[#ff5004]">Pricing Models</span>
             </h2>
-            <p className="max-w-2xl mx-auto text-xl text-white/70">
-              Each department specializes in delivering exceptional results in their domain
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
+              Choose the engagement model that best fits your project needs and budget
             </p>
           </motion.div>
 
-          <div className="overflow-x-auto">
-            <div className="min-w-[1000px]">
-              <div className="grid grid-cols-5 gap-6">
-                {/* Header Row */}
-                <div className="col-span-1"></div>
-                {departsments.map((dept, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`col-span-1 p-6 rounded-2xl border ${activeDepartment === dept.name ? 'border-[#ff5004]/50 bg-[#ff5004]/10' : 'border-[#ffffff10] bg-[#161616]'}`}
-                  >
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-16 h-16 rounded-xl bg-[#ffffff08] flex items-center justify-center text-3xl mb-4">
-                        {dept.icon}
-                      </div>
-                      <h3 className="text-xl font-bold mb-2">{dept.name}</h3>
-                      <p className="text-sm text-white/70">{dept.tagline}</p>
-                    </div>
-                  </motion.div>
-                ))}
-
-                {/* Rows */}
-                {comparisonData.map((row, i) => (
-                  <>
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="col-span-1 p-4 flex items-center bg-[#161616] rounded-l-2xl"
-                    >
-                      <h4 className="font-medium">{row.label}</h4>
-                    </motion.div>
-                    {departmentsData.map((dept, j) => (
-                      <motion.div
-                        key={j}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 + j * 0.05 }}
-                        className={`col-span-1 p-4 flex items-center justify-center ${j === departmentsData.length - 1 ? 'rounded-r-2xl' : ''} ${activeDepartment === dept.name ? 'bg-[#ff5004]/5' : 'bg-[#161616]'}`}
-                      >
-                        {typeof row.value(dept) === 'string' ? (
-                          <span className="text-sm text-center">{row.value(dept)}</span>
-                        ) : (
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, k) => (
-                              <div 
-                                key={k} 
-                                className={`w-3 h-3 rounded-full ${k < Number(row.value(dept)) ? 'bg-[#ff5004]' : 'bg-[#ffffff10]'}`}
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </motion.div>
-                    ))}
-                  </>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Integrated Workflow */}
-      <section className="relative py-20 bg-[#060606] overflow-hidden">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              Cross-Department Collaboration
-            </span>
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">
-              Integrated <span className="text-[#ff5004]">Workflow</span>
-            </h2>
-            <p className="max-w-2xl mx-auto text-xl text-white/70">
-              How our departments work together to deliver comprehensive solutions
-            </p>
-          </motion.div>
-
-          <div className="relative">
-            {/* Timeline Line */}
-            <div className="absolute left-1/2 top-0 h-full w-1 bg-gradient-to-b from-[#ff5004] via-[#ff5004]/30 to-[#ff5004] transform -translate-x-1/2" />
-            
-            {/* Process Steps */}
-            <div className="space-y-24 relative">
-              {workflowSteps.map((step, i) => (
+          <Tab.Group>
+            <Tab.List className="flex justify-center mb-12">
+              <div className="relative inline-flex bg-[#161616] rounded-2xl p-1 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
+                <Tab className={({ selected }) => 
+                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
+                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
+                  }`
+                }>
+                  Project-Based
+                </Tab>
+                <Tab className={({ selected }) => 
+                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
+                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
+                  }`
+                }>
+                  Retainer
+                </Tab>
+                <Tab className={({ selected }) => 
+                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
+                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
+                  }`
+                }>
+                  Hourly
+                </Tab>
                 <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className={`relative flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-12`}
-                >
-                  <div className="md:w-1/2">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-[#ff5004] flex items-center justify-center text-xl font-bold">
-                        {i + 1}
-                      </div>
-                      <h3 className="text-2xl font-bold">{step.title}</h3>
-                    </div>
-                    <p className="text-white/70 mb-6">{step.description}</p>
-                    <div className="flex flex-wrap gap-4">
-                      {step.departments.map((dept, j) => (
-                        <div key={j} className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-[#ffffff08] flex items-center justify-center">
-                            {departmentsData.find(d => d.name === dept)?.icon}
-                          </div>
-                          <span className="text-sm">{dept}</span>
+                  className="absolute inset-0 bg-[#ffffff08] rounded-xl"
+                  layoutId="pricingTab"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  style={{
+                    backgroundColor: '#ff500420'
+                  }}
+                />
+              </div>
+            </Tab.List>
+            <Tab.Panels>
+              <Tab.Panel>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {projectPricing.map((pricing, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      className={`bg-[#161616] rounded-2xl p-8 border ${
+                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
+                      } transition-all relative overflow-hidden`}
+                    >
+                      {pricing.recommended && (
+                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                          RECOMMENDED
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="md:w-1/2">
-                    <div className="bg-[#161616] rounded-2xl p-6 border border-[#ffffff10] h-full">
-                      <div className="aspect-video bg-[#ffffff05] rounded-lg flex items-center justify-center text-white/30">
-                        [Workflow Visualization: {step.title}]
+                      )}
+                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
+                      <div className="mb-6">
+                        <span className="text-4xl font-bold">${pricing.price}</span>
+                        {pricing.price !== 'Custom' && <span className="text-white/60"> / project</span>}
                       </div>
-                    </div>
+                      <ul className="space-y-3 mb-8">
+                        {pricing.features.map((feature, i) => (
+                          <li key={i} className="flex items-start">
+                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
+                            <span className="text-white/80">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => scrollToForm()}
+                        className={`w-full py-3 rounded-lg font-bold ${
+                          pricing.recommended 
+                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
+                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
+                        }`}
+                      >
+                        Get Started
+                      </motion.button>
+                    </motion.div>
+                  ))}
+                </div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {retainerPricing.map((pricing, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      className={`bg-[#161616] rounded-2xl p-8 border ${
+                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
+                      } transition-all relative overflow-hidden`}
+                    >
+                      {pricing.recommended && (
+                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                          RECOMMENDED
+                        </div>
+                      )}
+                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
+                      <div className="mb-6">
+                        <span className="text-4xl font-bold">${pricing.price}</span>
+                        <span className="text-white/60"> / month</span>
+                      </div>
+                      <ul className="space-y-3 mb-8">
+                        {pricing.features.map((feature, i) => (
+                          <li key={i} className="flex items-start">
+                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
+                            <span className="text-white/80">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => scrollToForm()}
+                        className={`w-full py-3 rounded-lg font-bold ${
+                          pricing.recommended 
+                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
+                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
+                        }`}
+                      >
+                        Get Started
+                      </motion.button>
+                    </motion.div>
+                  ))}
+                </div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {hourlyPricing.map((pricing, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      className={`bg-[#161616] rounded-2xl p-8 border ${
+                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
+                      } transition-all relative overflow-hidden`}
+                    >
+                      {pricing.recommended && (
+                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                          RECOMMENDED
+                        </div>
+                      )}
+                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
+                      <div className="mb-6">
+                        <span className="text-4xl font-bold">${pricing.price}</span>
+                        <span className="text-white/60"> / hour</span>
+                      </div>
+                      <ul className="space-y-3 mb-8">
+                        {pricing.features.map((feature, i) => (
+                          <li key={i} className="flex items-start">
+                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
+                            <span className="text-white/80">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => scrollToForm()}
+                        className={`w-full py-3 rounded-lg font-bold ${
+                          pricing.recommended 
+                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
+                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
+                        }`}
+                      >
+                        Get Started
+                      </motion.button>
+                    </motion.div>
+                  ))}
+                </div>
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </div>
+      </section>
+
+      {/* Case Studies Section */}
+      <section className="relative py-20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              OUR WORK
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+              Success <span className="text-[#ff5004]">Stories</span>
+            </h2>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
+              Real-world examples of how we've helped clients achieve their goals
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {caseStudies.map((study, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all cursor-pointer group"
+              >
+                <div className="h-48 bg-gradient-to-r from-[#ff5004]/10 to-[#060606] relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+                  <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-10 group-hover:opacity-20 transition-opacity">
+                    {study.icon}
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+                <div className="p-8">
+                  <div className="flex items-center mb-4">
+                    {study.tags.map((tag, i) => (
+                      <span key={i} className="mr-2 px-3 py-1 bg-[#ff5004]/10 text-[#ff5004] rounded-full text-xs">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">{study.title}</h3>
+                  <p className="text-white/70 mb-6">{study.description}</p>
+                  <div className="flex items-center text-[#ff5004] group-hover:text-[#ff6120] transition-colors">
+                    <span>View case study</span>
+                    <FiArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-32 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+      {/* Team Section */}
+      <section className="relative py-20 bg-[#0a0a0a]">
+        <div className="container mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="bg-gradient-to-r from-[#ff5004]/10 to-[#ff5004]/5 rounded-3xl p-12 md:p-16 border border-[#ff5004]/20 relative overflow-hidden"
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
           >
-            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-            <div className="relative z-10 text-center">
-              <h2 className="text-3xl md:text-4xl font-medium mb-6">
-                Ready to <span className="text-[#ff5004]">Transform</span> Your Business?
-              </h2>
-              <p className="max-w-2xl mx-auto text-xl text-white/70 mb-10">
-                Connect with our experts to discuss how our specialized departments can work together for your success
+            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              OUR TEAM
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+              Meet The <span className="text-[#ff5004]">Experts</span>
+            </h2>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
+              The talented professionals who will bring your vision to life
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+              >
+                <div className="h-64 bg-gradient-to-b from-[#ff5004]/10 to-[#060606] relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+                </div>
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+                  <p className="text-[#ff5004] mb-3">{member.role}</p>
+                  <p className="text-white/70 text-sm">{member.bio}</p>
+                  <div className="flex justify-center mt-4 space-x-3">
+                    {member.expertise.map((skill, i) => (
+                      <span key={i} className="px-2 py-1 bg-[#ffffff05] text-xs rounded">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Inquiry Form Section */}
+      <section id="inquiry-form" className="relative py-20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto bg-gradient-to-br from-[#161616] to-[#0d0d0d] rounded-3xl overflow-hidden border border-[#ffffff10] shadow-xl"
+          >
+            <div className="p-8 md:p-12">
+              <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                Ready to Discuss Your Project?
+              </h3>
+              <p className="text-white/70 mb-8">
+                Fill out the form below and our team will get back to you within 24 hours
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all"
-                >
-                  Get a Free Consultation
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5"
-                >
-                  Browse All Services
-                </motion.button>
-              </div>
+              
+              <InquiryForm selectedService={selectedService} departments={departments} />
             </div>
           </motion.div>
         </div>
@@ -523,565 +627,1210 @@ export default function Services() {
   );
 }
 
+function DepartmentSection({
+  id,
+  title,
+  description,
+  color,
+  services,
+  active,
+  scrollToForm
+}: {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  services: Array<{
+    title: string;
+    description: string;
+    details: string[];
+    benefits: string[];
+    icon?: string;
+    stats?: { label: string; value: string }[];
+  }>;
+  active: boolean;
+  scrollToForm: (service: string) => void;
+}) {
+  const [expandedService, setExpandedService] = useState<number | null>(null);
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (active) {
+      controls.start("visible");
+    } else {
+      controls.start("hidden");
+    }
+  }, [active, controls]);
+
+  const toggleService = (index: number) => {
+    setExpandedService(expandedService === index ? null : index);
+  };
+
+  return (
+    <section id={id} className="relative py-20">
+      <div className="container mx-auto px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            {title}
+          </h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] mb-6"></div>
+          <p className="text-xl text-white/70 max-w-3xl">
+            {description}
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-20">
+          {services.map((service, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              className={`bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] transition-all ${
+                expandedService === index ? 'border-[#ff5004]/50' : 'hover:border-[#ff5004]/30'
+              }`}
+            >
+              <div 
+                className="p-6 cursor-pointer flex justify-between items-center"
+                onClick={() => toggleService(index)}
+              >
+                <div className="flex items-center">
+                  {service.icon && (
+                    <div className="w-12 h-12 rounded-lg bg-[#ffffff05] flex items-center justify-center text-xl mr-4">
+                      {service.icon}
+                    </div>
+                  )}
+                  <h3 className="text-xl font-bold">{service.title}</h3>
+                </div>
+                <motion.div
+                  animate={{ rotate: expandedService === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-8 h-8 rounded-full bg-[#ffffff05] flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.div>
+              </div>
+              
+              <AnimatePresence>
+                {expandedService === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 space-y-6">
+                      <p className="text-white/80">{service.description}</p>
+                      
+                      {service.stats && (
+                        <div className="grid grid-cols-2 gap-4">
+                          {service.stats.map((stat, i) => (
+                            <div key={i} className="bg-[#ffffff05] p-4 rounded-lg">
+                              <div className="text-2xl font-bold text-[#ff5004] mb-1">{stat.value}</div>
+                              <div className="text-sm text-white/70">{stat.label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                            Service Details
+                          </h4>
+                          <ul className="space-y-3">
+                            {service.details.map((detail, i) => (
+                              <li key={i} className="flex items-start">
+                                <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
+                                <span className="text-white/70">{detail}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Key Benefits
+                          </h4>
+                          <ul className="space-y-3">
+                            {service.benefits.map((benefit, i) => (
+                              <li key={i} className="flex items-start">
+                                <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
+                                <span className="text-white/70">{benefit}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <div className="pt-4">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            scrollToForm(service.title);
+                          }}
+                          className="w-full px-6 py-3 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white font-medium rounded-lg transition-all"
+                        >
+                          Get a Quote for {service.title}
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InquiryForm({ selectedService, departments }: { selectedService: string | null; departments: any[] }) {
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>();
+  const [submitted, setSubmitted] = useState(false);
+
+  const onSubmit = async (data: FormData) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    console.log(data);
+    setSubmitted(true);
+    reset();
+  };
+
+  if (submitted) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-12"
+      >
+        <div className="w-20 h-20 bg-[#00ff88]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
+        <p className="text-white/70 mb-6">Your inquiry has been submitted successfully. Our team will contact you within 24 hours.</p>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setSubmitted(false)}
+          className="px-6 py-3 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white font-medium rounded-lg"
+        >
+          Submit Another Inquiry
+        </motion.button>
+      </motion.div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <input type="hidden" {...register("department")} value={departments.find(d => d.id === 'marketing')?.name} />
+      <input type="hidden" {...register("service")} value={selectedService || ''} />
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Full Name *</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiUser className="text-gray-500" />
+            </div>
+            <input
+              {...register("name", { required: "Name is required" })}
+              className="pl-10 w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+              placeholder="John Doe"
+            />
+          </div>
+          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2">Email Address *</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiMail className="text-gray-500" />
+            </div>
+            <input
+              {...register("email", { 
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address"
+                }
+              })}
+              className="pl-10 w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+              placeholder="john@example.com"
+              type="email"
+            />
+          </div>
+          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+        </div>
+      </div>
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Phone Number</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiPhone className="text-gray-500" />
+            </div>
+            <input
+              {...register("phone")}
+              className="pl-10 w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+              placeholder="+1 (555) 123-4567"
+              type="tel"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2">Department of Interest</label>
+          <select
+            {...register("department")}
+            className="w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+          >
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.name}>{dept.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Estimated Budget</label>
+          <select
+            {...register("budget")}
+            className="w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+          >
+            <option value="">Select budget range</option>
+            <option value="$1,000 - $5,000">$1,000 - $5,000</option>
+            <option value="$5,000 - $10,000">$5,000 - $10,000</option>
+            <option value="$10,000 - $25,000">$10,000 - $25,000</option>
+            <option value="$25,000+">$25,000+</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2">Project Timeline</label>
+          <select
+            {...register("timeline")}
+            className="w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+          >
+            <option value="">Select timeline</option>
+            <option value="ASAP">ASAP</option>
+            <option value="1-2 weeks">1-2 weeks</option>
+            <option value="1-3 months">1-3 months</option>
+            <option value="3-6 months">3-6 months</option>
+            <option value="6+ months">6+ months</option>
+          </select>
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-2">Message *</label>
+        <textarea
+          {...register("message", { required: "Message is required" })}
+          rows={4}
+          className="w-full bg-[#ffffff05] border border-[#ffffff10] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff5004] focus:border-transparent"
+          placeholder="Tell us about your project needs and requirements..."
+        ></textarea>
+        {errors.message && <p className="mt-1 text-sm text-red-500">{errors.message.message}</p>}
+      </div>
+      
+      <div className="pt-2">
+        <motion.button
+          type="submit"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={isSubmitting}
+          className="w-full px-6 py-4 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-[#ff5004]/30 disabled:opacity-70"
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Inquiry'}
+        </motion.button>
+      </div>
+    </form>
+  );
+}
+
 // Data
-const departsments = [
-  { name: 'Marketing', icon: '📈', tagline: 'Data-driven growth strategies' },
-  { name: 'Media', icon: '🎥', tagline: 'Visual storytelling that captivates' },
-  { name: 'Technical', icon: '💻', tagline: 'Robust digital infrastructure' },
-  { name: 'Animation', icon: '🎬', tagline: 'Bringing ideas to life' }
-];
-
-const departmentsData = [
+const marketingServices = [
   {
-    name: 'Marketing',
-    icon: '📈',
-    description: 'Data-driven campaigns that deliver measurable results',
-    fullDescription: 'Our marketing department specializes in creating targeted campaigns that drive engagement, conversions, and ROI across all digital channels.',
-    services: [
-      'Social Media Marketing', 
-      'Google Ads', 
-      'Meta Ads', 
-      'Email Marketing',
-      'Whatsapp Marketing',
-      'Performance Marketing',
-      'Influencer Marketing',
-      'Affiliate Marketing',
-      'Content Marketing'
+    title: "Social Media Marketing",
+    description: "Comprehensive social media strategies across all major platforms to increase brand awareness, engagement, and conversions.",
+    details: [
+      "Platform-specific content strategy development",
+      "Community management and engagement",
+      "Paid social media advertising campaigns",
+      "Influencer partnership programs",
+      "Performance analytics and optimization"
     ],
-    color: '#FF5004',
-    position: { top: 30, left: 20 }
+    benefits: [
+      "Increased brand visibility and recognition",
+      "Higher engagement rates with target audiences",
+      "Improved conversion rates from social traffic",
+      "Data-driven optimization for maximum ROI"
+    ],
+    icon: "📱",
+    stats: [
+      { label: "Average Engagement Increase", value: "3.5x" },
+      { label: "ROI Improvement", value: "240%" }
+    ]
   },
   {
-    name: 'Media',
-    icon: '🎥',
-    description: 'High-quality visual content production',
-    fullDescription: 'From concept to final edit, our media team creates stunning visuals that tell your brand story and engage your audience.',
-    services: [
-      'Videography',
-      'Video Editing',
-      'Photography',
-      'Photo Editing',
-      'Product Shoots',
-      'Commercial Shoots',
-      'Branding',
-      'Graphic Design'
+    title: "Google Ads",
+    description: "Strategic Google Ads management to drive qualified traffic and maximize conversion rates.",
+    details: [
+      "Keyword research and competitive analysis",
+      "Campaign structure optimization",
+      "Ad copy creation and testing",
+      "Landing page optimization",
+      "Conversion tracking implementation"
     ],
-    color: '#00C4FF',
-    position: { top: 30, left: 80 }
+    benefits: [
+      "Higher quality traffic to your website",
+      "Lower cost-per-acquisition (CPA)",
+      "Improved ad relevance and quality scores",
+      "Transparent reporting and performance insights"
+    ],
+    icon: "🔍",
+    stats: [
+      { label: "Average CTR Improvement", value: "2.8x" },
+      { label: "Cost Per Lead Reduction", value: "65%" }
+    ]
   },
   {
-    name: 'Technical',
-    icon: '💻',
-    description: 'Custom digital solutions built to scale',
-    fullDescription: 'Our technical team builds robust, secure, and scalable digital solutions tailored to your business requirements.',
-    services: [
-      'Web Development',
-      'App Development',
-      'Software Development',
-      'Landing Pages',
-      'SEO',
-      'CRM',
-      'ERP'
+    title: "Meta Ads",
+    description: "Targeted advertising solutions across Facebook and Instagram to reach your ideal customers.",
+    details: [
+      "Audience research and segmentation",
+      "Creative concept development",
+      "Campaign setup and optimization",
+      "A/B testing of ad variations",
+      "Retargeting strategy implementation"
     ],
-    color: '#00FFA3',
-    position: { top: 70, left: 40 }
+    benefits: [
+      "Precise targeting of demographic segments",
+      "Higher engagement with visual content",
+      "Improved brand recall and recognition",
+      "Scalable campaign performance"
+    ],
+    icon: "👍",
+    stats: [
+      { label: "Average Conversion Rate", value: "8.2%" },
+      { label: "Cost Per Result Reduction", value: "45%" }
+    ]
   },
   {
-    name: 'Animation',
-    icon: '🎬',
-    description: 'Bringing ideas to life through motion',
-    fullDescription: 'Our animation department creates captivating motion graphics and animations that explain, engage, and entertain.',
-    services: [
-      '3D Animation',
-      '2D Animation',
-      '3D Modeling',
-      'Motion Graphics',
-      'CGI Video',
-      'VFX Video',
-      'Whiteboard Animation'
+    title: "Email Marketing",
+    description: "Automated email campaigns that nurture leads and drive customer retention.",
+    details: [
+      "Email list segmentation and management",
+      "Automated drip campaign setup",
+      "Responsive email template design",
+      "A/B testing of subject lines and content",
+      "Performance analytics and optimization"
     ],
-    color: '#FF00E5',
-    position: { top: 70, left: 60 }
+    benefits: [
+      "Higher open and click-through rates",
+      "Improved customer retention",
+      "Automated lead nurturing",
+      "Personalized customer journeys"
+    ],
+    icon: "✉️",
+    stats: [
+      { label: "Average Open Rate", value: "32.5%" },
+      { label: "Click-to-Open Rate", value: "18.7%" }
+    ]
+  },
+  {
+    title: "WhatsApp Marketing",
+    description: "Direct communication channel to engage customers through personalized messaging.",
+    details: [
+      "WhatsApp Business API integration",
+      "Automated message flows",
+      "Broadcast campaign management",
+      "Customer support automation",
+      "Performance tracking and analytics"
+    ],
+    benefits: [
+      "Higher open rates than email",
+      "Direct communication with customers",
+      "Personalized customer experiences",
+      "Improved response times"
+    ],
+    icon: "💬",
+    stats: [
+      { label: "Message Open Rate", value: "98%" },
+      { label: "Average Response Time", value: "90s" }
+    ]
+  },
+  {
+    title: "Performance Marketing",
+    description: "Data-driven marketing strategies focused on measurable business outcomes.",
+    details: [
+      "Conversion tracking implementation",
+      "Attribution modeling",
+      "ROI-focused campaign optimization",
+      "Cross-channel performance analysis",
+      "Budget allocation strategy"
+    ],
+    benefits: [
+      "Clear measurement of marketing impact",
+      "Optimized spend across channels",
+      "Higher return on ad spend (ROAS)",
+      "Data-driven decision making"
+    ],
+    icon: "📊",
+    stats: [
+      { label: "Average ROAS", value: "5.2x" },
+      { label: "Customer Acquisition Cost", value: "Reduced 40%" }
+    ]
+  },
+  {
+    title: "Influencer Marketing",
+    description: "Authentic brand partnerships with relevant influencers to expand your reach.",
+    details: [
+      "Influencer identification and vetting",
+      "Campaign strategy development",
+      "Content collaboration management",
+      "Performance tracking and reporting",
+      "Relationship management"
+    ],
+    benefits: [
+      "Access to engaged niche audiences",
+      "Increased brand credibility",
+      "Higher engagement rates",
+      "Authentic content creation"
+    ],
+    icon: "🌟",
+    stats: [
+      { label: "Average Engagement Rate", value: "7.8%" },
+      { label: "Cost Per Engagement", value: "$0.12" }
+    ]
+  },
+  {
+    title: "Content Marketing",
+    description: "Strategic content creation and distribution to attract and retain customers.",
+    details: [
+      "Content strategy development",
+      "SEO-optimized content creation",
+      "Content calendar management",
+      "Distribution and promotion strategy",
+      "Performance measurement"
+    ],
+    benefits: [
+      "Improved organic search visibility",
+      "Higher quality lead generation",
+      "Establishment of thought leadership",
+      "Long-term sustainable growth"
+    ],
+    icon: "🖋️",
+    stats: [
+      { label: "Organic Traffic Growth", value: "3.1x" },
+      { label: "Lead Conversion Rate", value: "4.5%" }
+    ]
   }
 ];
 
-const services = {
-  Marketing: [
-    {
-      name: 'Social Media Marketing',
-      icon: '📱',
-      shortDescription: 'Strategic social media campaigns to grow your audience and engagement',
-      complexity: 4,
-      startingPrice: 1500,
-      deliveryTime: '4-8 weeks',
-      successRate: 92,
-      features: [
-        'Platform-specific strategy development',
-        'Content calendar creation',
-        'Community management',
-        'Performance analytics',
-        'Monthly reporting'
-      ]
-    },
-    {
-      name: 'Google Ads',
-      icon: '🔍',
-      shortDescription: 'Targeted pay-per-click campaigns to drive qualified traffic',
-      complexity: 3,
-      startingPrice: 2000,
-      deliveryTime: '2-4 weeks',
-      successRate: 88,
-      features: [
-        'Keyword research & selection',
-        'Ad copy creation',
-        'Landing page optimization',
-        'Conversion tracking',
-        'Monthly optimization'
-      ]
-    },
-    {
-      name: 'Meta Ads',
-      icon: '👍',
-      shortDescription: 'Facebook and Instagram advertising for maximum reach',
-      complexity: 3,
-      startingPrice: 1800,
-      deliveryTime: '2-4 weeks',
-      successRate: 85,
-      features: [
-        'Audience targeting strategy',
-        'Creative development',
-        'A/B testing',
-        'Retargeting setup',
-        'Performance monitoring'
-      ]
-    },
-    {
-      name: 'Email Marketing',
-      icon: '✉️',
-      shortDescription: 'Automated email sequences that convert',
-      complexity: 2,
-      startingPrice: 1200,
-      deliveryTime: '3-6 weeks',
-      successRate: 78,
-      features: [
-        'Email template design',
-        'List segmentation',
-        'Automation workflow',
-        'A/B testing',
-        'Performance analytics'
-      ]
-    },
-    {
-      name: 'Whatsapp Marketing',
-      icon: '💬',
-      shortDescription: 'Personalized messaging campaigns for higher engagement',
-      complexity: 3,
-      startingPrice: 1000,
-      deliveryTime: '2-3 weeks',
-      successRate: 95,
-      features: [
-        'Chatbot setup',
-        'Broadcast strategy',
-        'Opt-in management',
-        'Automated responses',
-        'Analytics dashboard'
-      ]
-    },
-    {
-      name: 'Performance Marketing',
-      icon: '🚀',
-      shortDescription: 'ROI-focused campaigns across multiple channels',
-      complexity: 5,
-      startingPrice: 5000,
-      deliveryTime: '4-12 weeks',
-      successRate: 90,
-      features: [
-        'Multi-channel strategy',
-        'Conversion tracking',
-        'Attribution modeling',
-        'Budget optimization',
-        'Quarterly strategy review'
-      ]
-    }
-  ],
-  Media: [
-    {
-      name: 'Videography',
-      icon: '🎥',
-      shortDescription: 'Professional video production for all your needs',
-      complexity: 4,
-      startingPrice: 3000,
-      deliveryTime: '2-8 weeks',
-      successRate: 95,
-      features: [
-        'Pre-production planning',
-        'Professional equipment',
-        'Cinematic shooting',
-        'Location scouting',
-        'Talent coordination'
-      ]
-    },
-    {
-      name: 'Video Editing',
-      icon: '✂️',
-      shortDescription: 'Polished edits that tell your story effectively',
-      complexity: 3,
-      startingPrice: 800,
-      deliveryTime: '1-4 weeks',
-      successRate: 98,
-      features: [
-        'Raw footage review',
-        'Storyboard creation',
-        'Color grading',
-        'Sound design',
-        '3 revisions included'
-      ]
-    },
-    {
-      name: 'Photography',
-      icon: '📸',
-      shortDescription: 'High-quality images for branding and marketing',
-      complexity: 3,
-      startingPrice: 1500,
-      deliveryTime: '1-3 weeks',
-      successRate: 97,
-      features: [
-        'Creative direction',
-        'Professional equipment',
-        'Location scouting',
-        'Model coordination',
-        'High-res deliverables'
-      ]
-    },
-    {
-      name: 'Photo Editing',
-      icon: '🖼️',
-      shortDescription: 'Enhance and perfect your images',
-      complexity: 2,
-      startingPrice: 500,
-      deliveryTime: '3-7 days',
-      successRate: 99,
-      features: [
-        'Color correction',
-        'Retouching',
-        'Background removal',
-        'Product enhancement',
-        'Unlimited revisions'
-      ]
-    },
-    {
-      name: 'Product Shoots',
-      icon: '📦',
-      shortDescription: 'Showcase your products in the best light',
-      complexity: 3,
-      startingPrice: 1200,
-      deliveryTime: '1-2 weeks',
-      successRate: 96,
-      features: [
-        'Studio setup',
-        'Lighting design',
-        '360° product views',
-        'Lifestyle context shots',
-        '10+ final images'
-      ]
-    },
-    {
-      name: 'Commercial Shoots',
-      icon: '🎬',
-      shortDescription: 'Professional productions for TV and online ads',
-      complexity: 5,
-      startingPrice: 10000,
-      deliveryTime: '4-12 weeks',
-      successRate: 90,
-      features: [
-        'Concept development',
-        'Script writing',
-        'Professional crew',
-        'Talent casting',
-        'Post-production'
-      ]
-    }
-  ],
-  Technical: [
-    {
-      name: 'Web Development',
-      icon: '🌐',
-      shortDescription: 'Custom websites built for performance and conversions',
-      complexity: 4,
-      startingPrice: 5000,
-      deliveryTime: '4-12 weeks',
-      successRate: 95,
-      features: [
-        'Responsive design',
-        'CMS integration',
-        'SEO optimization',
-        'Performance testing',
-        '1 year maintenance'
-      ]
-    },
-    {
-      name: 'App Development',
-      icon: '📱',
-      shortDescription: 'Native and cross-platform mobile applications',
-      complexity: 5,
-      startingPrice: 15000,
-      deliveryTime: '8-16 weeks',
-      successRate: 92,
-      features: [
-        'Platform-specific UI/UX',
-        'API integration',
-        'Push notifications',
-        'App store submission',
-        '3 months support'
-      ]
-    },
-    {
-      name: 'Software Development',
-      icon: '💾',
-      shortDescription: 'Custom business software solutions',
-      complexity: 5,
-      startingPrice: 25000,
-      deliveryTime: '12-24 weeks',
-      successRate: 90,
-      features: [
-        'Requirement analysis',
-        'System architecture',
-        'Database design',
-        'Quality assurance',
-        'User training'
-      ]
-    },
-    {
-      name: 'Landing Pages',
-      icon: '🖥️',
-      shortDescription: 'High-converting pages for your campaigns',
-      complexity: 2,
-      startingPrice: 1200,
-      deliveryTime: '1-2 weeks',
-      successRate: 85,
-      features: [
-        'Conversion-focused design',
-        'Mobile optimization',
-        'A/B testing setup',
-        'Analytics integration',
-        '1 revision included'
-      ]
-    },
-    {
-      name: 'SEO',
-      icon: '🔍',
-      shortDescription: 'Organic growth through search engine optimization',
-      complexity: 4,
-      startingPrice: 2000,
-      deliveryTime: 'Ongoing',
-      successRate: 80,
-      features: [
-        'Keyword research',
-        'Technical audit',
-        'Content strategy',
-        'Backlink building',
-        'Monthly reporting'
-      ]
-    },
-    {
-      name: 'CRM Implementation',
-      icon: '📊',
-      shortDescription: 'Streamline your customer relationships',
-      complexity: 4,
-      startingPrice: 8000,
-      deliveryTime: '4-8 weeks',
-      successRate: 88,
-      features: [
-        'System selection',
-        'Custom configuration',
-        'Data migration',
-        'Team training',
-        '3 months support'
-      ]
-    }
-  ],
-  Animation: [
-    {
-      name: '3D Animation',
-      icon: '🦖',
-      shortDescription: 'Realistic 3D animations for products and stories',
-      complexity: 5,
-      startingPrice: 8000,
-      deliveryTime: '4-12 weeks',
-      successRate: 90,
-      features: [
-        'Concept development',
-        '3D modeling',
-        'Texturing & lighting',
-        'Character rigging',
-        'Final rendering'
-      ]
-    },
-    {
-      name: '2D Animation',
-      icon: '✏️',
-      shortDescription: 'Engaging 2D animations for explainers and ads',
-      complexity: 4,
-      startingPrice: 5000,
-      deliveryTime: '3-8 weeks',
-      successRate: 92,
-      features: [
-        'Storyboard creation',
-        'Character design',
-        'Frame-by-frame animation',
-        'Sound synchronization',
-        '3 revisions included'
-      ]
-    },
-    {
-      name: '3D Modeling',
-      icon: '🗿',
-      shortDescription: 'High-quality 3D assets for various applications',
-      complexity: 4,
-      startingPrice: 3000,
-      deliveryTime: '2-6 weeks',
-      successRate: 95,
-      features: [
-        'Reference analysis',
-        'Low-poly modeling',
-        'High-poly detailing',
-        'UV unwrapping',
-        'Texture baking'
-      ]
-    },
-    {
-      name: 'Motion Graphics',
-      icon: '🎞️',
-      shortDescription: 'Dynamic motion designs for videos and presentations',
-      complexity: 3,
-      startingPrice: 2500,
-      deliveryTime: '2-4 weeks',
-      successRate: 97,
-      features: [
-        'Style frames',
-        'Typography animation',
-        'Infographic design',
-        'Sound design',
-        '2 revisions included'
-      ]
-    },
-    {
-      name: 'CGI Video',
-      icon: '🎥',
-      shortDescription: 'Photorealistic computer-generated imagery',
-      complexity: 5,
-      startingPrice: 10000,
-      deliveryTime: '4-16 weeks',
-      successRate: 85,
-      features: [
-        'Scene reconstruction',
-        'Material simulation',
-        'Light matching',
-        'Particle effects',
-        'Final compositing'
-      ]
-    },
-    {
-      name: 'Whiteboard Animation',
-      icon: '📝',
-      shortDescription: 'Engaging explainer videos with hand-drawn style',
-      complexity: 3,
-      startingPrice: 3500,
-      deliveryTime: '3-6 weeks',
-      successRate: 90,
-      features: [
-        'Script writing',
-        'Voiceover recording',
-        'Illustration',
-        'Animation',
-        'Sound effects'
-      ]
-    }
-  ]
-};
-
-const comparisonData = [
+const mediaServices = [
   {
-    label: 'Project Complexity',
-    value: (dept: any) => {
-      if (dept.name === 'Marketing') return 3;
-      if (dept.name === 'Media') return 4;
-      if (dept.name === 'Technical') return 5;
-      if (dept.name === 'Animation') return 4;
-      return 0;
-    }
+    title: "Videography",
+    description: "Professional video production services for commercials, brand films, and corporate videos.",
+    details: [
+      "Pre-production planning and storyboarding",
+      "4K/6K cinematic video production",
+      "Professional lighting and audio setup",
+      "Multi-camera setups when needed",
+      "Drone videography for aerial shots"
+    ],
+    benefits: [
+      "High-quality visual storytelling",
+      "Professional production values",
+      "Consistent brand representation",
+      "Engaging content for multiple platforms"
+    ],
+    icon: "🎥",
+    stats: [
+      { label: "Production Time", value: "2-4 weeks" },
+      { label: "Delivery Formats", value: "5+" }
+    ]
   },
   {
-    label: 'Average Project Duration',
-    value: (dept: any) => {
-      if (dept.name === 'Marketing') return '4-8 weeks';
-      if (dept.name === 'Media') return '2-6 weeks';
-      if (dept.name === 'Technical') return '8-16 weeks';
-      if (dept.name === 'Animation') return '4-12 weeks';
-      return '';
-    }
+    title: "Video Editing",
+    description: "Expert post-production to transform raw footage into compelling visual stories.",
+    details: [
+      "Color grading and correction",
+      "Motion graphics integration",
+      "Sound design and audio mixing",
+      "Multi-format output optimization",
+      "Versioning for different platforms"
+    ],
+    benefits: [
+      "Polished, professional final product",
+      "Consistent brand aesthetics",
+      "Optimized for viewer engagement",
+      "Platform-specific formatting"
+    ],
+    icon: "✂️",
+    stats: [
+      { label: "Turnaround Time", value: "3-7 days" },
+      { label: "Revision Rounds", value: "3 included" }
+    ]
   },
   {
-    label: 'Team Size',
-    value: (dept: any) => {
-      if (dept.name === 'Marketing') return '3-5 specialists';
-      if (dept.name === 'Media') return '2-4 creatives';
-      if (dept.name === 'Technical') return '3-6 developers';
-      if (dept.name === 'Animation') return '2-5 artists';
-      return '';
-    }
+    title: "Photography",
+    description: "Professional photography services for products, events, and brand imagery.",
+    details: [
+      "Studio and location photography",
+      "Product staging and composition",
+      "Professional lighting setups",
+      "High-resolution image capture",
+      "Multiple angle coverage"
+    ],
+    benefits: [
+      "High-quality visual assets",
+      "Consistent brand imagery",
+      "Professional product presentation",
+      "Versatile usage across platforms"
+    ],
+    icon: "📸",
+    stats: [
+      { label: "Image Resolution", value: "24MP+" },
+      { label: "Delivery Time", value: "48-72h" }
+    ]
   },
   {
-    label: 'Client Collaboration',
-    value: (dept: any) => {
-      if (dept.name === 'Marketing') return 4;
-      if (dept.name === 'Media') return 3;
-      if (dept.name === 'Technical') return 4;
-      if (dept.name === 'Animation') return 3;
-      return 0;
-    }
+    title: "Photo Editing",
+    description: "Professional retouching and enhancement of photographic images.",
+    details: [
+      "Color correction and grading",
+      "Background removal and replacement",
+      "Product retouching and enhancement",
+      "Skin retouching for portraits",
+      "Batch processing for efficiency"
+    ],
+    benefits: [
+      "Polished, professional images",
+      "Consistent visual style",
+      "Enhanced product presentation",
+      "Ready-to-use marketing assets"
+    ],
+    icon: "🎨",
+    stats: [
+      { label: "Editing Time", value: "<24h" },
+      { label: "File Formats", value: "5+" }
+    ]
   },
   {
-    label: 'Creative Freedom',
-    value: (dept: any) => {
-      if (dept.name === 'Marketing') return 2;
-      if (dept.name === 'Media') return 5;
-      if (dept.name === 'Technical') return 1;
-      if (dept.name === 'Animation') return 4;
-      return 0;
-    }
+    title: "Product Shoots",
+    description: "Specialized photography services tailored for e-commerce and marketing needs.",
+    details: [
+      "360-degree product photography",
+      "Lifestyle context shots",
+      "Detail and feature close-ups",
+      "Consistent lighting and angles",
+      "White background standardization"
+    ],
+    benefits: [
+      "Increased product appeal",
+      "Higher conversion rates",
+      "Consistent online presentation",
+      "Reduced product returns"
+    ],
+    icon: "📦",
+    stats: [
+      { label: "Products Per Day", value: "20-50" },
+      { label: "Image Types", value: "3-5 per product" }
+    ]
+  },
+  {
+    title: "Commercial Shoots",
+    description: "Professional production of commercial content for advertising campaigns.",
+    details: [
+      "Concept development and storyboarding",
+      "Talent casting and direction",
+      "Location scouting and permits",
+      "Professional hair and makeup",
+      "Art direction and styling"
+    ],
+    benefits: [
+      "High-impact advertising content",
+      "Professional production values",
+      "Clear brand messaging",
+      "Emotional audience connection"
+    ],
+    icon: "💼",
+    stats: [
+      { label: "Production Scale", value: "Small to Large" },
+      { label: "Crew Size", value: "5-20+" }
+    ]
+  },
+  {
+    title: "Branding",
+    description: "Comprehensive visual identity development for cohesive brand representation.",
+    details: [
+      "Logo design and refinement",
+      "Brand style guide development",
+      "Visual identity system creation",
+      "Brand asset library management",
+      "Application across all touchpoints"
+    ],
+    benefits: [
+      "Strong, recognizable brand identity",
+      "Consistent visual representation",
+      "Improved brand recall",
+      "Cohesive customer experience"
+    ],
+    icon: "🏷️",
+    stats: [
+      { label: "Brand Guidelines", value: "50+ pages" },
+      { label: "Asset Types", value: "10+" }
+    ]
+  },
+  {
+    title: "Graphic Design",
+    description: "Creative design solutions for print and digital marketing materials.",
+    details: [
+      "Marketing collateral design",
+      "Social media graphics",
+      "Presentation design",
+      "Infographic creation",
+      "Print material design"
+    ],
+    benefits: [
+      "Professional visual communication",
+      "Consistent brand aesthetics",
+      "Improved information retention",
+      "Higher engagement rates"
+    ],
+    icon: "✏️",
+    stats: [
+      { label: "Design Assets", value: "1000+" },
+      { label: "File Formats", value: "10+" }
+    ]
   }
 ];
 
-const workflowSteps = [
+const technicalServices = [
   {
-    title: 'Discovery & Strategy',
-    description: 'We begin with comprehensive discovery sessions to understand your business goals, target audience, and project requirements across all relevant departments.',
-    departments: ['Marketing', 'Media', 'Technical', 'Animation']
+    title: "Web Development",
+    description: "Custom website development tailored to your business requirements and user needs.",
+    details: [
+      "Responsive, mobile-first development",
+      "CMS integration (WordPress, Shopify, etc.)",
+      "E-commerce functionality",
+      "Performance optimization",
+      "Security hardening"
+    ],
+    benefits: [
+      "Faster load times",
+      "Higher conversion rates",
+      "Improved SEO performance",
+      "Enhanced security"
+    ],
+    icon: "🌐",
+    stats: [
+      { label: "Page Load Speed", value: "<2s" },
+      { label: "Mobile Optimization", value: "100%" }
+    ]
   },
   {
-    title: 'Concept Development',
-    description: 'Our teams collaborate to create integrated concepts that leverage each department\'s strengths for maximum impact.',
-    departments: ['Marketing', 'Media', 'Animation']
+    title: "App Development",
+    description: "Native and cross-platform mobile application development for iOS and Android.",
+    details: [
+      "UI/UX focused development",
+      "Native (Swift, Kotlin) and cross-platform (React Native, Flutter)",
+      "API integration",
+      "App store optimization",
+      "Ongoing maintenance"
+    ],
+    benefits: [
+      "Smooth user experience",
+      "Offline functionality",
+      "Device feature integration",
+      "Higher user retention"
+    ],
+    icon: "📱",
+    stats: [
+      { label: "App Store Rating", value: "4.8+" },
+      { label: "Crash Rate", value: "<0.1%" }
+    ]
   },
   {
-    title: 'Technical Architecture',
-    description: 'The technical team designs the infrastructure while coordinating with other departments to ensure all creative elements can be properly implemented.',
-    departments: ['Technical', 'Marketing', 'Media']
+    title: "Software Development",
+    description: "Custom software solutions designed to streamline your business operations.",
+    details: [
+      "Requirement analysis",
+      "System architecture design",
+      "Database design",
+      "Quality assurance testing",
+      "Documentation"
+    ],
+    benefits: [
+      "Automated workflows",
+      "Improved operational efficiency",
+      "Customized to your needs",
+      "Scalable solutions"
+    ],
+    icon: "💻",
+    stats: [
+      { label: "Code Coverage", value: "90%+" },
+      { label: "Bug Resolution", value: "<24h" }
+    ]
   },
   {
-    title: 'Content Production',
-    description: 'Media and animation teams produce high-quality assets while marketing develops the messaging framework and technical prepares for integration.',
-    departments: ['Media', 'Animation', 'Marketing']
+    title: "Landing Pages",
+    description: "High-converting landing pages designed to maximize lead generation and sales.",
+    details: [
+      "Conversion-focused design",
+      "A/B testing implementation",
+      "Lead capture optimization",
+      "Loading speed optimization",
+      "Integration with marketing tools"
+    ],
+    benefits: [
+      "Higher conversion rates",
+      "Improved lead quality",
+      "Better ad performance",
+      "Measurable results"
+    ],
+    icon: "🛬",
+    stats: [
+      { label: "Average Conversion Rate", value: "15-25%" },
+      { label: "Load Time", value: "<1.5s" }
+    ]
   },
   {
-    title: 'Integration & Testing',
-    description: 'All components come together with rigorous testing to ensure seamless performance across all platforms and devices.',
-    departments: ['Technical', 'Media', 'Animation']
+    title: "SEO",
+    description: "Comprehensive search engine optimization to increase organic visibility and traffic.",
+    details: [
+      "Keyword research",
+      "On-page optimization",
+      "Technical SEO audits",
+      "Content strategy",
+      "Backlink building"
+    ],
+    benefits: [
+      "Higher search rankings",
+      "Increased organic traffic",
+      "Long-term sustainable growth",
+      "Higher ROI than paid ads"
+    ],
+    icon: "🔎",
+    stats: [
+      { label: "Keyword Rankings", value: "Top 3 in 3 months" },
+      { label: "Organic Traffic Growth", value: "3-5x" }
+    ]
   },
   {
-    title: 'Launch & Optimization',
-    description: 'Marketing leads the launch campaign while all departments monitor performance and make data-driven optimizations.',
-    departments: ['Marketing', 'Technical', 'Media']
+    title: "CRM",
+    description: "Customer Relationship Management solutions to enhance customer interactions.",
+    details: [
+      "CRM selection consultation",
+      "Customization and configuration",
+      "Data migration",
+      "Integration with other systems",
+      "User training"
+    ],
+    benefits: [
+      "Improved customer insights",
+      "Better sales tracking",
+      "Enhanced customer service",
+      "Marketing automation"
+    ],
+    icon: "🤝",
+    stats: [
+      { label: "Implementation Time", value: "2-4 weeks" },
+      { label: "User Adoption", value: "90%+" }
+    ]
+  },
+  {
+    title: "ERP",
+    description: "Enterprise Resource Planning systems to integrate and manage business processes.",
+    details: [
+      "Needs assessment",
+      "System selection",
+      "Implementation",
+      "Data migration",
+      "User training"
+    ],
+    benefits: [
+      "Streamlined operations",
+      "Real-time data access",
+      "Improved decision making",
+      "Reduced operational costs"
+    ],
+    icon: "📈",
+    stats: [
+      { label: "Process Automation", value: "80%+" },
+      { label: "Reporting Time", value: "Reduced 70%" }
+    ]
+  }
+];
+
+const animationServices = [
+  {
+    title: "3D Animation",
+    description: "High-quality 3D animation for product visualization, explainer videos, and more.",
+    details: [
+      "3D modeling and texturing",
+      "Character rigging",
+      "Motion design",
+      "Lighting and rendering",
+      "Post-production"
+    ],
+    benefits: [
+      "Realistic product visualization",
+      "Engaging storytelling",
+      "Higher viewer retention",
+      "Memorable brand experiences"
+    ],
+    icon: "🎬",
+    stats: [
+      { label: "Animation Length", value: "15-60s" },
+      { label: "Render Time", value: "24-72h" }
+    ]
+  },
+  {
+    title: "2D Animation",
+    description: "Traditional and motion graphics animation for explainer videos and advertisements.",
+    details: [
+      "Storyboard development",
+      "Character design",
+      "Frame-by-frame animation",
+      "Motion graphics",
+      "Sound design"
+    ],
+    benefits: [
+      "Simplified complex concepts",
+      "Brand personality expression",
+      "Higher engagement rates",
+      "Cross-cultural appeal"
+    ],
+    icon: "🖌️",
+    stats: [
+      { label: "Production Time", value: "2-4 weeks" },
+      { label: "Style Options", value: "10+" }
+    ]
+  },
+  {
+    title: "3D Modeling",
+    description: "Detailed 3D models for products, characters, and environments.",
+    details: [
+      "High-poly modeling",
+      "Low-poly optimization",
+      "UV unwrapping",
+      "Texturing and materials",
+      "Render-ready exports"
+    ],
+    benefits: [
+      "Accurate product representation",
+      "Versatile asset usage",
+      "Interactive 3D experiences",
+      "Photorealistic visualization"
+    ],
+    icon: "🧊",
+    stats: [
+      { label: "Polygon Count", value: "50k-1M+" },
+      { label: "Texture Resolution", value: "4K-8K" }
+    ]
+  },
+  {
+    title: "Motion Graphics",
+    description: "Dynamic motion graphics for advertisements, title sequences, and presentations.",
+    details: [
+      "Concept development",
+      "Typography animation",
+      "Infographic animation",
+      "Logo animation",
+      "Composite editing"
+    ],
+    benefits: [
+      "Professional presentation",
+      "Enhanced information retention",
+      "Modern brand image",
+      "Higher engagement"
+    ],
+    icon: "🌀",
+    stats: [
+      { label: "Animation Length", value: "5-30s" },
+      { label: "Delivery Formats", value: "5+" }
+    ]
+  },
+  {
+    title: "CGI Video",
+    description: "Computer-generated imagery for realistic product visualization and special effects.",
+    details: [
+      "Photorealistic rendering",
+      "Physics simulations",
+      "Material accuracy",
+      "Light matching",
+      "Seamless compositing"
+    ],
+    benefits: [
+      "Cost-effective alternative to live shoots",
+      "Impossible camera angles",
+      "Consistent product representation",
+      "Flexible revisions"
+    ],
+    icon: "🎞️",
+    stats: [
+      { label: "Render Quality", value: "4K-8K" },
+      { label: "Realism Level", value: "Photoreal" }
+    ]
+  },
+  {
+    title: "VFX Video",
+    description: "Visual effects integration for film, television, and commercial productions.",
+    details: [
+      "Green screen compositing",
+      "Particle effects",
+      "Environmental effects",
+      "Digital set extensions",
+      "Color grading"
+    ],
+    benefits: [
+      "Enhanced production value",
+      "Creative freedom",
+      "Cost savings on location shoots",
+      "Seamless reality enhancement"
+    ],
+    icon: "✨",
+    stats: [
+      { label: "VFX Shots", value: "1000+" },
+      { label: "Compositing Layers", value: "20-100+" }
+    ]
+  },
+  {
+    title: "Whiteboard Animation",
+    description: "Engaging whiteboard animation for explainer videos and educational content.",
+    details: [
+      "Script development",
+      "Storyboarding",
+      "Hand-drawn style animation",
+      "Voiceover synchronization",
+      "Sound effects"
+    ],
+    benefits: [
+      "Simplified complex concepts",
+      "Higher information retention",
+      "Cost-effective production",
+      "Broad audience appeal"
+    ],
+    icon: "📝",
+    stats: [
+      { label: "Production Time", value: "1-2 weeks" },
+      { label: "Engagement Rate", value: "85%+" }
+    ]
+  }
+];
+
+const projectPricing = [
+  {
+    name: "Starter",
+    price: "2,500",
+    recommended: false,
+    features: [
+      "Small-scale project",
+      "1-2 week timeline",
+      "Basic functionality",
+      "Standard design",
+      "1 revision round",
+      "Email support"
+    ]
+  },
+  {
+    name: "Professional",
+    price: "10,000",
+    recommended: true,
+    features: [
+      "Medium-scale project",
+      "3-6 week timeline",
+      "Advanced features",
+      "Custom design",
+      "3 revision rounds",
+      "Priority support"
+    ]
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    recommended: false,
+    features: [
+      "Large-scale project",
+      "8+ week timeline",
+      "Complex functionality",
+      "Premium design",
+      "Unlimited revisions",
+      "Dedicated account manager"
+    ]
+  }
+];
+
+const retainerPricing = [
+  {
+    name: "Basic",
+    price: "1,500",
+    recommended: false,
+    features: [
+      "20 hours/month",
+      "Standard support",
+      "Email communication",
+      "1-2 day response time",
+      "Basic reporting",
+      "Monthly strategy call"
+    ]
+  },
+  {
+    name: "Growth",
+    price: "3,500",
+    recommended: true,
+    features: [
+      "50 hours/month",
+      "Priority support",
+      "Slack communication",
+      "Same-day response",
+      "Advanced reporting",
+      "Weekly strategy call"
+    ]
+  },
+  {
+    name: "Enterprise",
+    price: "7,500",
+    recommended: false,
+    features: [
+      "100+ hours/month",
+      "24/7 support",
+      "Dedicated manager",
+      "Immediate response",
+      "Custom reporting",
+      "Daily standups"
+    ]
+  }
+];
+
+const hourlyPricing = [
+  {
+    name: "Junior",
+    price: "50",
+    recommended: false,
+    features: [
+      "Entry-level specialist",
+      "1-2 years experience",
+      "Standard quality",
+      "Supervised work",
+      "Basic skillset",
+      "Good for simple tasks"
+    ]
+  },
+  {
+    name: "Senior",
+    price: "100",
+    recommended: true,
+    features: [
+      "Experienced specialist",
+      "5+ years experience",
+      "High quality",
+      "Independent work",
+      "Advanced skillset",
+      "Ideal for most projects"
+    ]
+  },
+  {
+    name: "Expert",
+    price: "200",
+    recommended: false,
+    features: [
+      "Top-tier specialist",
+      "10+ years experience",
+      "Premium quality",
+      "Strategic guidance",
+      "Niche expertise",
+      "Complex projects only"
+    ]
+  }
+];
+
+const caseStudies = [
+  {
+    title: "E-commerce Platform Redesign",
+    description: "Increased conversion rates by 220% through UX optimization and performance enhancements.",
+    tags: ["Web Development", "UI/UX", "E-commerce"],
+    icon: "🛒"
+  },
+  {
+    title: "Mobile App Launch",
+    description: "Successful launch of a fitness app with 500k+ downloads in first 3 months.",
+    tags: ["App Development", "Marketing", "UI/UX"],
+    icon: "📱"
+  },
+  {
+    title: "Brand Awareness Campaign",
+    description: "Generated 2M+ impressions through targeted social media advertising.",
+    tags: ["Social Media", "Advertising", "Content"],
+    icon: "📢"
+  },
+  {
+    title: "Product Animation Series",
+    description: "Created engaging 3D animations that increased product understanding by 75%.",
+    tags: ["3D Animation", "Product", "Marketing"],
+    icon: "🎥"
+  },
+  {
+    title: "CRM Implementation",
+    description: "Streamlined sales processes reducing administrative work by 40 hours/week.",
+    tags: ["CRM", "Automation", "Sales"],
+    icon: "📊"
+  },
+  {
+    title: "Corporate Video Production",
+    description: "Produced award-winning brand film viewed over 1M times.",
+    tags: ["Video", "Production", "Branding"],
+    icon: "🎬"
+  }
+];
+
+const teamMembers = [
+  {
+    name: "Alex Johnson",
+    role: "Creative Director",
+    bio: "10+ years experience in visual storytelling and brand development across multiple industries.",
+    expertise: ["Creative Direction", "Brand Strategy", "Visual Design"]
+  },
+  {
+    name: "Sarah Chen",
+    role: "Lead Developer",
+    bio: "Full-stack developer specializing in scalable web applications and performance optimization.",
+    expertise: ["React", "Node.js", "AWS"]
+  },
+  {
+    name: "Michael Rodriguez",
+    role: "Marketing Strategist",
+    bio: "Data-driven marketer with expertise in growth hacking and conversion rate optimization.",
+    expertise: ["Digital Marketing", "SEO", "Analytics"]
+  },
+  {
+    name: "Emma Wilson",
+    role: "Animation Director",
+    bio: "Award-winning animator with experience in both 2D and 3D animation for major brands.",
+    expertise: ["3D Animation", "Motion Graphics", "Visual Effects"]
   }
 ];
