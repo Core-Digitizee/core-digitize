@@ -1,254 +1,318 @@
 // src/components/Loader.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import logo from '/Logo.png';
 
 interface LoaderProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
   isVisible: boolean;
-  message?: string;
-  particleCount?: number;
-  showProgress?: boolean;
+  transitionDuration?: number;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  loadingText?: string;
+  accentColor?: 'white' | 'platinum' | 'blue' | 'amber' | 'emerald' | 'violet';
+  progress?: number | null; // Optional progress indicator (0-100)
+  showPercentage?: boolean; // Show progress percentage
+  blurLevel?: 'none' | 'sm' | 'md' | 'lg'; // Background blur level
+  backgroundColor?: string; // Custom background color
 }
 
-const Loader: React.FC<LoaderProps> = ({
+const Loader: React.FC<LoaderProps> = ({ 
+  isVisible, 
+  transitionDuration = 800,
   size = 'md',
-  isVisible,
-  message = 'Loading...',
-  particleCount = 120,
-  showProgress = true
+  loadingText = "INITIALIZING",
+  accentColor = 'white',
+  progress = null,
+  showPercentage = false,
+  blurLevel = 'md',
+  backgroundColor = 'rgba(0, 0, 0, 0.95)'
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const logoContainerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+  const [progressWidth, setProgressWidth] = useState(0);
 
-  const loaderSizeClass = {
-    sm: 'w-16 h-16',
-    md: 'w-32 h-32',
-    lg: 'w-48 h-48',
-    xl: 'w-64 h-64'
-  }[size];
-
-  useEffect(() => {
-    if (!isVisible || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // Particle system
-    const particles = Array.from({ length: particleCount }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 3 + 1,
-      speedX: (Math.random() - 0.5) * 0.5,
-      speedY: (Math.random() - 0.5) * 0.5,
-      color: `rgba(255, 80, 4, ${Math.random() * 0.5 + 0.1})`,
-      orbitRadius: Math.random() * 150 + 50,
-      angle: Math.random() * Math.PI * 2
-    }));
-
-    let animationFrameId: number;
-    let progress = 0;
-
-    const animate = () => {
-      ctx.fillStyle = '#060606';
-      ctx.globalAlpha = 0.15;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.globalAlpha = 1;
-
-      // Update and draw particles
-      particles.forEach(particle => {
-        // Orbit animation
-        particle.angle += 0.005;
-        particle.x = canvas.width / 2 + Math.cos(particle.angle) * particle.orbitRadius;
-        particle.y = canvas.height / 2 + Math.sin(particle.angle) * particle.orbitRadius;
-
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color;
-        ctx.fill();
-
-        // Connection lines
-        if (Math.random() > 0.97) {
-          particles.forEach(p => {
-            const distance = Math.sqrt(
-              Math.pow(particle.x - p.x, 2) + Math.pow(particle.y - p.y, 2)
-            );
-            if (distance < 150) {
-              ctx.beginPath();
-              ctx.moveTo(particle.x, particle.y);
-              ctx.lineTo(p.x, p.y);
-              ctx.strokeStyle = `rgba(255, 80, 4, ${0.2 - distance / 750})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          });
-        }
-      });
-
-      // Update progress bar if enabled
-      if (showProgress && progressRef.current) {
-        progress = (progress + 0.5) % 100;
-        progressRef.current.style.width = `${Math.min(progress, 99)}%`;
+  // Configuration with responsive design
+  const config = {
+    sizes: {
+      xs: { 
+        logo: 64, 
+        text: 'text-xs', 
+        spacing: 'mt-4',
+        progressHeight: 1
+      },
+      sm: { 
+        logo: 96, 
+        text: 'text-sm', 
+        spacing: 'mt-5',
+        progressHeight: 1.5
+      },
+      md: { 
+        logo: 128, 
+        text: 'text-base', 
+        spacing: 'mt-6',
+        progressHeight: 2
+      },
+      lg: { 
+        logo: 160, 
+        text: 'text-lg', 
+        spacing: 'mt-8',
+        progressHeight: 2.5
+      },
+      xl: { 
+        logo: 192, 
+        text: 'text-xl', 
+        spacing: 'mt-10',
+        progressHeight: 3
       }
+    },
+    colors: {
+      white: { 
+        primary: '#ffffff', 
+        secondary: 'rgba(255,255,255,0.85)',
+        tertiary: 'rgba(255,255,255,0.6)'
+      },
+      platinum: { 
+        primary: '#e5e4e2', 
+        secondary: 'rgba(229,228,226,0.85)',
+        tertiary: 'rgba(229,228,226,0.6)'
+      },
+      blue: { 
+        primary: '#3b82f6', 
+        secondary: 'rgba(59,130,246,0.85)',
+        tertiary: 'rgba(59,130,246,0.6)'
+      },
+      amber: { 
+        primary: '#f59e0b', 
+        secondary: 'rgba(245,158,11,0.85)',
+        tertiary: 'rgba(245,158,11,0.6)'
+      },
+      emerald: {
+        primary: '#10b981',
+        secondary: 'rgba(16,185,129,0.85)',
+        tertiary: 'rgba(16,185,129,0.6)'
+      },
+      violet: {
+        primary: '#8b5cf6',
+        secondary: 'rgba(139,92,246,0.85)',
+        tertiary: 'rgba(139,92,246,0.6)'
+      }
+    },
+    blur: {
+      none: '',
+      sm: 'backdrop-blur-sm',
+      md: 'backdrop-blur-md',
+      lg: 'backdrop-blur-lg'
+    }
+  };
 
-      animationFrameId = requestAnimationFrame(animate);
-    };
+  // Handle progress animation
+  useEffect(() => {
+    if (progress !== null && progressRef.current) {
+      const targetWidth = Math.min(Math.max(progress, 0), 100);
+      setProgressWidth(targetWidth);
+    }
+  }, [progress]);
 
-    animate();
+  // Handle mount/unmount transitions
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+    
+    if (isVisible) {
+      setIsMounted(true);
+      document.body.style.overflow = 'hidden';
+      
+      timers.push(setTimeout(() => {
+        if (logoContainerRef.current) {
+          logoContainerRef.current.style.opacity = '1';
+          logoContainerRef.current.style.transform = 'translateY(0) scale(1)';
+        }
+      }, 50));
+    } else {
+      if (loaderRef.current) {
+        loaderRef.current.style.opacity = '0';
+      }
+      
+      timers.push(setTimeout(() => {
+        setIsMounted(false);
+        document.body.style.overflow = '';
+      }, transitionDuration));
+    }
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isVisible, particleCount, showProgress]);
+    return () => timers.forEach(timer => clearTimeout(timer));
+  }, [isVisible, transitionDuration]);
 
-  if (!isVisible) return null;
+  if (!isMounted) return null;
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-[#060606] flex flex-col justify-center items-center z-[9999] overflow-hidden">
-      {/* Canvas for particle effects */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      />
+    <div 
+      ref={loaderRef}
+      role="status"
+      aria-live="polite"
+      aria-busy={isVisible}
+      aria-label="Loading content"
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-700 ${config.blur[blurLevel]}`}
+      style={{
+        backgroundColor: backgroundColor,
+        opacity: isVisible ? 1 : 0,
+        transition: `opacity ${transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      }}
+    >
+      {/* Logo Container */}
+      <div 
+        ref={logoContainerRef}
+        className="relative flex flex-col items-center justify-center opacity-0 transform translate-y-8 scale-95 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          willChange: 'opacity, transform'
+        }}
+      >
+        {/* Logo with subtle pulse animation */}
+        <div className="relative group">
+          <img
+            src={logoError ? '/fallback-logo.png' : logo}
+            alt="Loading"
+            className="object-contain transition-all duration-500 group-hover:scale-[1.02]"
+            style={{
+              width: `${config.sizes[size].logo}px`,
+              height: `${config.sizes[size].logo}px`,
+              animation: 'logoPulse 2s ease-in-out infinite',
+              animationPlayState: isVisible ? 'running' : 'paused'
+            }}
+            onError={() => setLogoError(true)}
+          />
+        </div>
 
-      {/* Main loader container */}
-      <div className="relative z-10 flex flex-col items-center">
-        {/* 3D effect container */}
-        <div className="relative perspective-1000">
-          {/* Logo with 3D rotation */}
-          <div className={`${loaderSizeClass} relative transform-style-preserve-3d animate-rotate-3d`}>
-            <img
-              src={logo}
-              alt="Loading Logo"
-              className="w-full h-full object-contain transform translate-z-20"
-            />
-            <div className="absolute inset-0 border-4 border-[#ff5004] rounded-full opacity-70 transform translate-z-10" />
-            <div className="absolute inset-0 bg-[#ff5004] rounded-full blur-xl opacity-20 transform translate-z-0" />
-          </div>
-
-          {/* Floating particles around logo */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-[#ff5004] animate-float"
+        {/* Progress Indicator - either animated or controlled */}
+        {progress === null ? (
+          <div 
+            className="relative mt-8 w-full overflow-hidden"
+            style={{ 
+              width: `${config.sizes[size].logo}px`,
+              height: `${config.sizes[size].progressHeight}px`,
+              borderRadius: `${config.sizes[size].progressHeight}px`
+            }}
+          >
+            <div 
+              className="absolute h-full rounded-full"
               style={{
-                width: `${Math.random() * 8 + 4}px`,
-                height: `${Math.random() * 8 + 4}px`,
-                top: '50%',
-                left: '50%',
-                opacity: Math.random() * 0.5 + 0.3,
-                animationDuration: `${Math.random() * 10 + 10}s`,
-                animationDelay: `${Math.random() * 5}s`,
-                transform: `translate(-50%, -50%) rotate(${Math.random() * 360}deg) translate(${
-                  (Math.random() * 60 + 40) * (i % 2 ? 1 : -1)
-                }px)`
+                width: '100%',
+                backgroundColor: config.colors[accentColor].primary,
+                opacity: 0.2
               }}
             />
-          ))}
-        </div>
-
-        {/* Loading message */}
-        {message && (
-          <div className="mt-8 text-center">
-            <p className="text-white text-xl font-medium tracking-wider animate-pulse">
-              {message.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="inline-block"
-                  style={{
-                    animationDelay: `${i * 0.1}s`,
-                    animationDuration: '2s'
-                  }}
-                >
-                  {char}
-                </span>
-              ))}
-            </p>
+            <div 
+              className="absolute h-full rounded-full"
+              style={{
+                width: '100%',
+                backgroundColor: config.colors[accentColor].primary,
+                animation: 'progressWave 2.4s cubic-bezier(0.65,0,0.35,1) infinite',
+                opacity: 0.7
+              }}
+            />
+            <div 
+              className="absolute h-full rounded-full"
+              style={{
+                width: '30%',
+                backgroundColor: config.colors[accentColor].primary,
+                animation: 'progressPulse 2.4s cubic-bezier(0.65,0,0.35,1) infinite',
+                filter: 'blur(1px)',
+                opacity: 0.9
+              }}
+            />
           </div>
-        )}
-
-        {/* Advanced progress indicator */}
-        {showProgress && (
-          <div className="w-64 h-2 bg-[#ffffff10] rounded-full mt-8 overflow-hidden relative">
-            <div
-              ref={progressRef}
-              className="h-full bg-gradient-to-r from-[#ff5004] to-[#ff9004] rounded-full relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white opacity-30 animate-shimmer" />
-            </div>
-            <div className="absolute inset-0 border border-[#ffffff20] rounded-full pointer-events-none" />
+        ) : (
+          <div 
+            ref={progressRef}
+            className="relative mt-8 w-full overflow-hidden"
+            style={{ 
+              width: `${config.sizes[size].logo}px`,
+              height: `${config.sizes[size].progressHeight}px`,
+              borderRadius: `${config.sizes[size].progressHeight}px`,
+              backgroundColor: `${config.colors[accentColor].tertiary}20`
+            }}
+          >
+            <div 
+              className="absolute h-full rounded-full transition-all duration-500 ease-out"
+              style={{
+                width: `${progressWidth}%`,
+                backgroundColor: config.colors[accentColor].primary,
+                boxShadow: `0 0 8px ${config.colors[accentColor].primary}`
+              }}
+            />
+            {showPercentage && (
+              <div 
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-xs font-medium"
+                style={{
+                  color: config.colors[accentColor].primary,
+                  textShadow: `0 0 4px ${config.colors[accentColor].tertiary}`
+                }}
+              >
+                {progressWidth}%
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Footer with loading stats (simulated) */}
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center">
-        <div className="text-[#ffffff60] text-sm font-mono flex space-x-4">
-          <span className="animate-pulse">SYSTEM INITIALIZED</span>
-          <span>|</span>
-          <span className="animate-pulse">MEMORY: {Math.floor(Math.random() * 80 + 20)}%</span>
-          <span>|</span>
-          <span className="animate-pulse">LOADING ASSETS...</span>
+      {/* Loading Text with optional progress */}
+      <div className={`${config.sizes[size].spacing} relative overflow-hidden`}>
+        <div className="flex flex-col items-center">
+          <p 
+            className={`${config.sizes[size].text} font-medium tracking-wider text-center uppercase`}
+            style={{
+              color: config.colors[accentColor].secondary,
+              opacity: 0,
+              animation: 'textFadeIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards',
+              letterSpacing: '0.15em'
+            }}
+          >
+            {loadingText}
+          </p>
+          <div 
+            className="absolute bottom-0 left-0 h-px transition-all duration-1000"
+            style={{
+              width: '0%',
+              backgroundColor: config.colors[accentColor].tertiary,
+              animation: 'textUnderlineExpand 1.6s cubic-bezier(0.65,0,0.35,1) 0.6s forwards'
+            }}
+          />
         </div>
       </div>
+
+      {/* Animation Styles */}
+      <style>{`
+        @keyframes logoPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.03); opacity: 0.9; }
+        }
+        @keyframes progressWave {
+          0% { transform: translateX(-100%) scaleX(0.8); opacity: 0.7; }
+          60% { transform: translateX(0%) scaleX(1); opacity: 1; }
+          100% { transform: translateX(100%) scaleX(0.8); opacity: 0.7; }
+        }
+        @keyframes progressPulse {
+          0% { transform: translateX(-100%) scaleX(1); opacity: 0; }
+          20% { opacity: 0.8; }
+          80% { opacity: 0.8; }
+          100% { transform: translateX(333%) scaleX(1); opacity: 0; }
+        }
+        @keyframes textFadeIn {
+          0% { opacity: 0; transform: translateY(6px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes textUnderlineExpand {
+          0% { width: 0%; left: 50%; }
+          100% { width: 100%; left: 0%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [style*="animation"], [class*="transition"] {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
 
-const animationStyles = `
-  @keyframes rotate-3d {
-    0% { transform: rotateY(0deg) rotateX(10deg); }
-    100% { transform: rotateY(360deg) rotateX(10deg); }
-  }
-  
-  @keyframes float {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-  }
-  
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-  
-  @keyframes pulse-opacity {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-  
-  @keyframes char-wave {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(-10px); opacity: 0.8; }
-  }
-  
-  .animate-rotate-3d {
-    animation: rotate-3d 8s linear infinite;
-  }
-  
-  .animate-float {
-    animation: float var(--duration) ease-in-out infinite;
-  }
-  
-  .animate-shimmer {
-    animation: shimmer 2s linear infinite;
-  }
-  
-  .animate-pulse span {
-    display: inline-block;
-    animation: char-wave 2s ease-in-out infinite;
-  }
-`;
-
-const LoaderWithStyles: React.FC<LoaderProps> = (props) => (
-  <>
-    <style>{animationStyles}</style>
-    <Loader {...props} />
-  </>
-);
-
-export default LoaderWithStyles;
+export default Loader;

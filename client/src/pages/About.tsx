@@ -1,369 +1,226 @@
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiChevronDown } from 'react-icons/fi';
-import { FaLinkedin, FaTwitter } from 'react-icons/fa';
+import { FiArrowRight, FiChevronRight, FiAward, FiUsers, FiLayers, FiTrendingUp } from 'react-icons/fi';
 
-// Enhanced GlobalStyles with smooth scrolling
+// Custom scrollbar styles
 const GlobalStyles = () => (
   <style>{`
-    html {
-      scroll-behavior: smooth;
-    }
     ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0a0a0a;
+      background: rgba(10, 10, 10, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 80, 4, 0.1);
     }
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, #ff5004, #ff732e);
-      border-radius: 5px;
-      border: 2px solid #0a0a0a;
+      background: linear-gradient(45deg, #ff5004, #ff732e);
+      border-radius: 10px;
+      border: 1px solid rgba(10, 10, 10, 0.3);
+      transition: all 0.3s ease;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(to bottom, #ff6120, #ff8440);
+      background: linear-gradient(45deg, #ff6120, #ff8440);
+      width: 10px;
     }
     ::-webkit-scrollbar-corner {
-      background: #0a0a0a;
+      background: rgba(10, 10, 10, 0.8);
+    }
+    html {
+      scroll-behavior: smooth;
     }
   `}</style>
 );
 
-export default function AboutUs() {
+export default function About() {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end']
-  });
 
-  // Parallax effects
-  const y1 = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
-
-  // State for interactive elements
-  const [activeTab, setActiveTab] = useState('mission');
-  const [expandedTeamMember, setExpandedTeamMember] = useState<number | null>(null);
-
-  // Navigation handlers
-  const navigateTo = (path: string) => {
-    navigate(path);
-    window.scrollTo(0, 0);
+  const handleContactClick = () => {
+    navigate('/contact');
   };
 
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const handleServicesClick = () => {
+    navigate('/services');
   };
 
   return (
-    <div className="bg-[#060606] text-white" ref={containerRef}>
+    <div className="bg-[#060606] text-white relative overflow-hidden">
       <GlobalStyles />
       
-      {/* Animated Navigation Bar */}
-      <motion.nav 
-        className="fixed top-0 left-0 right-0 z-50 bg-[#060606]/90 backdrop-blur-md border-b border-[#ffffff10]"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
+        {/* Background Elements */}
+        <div className="absolute inset-0 z-0">
+          {/* Animated grid */}
           <motion.div 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigateTo('/')}
-            className="flex items-center cursor-pointer"
-          >
-            <img src="/Logo.png" alt="Core Digitize" className="h-10 w-10 mr-3" />
-            <span className="text-2xl font-bold">
-              <span className="text-[#ff5004]">core</span>
-              <span className="text-white">digitize</span>
-            </span>
-          </motion.div>
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: 'linear-gradient(to right, #ff5004 1px, transparent 1px), linear-gradient(to bottom, #ff5004 1px, transparent 1px)',
+              backgroundSize: '40px 40px'
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%']
+            }}
+            transition={{
+              duration: 120,
+              repeat: Infinity,
+              ease: 'linear'
+            }}
+          />
           
-          <div className="hidden md:flex items-center space-x-8">
-            {['story', 'values', 'team', 'process', 'clients', 'contact'].map((item) => (
-              <motion.button
-                key={item}
-                whileHover={{ color: '#ff5004', y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scrollTo(item)}
-                className="text-white/80 hover:text-white text-sm uppercase tracking-wider font-medium"
-              >
-                {item}
-              </motion.button>
-            ))}
-            <motion.button
-              whileHover={{ scale: 1.05, backgroundColor: '#ff5004' }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigateTo('/contact')}
-              className="px-6 py-2 bg-[#ff5004]/80 hover:bg-[#ff5004] text-white rounded-lg text-sm font-medium transition-all"
-            >
-              Get in Touch
-            </motion.button>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* Hero Section with Parallax */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-        <motion.div 
-          className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"
-          style={{ y: y1 }}
-        />
-        
-        <motion.div 
-          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-[#ff5004]/10 filter blur-[100px]"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
+          {/* Floating particles */}
+          {[...Array(30)].map((_, i) => (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
-                WHO WE ARE
-              </span>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-8">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Redefining</span>{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Digital Excellence</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed">
-                We are a collective of strategists, designers, and engineers committed to building transformative digital experiences that drive measurable business impact.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => scrollTo('story')}
-                  className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all flex items-center gap-3"
-                >
-                  Our Story <FiChevronDown className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigateTo('/contact')}
-                  className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5 flex items-center gap-3"
-                >
-                  Contact Us <FiArrowRight className="w-5 h-5" />
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-        
-        <motion.div 
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 cursor-pointer z-20"
-          animate={{
-            y: [0, 15, 0],
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          onClick={() => scrollTo('story')}
-        >
-          <div className="w-10 h-16 rounded-full border-2 border-[#ff5004]/50 flex justify-center p-1">
-            <motion.div
-              className="w-2 h-4 rounded-full bg-[#ff5004]"
-              animate={{
-                y: [0, 10, 0],
+              key={i}
+              className="absolute rounded-full bg-[#ff5004]"
+              style={{
+                width: `${Math.random() * 6 + 2}px`,
+                height: `${Math.random() * 6 + 2}px`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: Math.random() * 0.2 + 0.05
               }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
+              animate={{
+                y: [0, -Math.random() * 100 - 50],
+                x: [0, (Math.random() > 0.5 ? 1 : -1) * Math.random() * 30],
+                opacity: [0.1, 0.3, 0],
+                transition: {
+                  duration: Math.random() * 20 + 15,
+                  repeat: Infinity,
+                  repeatDelay: Math.random() * 8
+                }
               }}
             />
-          </div>
-        </motion.div>
-      </section>
+          ))}
+          
+          {/* Floating shapes */}
+          <motion.div 
+            className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#ff5004]/5 blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.1, 0.15, 0.1]
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: 'easeInOut'
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#ff5004]/5 blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.1, 0.2, 0.1]
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: 'easeInOut'
+            }}
+          />
+        </div>
 
-      {/* Story Section */}
-      <section id="story" className="relative py-32 overflow-hidden">
-        <div className="container mx-auto px-6">
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-10">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true, margin: "-100px" }}
+            <div className="space-y-8">
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full text-sm font-medium tracking-wider"
               >
-                <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-                  OUR JOURNEY
-                </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                  From Vision to <span className="text-[#ff5004]">Global Impact</span>
-                </h2>
-                <p className="text-xl text-white/70 leading-relaxed mb-8">
-                  Founded in 2015, Core Digitize began as a small team of passionate technologists with a shared vision to revolutionize digital experiences. Today, we're a global force with offices in 5 countries, serving Fortune 500 companies and innovative startups alike.
-                </p>
-              </motion.div>
+                CORE DIGITIZE
+              </motion.span>
               
-              {/* Interactive Timeline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-5xl md:text-6xl font-bold leading-tight"
+              >
+                <span className="block mb-4">Digital Transformation</span>
+                <span className="bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004] bg-clip-text text-transparent">
+                  Done Right
+                </span>
+              </motion.h1>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-xl text-white/80 leading-relaxed max-w-2xl"
+              >
+                We architect digital experiences that drive growth. As a full-service digital agency, we combine strategy, creativity, and technology to deliver measurable results for forward-thinking businesses.
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-wrap gap-6"
+              >
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.03,
+                    boxShadow: '0 10px 25px -5px rgba(255, 80, 4, 0.5)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleContactClick}
+                  className="px-8 py-4 bg-gradient-to-r from-[#ff5004] to-[#ff732e] hover:from-[#ff6120] hover:to-[#ff8440] text-white font-semibold rounded-xl
+                             transition-all duration-300 shadow-lg shadow-[#ff5004]/30
+                             flex items-center gap-3 group"
+                >
+                  <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  Get in Touch
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.03,
+                    boxShadow: '0 10px 25px -5px rgba(255, 80, 4, 0.2)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleServicesClick}
+                  className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white
+                             font-semibold rounded-xl transition-all duration-300 backdrop-blur-lg bg-white/5
+                             flex items-center gap-3 group"
+                >
+                  <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  Explore Services
+                </motion.button>
+              </motion.div>
+
+              {/* Trust indicators */}
               <motion.div
                 initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="relative"
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="flex flex-wrap items-center gap-8 pt-4"
               >
-                <div className="space-y-8 pl-8 border-l-2 border-[#ff5004]/30">
-                  {timelineData.map((item, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      className="relative group"
-                    >
-                      <div className="absolute -left-8 top-0 w-4 h-4 rounded-full bg-[#ff5004] border-4 border-[#060606] group-hover:scale-125 transition-transform"></div>
-                      <div className="bg-[#161616] rounded-xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/50 transition-all">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-xl font-bold text-white">{item.year}</h3>
-                          <span className="px-3 py-1 bg-[#ff5004]/10 text-[#ff5004] rounded-full text-xs font-medium">
-                            {item.category}
-                          </span>
-                        </div>
-                        <p className="text-white/70">{item.event}</p>
-                        {item.details && (
-                          <p className="text-sm text-white/50 mt-2">{item.details}</p>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <FiAward className="text-[#ff5004] w-5 h-5" />
+                  <span className="text-white/80">Award-Winning Work</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FiUsers className="text-[#ff5004] w-5 h-5" />
+                  <span className="text-white/80">Client-Focused</span>
                 </div>
               </motion.div>
             </div>
             
             <motion.div
               initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className="relative h-full"
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="relative"
             >
-              <div className="sticky top-32 space-y-8">
-                {/* Mission/Vision Toggle */}
-                <div className="bg-[#161616] rounded-xl overflow-hidden border border-[#ffffff10]">
-                  <div className="flex border-b border-[#ffffff10]">
-                    {['mission', 'vision', 'approach'].map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-4 text-center font-medium text-sm uppercase tracking-wider transition-all ${
-                          activeTab === tab 
-                            ? 'text-[#ff5004] border-b-2 border-[#ff5004]' 
-                            : 'text-white/50 hover:text-white'
-                        }`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="p-8">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeTab}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-4"
-                      >
-                        {activeTab === 'mission' && (
-                          <>
-                            <h3 className="text-2xl font-bold text-white mb-4">Our Mission</h3>
-                            <p className="text-white/70 leading-relaxed">
-                              To empower businesses through innovative digital solutions that drive growth, efficiency, and competitive advantage. We combine cutting-edge technology with strategic thinking to deliver measurable results.
-                            </p>
-                            <ul className="space-y-3 mt-6">
-                              {['Technology Innovation', 'Client Success', 'Sustainable Growth', 'Ethical Practices'].map((item) => (
-                                <li key={item} className="flex items-start">
-                                  <span className="text-[#ff5004] mr-3">✓</span>
-                                  <span className="text-white/80">{item}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </>
-                        )}
-                        {activeTab === 'vision' && (
-                          <>
-                            <h3 className="text-2xl font-bold text-white mb-4">Our Vision</h3>
-                            <p className="text-white/70 leading-relaxed">
-                              To be the most trusted digital transformation partner for forward-thinking organizations worldwide. We envision a future where technology seamlessly enhances every aspect of business operations and customer experiences.
-                            </p>
-                          </>
-                        )}
-                        {activeTab === 'approach' && (
-                          <>
-                            <h3 className="text-2xl font-bold text-white mb-4">Our Approach</h3>
-                            <p className="text-white/70 leading-relaxed">
-                              We follow a proven methodology that combines strategic planning, agile development, and continuous optimization to ensure successful outcomes.
-                            </p>
-                            <div className="mt-6 space-y-4">
-                              {[
-                                { step: 'Discovery', desc: 'Deep dive into your business needs' },
-                                { step: 'Strategy', desc: 'Custom roadmap for digital success' },
-                                { step: 'Execution', desc: 'Agile development with transparency' },
-                                { step: 'Optimization', desc: 'Continuous improvement cycles' }
-                              ].map((item, i) => (
-                                <div key={i} className="flex items-start">
-                                  <div className="w-8 h-8 rounded-full bg-[#ff5004]/10 text-[#ff5004] flex items-center justify-center mr-4 font-bold">
-                                    {i + 1}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-bold text-white">{item.step}</h4>
-                                    <p className="text-white/60 text-sm">{item.desc}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                </div>
-                
-                {/* Stats Card */}
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { value: '8+', label: 'Years Experience' },
-                    { value: '200+', label: 'Projects Delivered' },
-                    { value: '95%', label: 'Client Retention' },
-                    { value: '5', label: 'Global Offices' }
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      className="bg-[#161616] rounded-lg p-4 border border-[#ffffff10] text-center"
-                    >
-                      <div className="text-3xl font-bold text-[#ff5004] mb-1">{stat.value}</div>
-                      <div className="text-xs text-white/60 uppercase tracking-wider">{stat.label}</div>
-                    </motion.div>
-                  ))}
+              <div className="relative aspect-square w-full max-w-xl mx-auto">
+                {/* Main image with gradient border */}
+                <div className="absolute inset-0 rounded-3xl overflow-hidden border-2 border-[#ff5004]/30">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#ff5004]/10 to-[#060606]"></div>
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
                 </div>
               </div>
             </motion.div>
@@ -371,9 +228,124 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Values Section */}
-      <section id="values" className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-        <div className="container mx-auto px-6">
+      {/* Company Overview Section */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="mb-16"
+            >
+              <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
+                Who We Are
+              </span>
+              <h2 className="text-4xl md:text-5xl font-medium mb-6">
+                Digital Architects <span className="text-[#ff5004]">Building The Future</span>
+              </h2>
+              <p className="text-xl text-white/70 leading-relaxed max-w-4xl mx-auto">
+                Core Digitize is a full-service digital agency specializing in transformative marketing strategies, 
+                cutting-edge web development, and captivating media production. We partner with ambitious brands 
+                to create digital experiences that drive measurable business growth.
+              </p>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="grid md:grid-cols-3 gap-8 mt-16"
+            >
+              {[
+                { value: "30+", label: "Digital Services", icon: <FiLayers className="w-8 h-8 text-[#ff5004] mx-auto mb-4" /> },
+                { value: "100%", label: "Client Satisfaction", icon: <FiUsers className="w-8 h-8 text-[#ff5004] mx-auto mb-4" /> },
+                { value: "2x", label: "Average Growth", icon: <FiTrendingUp className="w-8 h-8 text-[#ff5004] mx-auto mb-4" /> }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+                >
+                  {stat.icon}
+                  <h3 className="text-4xl font-bold text-white mb-2">{stat.value}</h3>
+                  <p className="text-white/70">{stat.label}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story Section */}
+      <section className="relative py-32 overflow-hidden bg-gradient-to-b from-[#0a0a0a] to-[#060606]">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="relative"
+            >
+              <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#ffffff10]">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#ff5004]/10 to-[#060606]"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1469&q=80')] bg-cover bg-center mix-blend-overlay opacity-40"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="w-24 h-24 bg-[#ff5004] rounded-full flex items-center justify-center text-4xl shadow-xl cursor-pointer"
+                  >
+                    ▶
+                  </motion.div>
+                </div>
+              </div>
+              <div className="absolute -top-10 -left-10 w-48 h-48 bg-[#ff5004]/10 rounded-full filter blur-[80px] opacity-50"></div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="space-y-8"
+            >
+              <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
+                Our Journey
+              </span>
+              <h2 className="text-4xl md:text-5xl font-medium mb-6">
+                Building The Future <span className="text-[#ff5004]">Since 2025</span>
+              </h2>
+              <p className="text-xl text-white/70 leading-relaxed">
+                Founded in 2025 by a team of digital visionaries, Core Digitize was born from a shared frustration with agencies that overpromise and underdeliver. We set out to create a different kind of digital partner—one that combines technical excellence with business acumen.
+              </p>
+              <p className="text-xl text-white/70 leading-relaxed">
+                In just a short time, we've grown from a boutique studio to a full-service agency serving clients across multiple industries. Our rapid growth is a testament to our client-centric approach and our commitment to delivering tangible results.
+              </p>
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                <div className="bg-[#161616] p-6 rounded-xl border border-[#ffffff10]">
+                  <h3 className="text-3xl font-bold text-[#ff5004] mb-2">30+</h3>
+                  <p className="text-white/80">Digital Services</p>
+                </div>
+                <div className="bg-[#161616] p-6 rounded-xl border border-[#ffffff10]">
+                  <h3 className="text-3xl font-bold text-[#ff5004] mb-2">100%</h3>
+                  <p className="text-white/80">Client Retention</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Approach Section */}
+      <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -382,169 +354,199 @@ export default function AboutUs() {
             className="text-center mb-20"
           >
             <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              OUR CORE
+              How We Work
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              The Principles That <span className="text-[#ff5004]">Define Us</span>
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">
+              Our <span className="text-[#ff5004]">Proven Process</span>
             </h2>
-            <p className="max-w-3xl mx-auto text-xl text-white/70">
-              These values guide every decision we make and every solution we deliver
+            <p className="max-w-2xl mx-auto text-xl text-white/70">
+              A results-driven methodology that delivers exceptional outcomes
             </p>
           </motion.div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {valuesData.map((value, i) => (
+            {[
+              {
+                title: "Discovery & Research",
+                description: "We begin by deeply understanding your business, audience, and competitive landscape through comprehensive research and analysis.",
+                icon: "🔍"
+              },
+              {
+                title: "Strategic Planning",
+                description: "Our team develops a customized roadmap with clear KPIs and milestones tailored to your specific business objectives.",
+                icon: "🧠"
+              },
+              {
+                title: "Execution & Development",
+                description: "Our experts implement solutions with precision, using agile methodologies to ensure flexibility and efficiency.",
+                icon: "⚡"
+              },
+              {
+                title: "Optimization & Growth",
+                description: "We continuously monitor performance and refine strategies based on data to maximize your ROI over time.",
+                icon: "📈"
+              }
+            ].map((step, index) => (
               <motion.div
-                key={i}
+                key={index}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ y: -10 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/50 transition-all group"
+                whileHover={{ y: -10 }}
+                className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
               >
-                <div className="p-8 h-full flex flex-col">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-3xl mb-6 text-[#ff5004] group-hover:rotate-6 transition-transform">
-                    {value.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">{value.title}</h3>
-                  <p className="text-white/70 mb-6 flex-1">{value.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {value.tags.map((tag, j) => (
-                      <span key={j} className="px-3 py-1 bg-[#ffffff05] text-white/60 rounded-full text-xs">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-3xl mb-6 group-hover:bg-gradient-to-br group-hover:from-[#ff5004]/20 group-hover:to-[#ff5004]/30 transition-all">
+                  {step.icon}
                 </div>
+                <h3 className="text-2xl font-bold text-white mb-4">{step.title}</h3>
+                <p className="text-white/70">{step.description}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values Section */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="space-y-8"
+            >
+              <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
+                Our Foundation
+              </span>
+              <h2 className="text-4xl md:text-5xl font-medium mb-6">
+                The Principles That <span className="text-[#ff5004]">Guide Us</span>
+              </h2>
+              <p className="text-xl text-white/70 leading-relaxed">
+                These core values define who we are and how we operate. They influence every decision we make and every solution we deliver.
+              </p>
+              
+              <div className="space-y-6">
+                {[
+                  {
+                    title: "Innovation",
+                    description: "We challenge conventions and push boundaries to deliver cutting-edge solutions that give our clients a competitive edge."
+                  },
+                  {
+                    title: "Integrity",
+                    description: "We believe in radical transparency, honest communication, and doing what's right—even when no one is watching."
+                  },
+                  {
+                    title: "Excellence",
+                    description: "We're obsessed with quality and attention to detail, delivering work that exceeds expectations at every turn."
+                  },
+                  {
+                    title: "Partnership",
+                    description: "We view every client relationship as a long-term partnership, invested in your success as much as our own."
+                  }
+                ].map((value, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="flex items-start gap-4"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#ff5004]/10 flex items-center justify-center text-[#ff5004] mt-1 flex-shrink-0">
+                      <FiChevronRight className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1">{value.title}</h3>
+                      <p className="text-white/70">{value.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="relative"
+            >
+              <div className="relative aspect-square rounded-3xl overflow-hidden border-2 border-[#ff5004]/30">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#ff5004]/10 to-[#060606]"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Team Section */}
-      <section id="team" className="relative py-32 overflow-hidden">
-        <div className="container mx-auto px-6">
+      <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
+        <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-20"
+            className="mb-20"
           >
             <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              OUR TEAM
+              Our Team
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Meet The <span className="text-[#ff5004]">Minds</span> Behind The Magic
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">
+              Meet The <span className="text-[#ff5004]">Digital Architects</span>
             </h2>
-            <p className="max-w-3xl mx-auto text-xl text-white/70">
-              A diverse collective of strategists, creators, and technologists united by passion
+            <p className="max-w-2xl mx-auto text-xl text-white/70">
+              A diverse collective of strategists, creatives, and technologists united by a passion for digital excellence
             </p>
           </motion.div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {teamData.map((member, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="relative"
-              >
-                <div 
-                  className={`bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] hover:border-[#ff5004]/50 transition-all cursor-pointer ${expandedTeamMember === i ? 'h-auto' : 'h-[500px]'}`}
-                  onClick={() => setExpandedTeamMember(expandedTeamMember === i ? null : i)}
-                >
-                  <div className="h-64 bg-gradient-to-br from-[#ff5004]/10 to-[#060606] relative overflow-hidden">
-                    {/* Team member image would go here */}
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl text-white/20">
-                      {member.initials}
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0a0a0a] to-transparent">
-                      <h3 className="text-xl font-bold text-white">{member.name}</h3>
-                      <p className="text-[#ff5004]">{member.position}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm text-white/50">{member.department}</div>
-                      <div className="flex items-center space-x-3">
-                        {member.social.linkedin && (
-                          <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#ff5004] transition-colors">
-                            <FaLinkedin className="w-5 h-5" />
-                          </a>
-                        )}
-                        {member.social.twitter && (
-                          <a href={member.social.twitter} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#ff5004] transition-colors">
-                            <FaTwitter className="w-5 h-5" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className={`overflow-hidden transition-all duration-300 ${expandedTeamMember === i ? 'max-h-[500px]' : 'max-h-0'}`}>
-                      <p className="text-white/70 mb-4">{member.bio}</p>
-                      <div className="mb-4">
-                        <h4 className="text-sm font-bold text-white/80 mb-2">Expertise</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {member.expertise.map((skill, j) => (
-                            <span key={j} className="px-3 py-1 bg-[#ffffff05] text-white/60 rounded-full text-xs">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigateTo('/contact');
-                        }}
-                        className="w-full mt-4 px-4 py-2 bg-[#ff5004]/10 hover:bg-[#ff5004]/20 text-[#ff5004] rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
-                      >
-                        Contact {member.name.split(' ')[0]} <FiArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <div className={`flex items-center justify-center pt-4 ${expandedTeamMember === i ? 'opacity-0 h-0' : 'opacity-100 h-auto'} transition-all`}>
-                      <FiChevronDown className="w-5 h-5 text-[#ff5004] animate-bounce" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          {/* Join Team CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="mt-20 text-center"
+            className="relative"
           >
-            <div className="inline-block p-[1px] rounded-2xl bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:shadow-lg hover:shadow-[#ff5004]/20 transition-shadow">
-              <button 
-                onClick={() => navigateTo('/careers')}
-                className="relative overflow-hidden px-8 py-4 bg-[#060606] rounded-2xl group w-full"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] opacity-0 group-hover:opacity-10 transition-opacity duration-300 ease-out" />
-                <span className="relative z-10 flex items-center justify-center text-lg font-bold text-white">
+            <div className="max-w-4xl mx-auto bg-[#161616] rounded-3xl p-12 border border-[#ffffff10]">
+              <div className="text-5xl mb-6">👥</div>
+              <h3 className="text-2xl font-bold text-white mb-4">Curated Excellence</h3>
+              <p className="text-white/70 mb-8 max-w-2xl mx-auto">
+                We're selective about who joins our team, ensuring every Core Digitize member brings exceptional expertise, 
+                creative problem-solving skills, and a collaborative spirit. Our team includes award-winning designers, 
+                marketing strategists with proven track records, and developers who breathe life into complex digital solutions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleContactClick}
+                  className="px-8 py-3 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-lg transition-all"
+                >
+                  Meet Our Team
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-3 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-lg transition-all backdrop-blur-lg bg-white/5"
+                >
                   Join Our Team
-                  <FiArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-2 transition-transform duration-300 ease-out" />
-                </span>
-              </button>
+                </motion.button>
+              </div>
             </div>
+            
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#ff5004]/5 rounded-full filter blur-[100px] opacity-30"></div>
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#ff5004]/5 rounded-full filter blur-[100px] opacity-30"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Process Section */}
-      <section id="process" className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-        <div className="container mx-auto px-6">
+      {/* Why Choose Us Section */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -553,72 +555,142 @@ export default function AboutUs() {
             className="text-center mb-20"
           >
             <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              OUR METHOD
+              Differentiators
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              The Core Digitize <span className="text-[#ff5004]">Process</span>
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">
+              Why <span className="text-[#ff5004]">Core Digitize</span> Stands Out
             </h2>
-            <p className="max-w-3xl mx-auto text-xl text-white/70">
-              A proven framework that ensures success at every stage of your project
+            <p className="max-w-2xl mx-auto text-xl text-white/70">
+              What makes us the preferred digital partner for ambitious brands
+            </p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Full-Service Expertise",
+                description: "From strategy to execution, we offer 30+ specialized services under one roof, eliminating the need to coordinate multiple vendors.",
+                icon: "🛠️"
+              },
+              {
+                title: "Business-First Approach",
+                description: "We don't just deliver digital products—we create solutions that drive measurable business outcomes and ROI.",
+                icon: "📈"
+              },
+              {
+                title: "Future-Ready Solutions",
+                description: "Our work anticipates tomorrow's trends while solving today's challenges, ensuring your digital assets remain relevant.",
+                icon: "🔮"
+              },
+              {
+                title: "Data-Driven Decisions",
+                description: "We let metrics guide our strategies, not hunches, ensuring every decision is backed by actionable insights.",
+                icon: "📊"
+              },
+              {
+                title: "Agile Methodology",
+                description: "Our flexible processes adapt to your evolving needs while maintaining rigorous quality standards.",
+                icon: "🔄"
+              },
+              {
+                title: "Transparent Operations",
+                description: "Clear communication, honest timelines, and no hidden fees—just straightforward collaboration.",
+                icon: "🔍"
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                whileHover={{ y: -10 }}
+                className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
+              >
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#ff5004]/10 to-[#ff5004]/20 flex items-center justify-center text-2xl mb-6 group-hover:bg-gradient-to-br group-hover:from-[#ff5004]/20 group-hover:to-[#ff5004]/30 transition-all">
+                  {item.icon}
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                <p className="text-white/70">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Milestones Section */}
+      <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-20"
+          >
+            <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
+              Our Journey
+            </span>
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">
+              Key <span className="text-[#ff5004]">Milestones</span>
+            </h2>
+            <p className="max-w-2xl mx-auto text-xl text-white/70">
+              Significant moments that have shaped our growth and evolution
             </p>
           </motion.div>
           
           <div className="relative">
-            {/* Process Line */}
-            <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#ff5004] via-[#ff5004]/50 to-[#ff5004] hidden lg:block"></div>
+            {/* Timeline line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-[#ff5004] to-transparent"></div>
             
-            <div className="space-y-20 lg:space-y-32">
-              {processData.map((step, i) => (
+            <div className="space-y-16">
+              {[
+                {
+                  year: "2025",
+                  title: "Company Founded",
+                  description: "Core Digitize established with a vision to redefine digital services",
+                  highlight: true
+                },
+                {
+                  year: "2025 Q3",
+                  title: "First Major Client",
+                  description: "Secured our first enterprise client, validating our business model",
+                  highlight: false
+                },
+                {
+                  year: "2026",
+                  title: "Service Expansion",
+                  description: "Launched comprehensive animation and development divisions",
+                  highlight: true
+                },
+                {
+                  year: "2026 Q2",
+                  title: "Team Growth",
+                  description: "Expanded our team to 15 full-time digital experts",
+                  highlight: false
+                },
+                {
+                  year: "Future",
+                  title: "Global Expansion",
+                  description: "Plans underway to establish international presence",
+                  highlight: true
+                }
+              ].map((milestone, index) => (
                 <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  key={index}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="relative"
+                  className={`relative flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}
                 >
-                  {/* Process Dot */}
-                  <div className="hidden lg:block absolute left-16 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[#ff5004] border-4 border-[#0a0a0a]"></div>
-                  
-                  <div className={`bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] lg:ml-32 ${i % 2 === 0 ? 'lg:mr-20' : 'lg:ml-20'}`}>
-                    <div className="p-8">
-                      <div className="flex items-start mb-6">
-                        <div className="w-16 h-16 rounded-xl bg-[#ff5004]/10 text-[#ff5004] flex items-center justify-center text-2xl font-bold mr-6">
-                          0{i + 1}
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-bold text-white mb-2">{step.title}</h3>
-                          <p className="text-[#ff5004]">{step.subtitle}</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/70 mb-6">{step.description}</p>
-                      
-                      <div className="bg-[#0a0a0a] rounded-xl p-6">
-                        <h4 className="text-sm font-bold text-white/80 mb-3 uppercase tracking-wider">Key Activities</h4>
-                        <ul className="space-y-3">
-                          {step.activities.map((activity, j) => (
-                            <li key={j} className="flex items-start">
-                              <span className="text-[#ff5004] mr-3">•</span>
-                              <span className="text-white/80">{activity}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {step.deliverables && (
-                        <div className="mt-6">
-                          <h4 className="text-sm font-bold text-white/80 mb-3 uppercase tracking-wider">Deliverables</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {step.deliverables.map((item, j) => (
-                              <span key={j} className="px-3 py-1 bg-[#ffffff05] text-white/60 rounded-full text-xs">
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                  <div className={`w-full max-w-md ${index % 2 === 0 ? 'lg:mr-auto' : 'lg:ml-auto'} bg-[#161616] rounded-2xl p-8 border ${milestone.highlight ? 'border-[#ff5004]/40' : 'border-[#ffffff10]'} relative`}>
+                    <div className={`absolute top-1/2 transform -translate-y-1/2 ${index % 2 === 0 ? '-left-16' : '-right-16'} w-8 h-8 rounded-full ${milestone.highlight ? 'bg-[#ff5004]' : 'bg-[#ffffff20]'} flex items-center justify-center`}>
+                      <div className="w-4 h-4 rounded-full bg-white"></div>
                     </div>
+                    <div className={`${milestone.highlight ? 'text-[#ff5004]' : 'text-white/70'} font-bold mb-2`}>{milestone.year}</div>
+                    <h3 className="text-2xl font-bold text-white mb-3">{milestone.title}</h3>
+                    <p className="text-white/70">{milestone.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -627,89 +699,9 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Clients Section */}
-      <section id="clients" className="relative py-32 overflow-hidden">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-20"
-          >
-            <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
-              OUR PARTNERS
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Trusted By <span className="text-[#ff5004]">Industry Leaders</span>
-            </h2>
-            <p className="max-w-3xl mx-auto text-xl text-white/70">
-              We're proud to collaborate with innovative organizations across industries
-            </p>
-          </motion.div>
-          
-          {/* Client Logos */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8"
-          >
-            {[...Array(10)].map((_, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-[#161616] rounded-xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 flex items-center justify-center h-32 transition-all"
-              >
-                <div className="text-2xl font-bold text-white/20">CLIENT {i + 1}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-          
-          {/* Testimonials */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="mt-20 grid md:grid-cols-2 gap-8"
-          >
-            {testimonials.map((testimonial, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
-              >
-                <div className="flex items-center mb-6">
-                  {[...Array(5)].map((_, j) => (
-                    <svg key={j} className="w-5 h-5 text-[#ff5004]" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-white/80 mb-6 italic">"{testimonial.quote}"</p>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-[#ff5004]/10 flex items-center justify-center mr-4">
-                    <span className="text-xl">{testimonial.initials}</span>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{testimonial.name}</h4>
-                    <p className="text-sm text-white/60">{testimonial.position}, {testimonial.company}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section id="contact" className="relative py-32 overflow-hidden">
-        <div className="container mx-auto px-6">
+      <section className="relative py-32 overflow-hidden">
+        <div className="container mx-auto px-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -718,278 +710,43 @@ export default function AboutUs() {
             className="bg-gradient-to-r from-[#ff5004]/10 to-[#ff5004]/5 rounded-3xl p-12 md:p-16 border border-[#ff5004]/20 relative overflow-hidden"
           >
             <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-            <div className="relative z-10">
-              <div className="max-w-3xl mx-auto text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                  Ready to <span className="text-[#ff5004]">Elevate</span> Your Digital Presence?
-                </h2>
-                <p className="text-xl text-white/70">
-                  Let's discuss how Core Digitize can help you achieve your business objectives through innovative technology solutions.
-                </p>
-              </div>
-              
-              <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="relative z-10 text-center">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6">
+                Ready to <span className="text-[#ff5004]">Transform</span> Your Digital Strategy?
+              </h2>
+              <p className="max-w-2xl mx-auto text-xl text-white/70 mb-10">
+                Let's discuss how we can help your business thrive in the digital landscape
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigateTo('/contact')}
-                  className="bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl p-6 transition-all flex flex-col items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleContactClick}
+                  className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#ff5004]/30"
                 >
-                  <span className="text-2xl mb-2">📞</span>
-                  <span>Book a Call</span>
+                  Start Your Project
                 </motion.button>
-                
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigateTo('/contact')}
-                  className="bg-[#161616] border border-[#ffffff10] hover:border-[#ff5004]/50 text-white font-semibold rounded-xl p-6 transition-all flex flex-col items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleServicesClick}
+                  className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5"
                 >
-                  <span className="text-2xl mb-2">✉️</span>
-                  <span>Send Message</span>
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigateTo('/contact')}
-                  className="bg-[#161616] border border-[#ffffff10] hover:border-[#ff5004]/50 text-white font-semibold rounded-xl p-6 transition-all flex flex-col items-center"
-                >
-                  <span className="text-2xl mb-2">💼</span>
-                  <span>Request Proposal</span>
+                  Explore Services
                 </motion.button>
               </div>
             </div>
+            <motion.div 
+              animate={{
+                x: [0, 20, 0, -20, 0],
+                y: [0, -20, 0, 20, 0],
+                transition: { duration: 15, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-[#ff5004] filter blur-[100px] opacity-20"
+            />
           </motion.div>
         </div>
       </section>
     </div>
   );
 }
-
-// Enhanced Data
-const timelineData = [
-  { 
-    year: "2015", 
-    category: "Foundation",
-    event: "Core Digitize founded with focus on web development",
-    details: "Started in a small office with just 3 team members"
-  },
-  { 
-    year: "2017", 
-    category: "Growth",
-    event: "Expanded service offerings to include digital marketing",
-    details: "First major client project with Fortune 500 company"
-  },
-  { 
-    year: "2019", 
-    category: "Innovation",
-    event: "Launched AI/ML division for advanced analytics",
-    details: "Developed proprietary algorithms for customer behavior prediction"
-  },
-  { 
-    year: "2021", 
-    category: "Global",
-    event: "Opened international offices in 3 countries",
-    details: "Established teams in London, Singapore, and Toronto"
-  },
-  { 
-    year: "2023", 
-    category: "Future",
-    event: "Pioneering Web3 and Metaverse solutions",
-    details: "Developing cutting-edge blockchain applications"
-  }
-];
-
-const valuesData = [
-  { 
-    icon: "🚀",
-    title: "Innovation",
-    description: "We constantly push boundaries to explore new technologies and methodologies that deliver competitive advantage.",
-    tags: ["R&D", "Emerging Tech", "Experimentation"]
-  },
-  { 
-    icon: "🎯",
-    title: "Excellence",
-    description: "Quality is never compromised. We deliver solutions that meet the highest standards of performance and reliability.",
-    tags: ["Quality", "Precision", "Craftsmanship"]
-  },
-  { 
-    icon: "🤝",
-    title: "Partnership",
-    description: "We view every client relationship as a long-term partnership, invested in your ongoing success.",
-    tags: ["Collaboration", "Trust", "Commitment"]
-  },
-  { 
-    icon: "🌍",
-    title: "Impact",
-    description: "Our work aims to create meaningful, measurable impact for businesses and communities alike.",
-    tags: ["Sustainability", "ROI", "Value Creation"]
-  }
-];
-
-const teamData = [
-  {
-    name: "Alex Johnson",
-    position: "CEO & Founder",
-    initials: "AJ",
-    department: "Leadership",
-    bio: "Visionary leader with 15+ years in digital transformation. Alex founded Core Digitize with the mission to bridge the gap between business needs and technological innovation.",
-    expertise: ["Strategic Planning", "Business Development", "Digital Transformation"],
-    social: {
-      linkedin: "#",
-      twitter: "#"
-    }
-  },
-  {
-    name: "Sarah Chen",
-    position: "CTO",
-    initials: "SC",
-    department: "Technology",
-    bio: "Technology architect specializing in scalable systems. Sarah leads our engineering teams to build robust, future-proof solutions.",
-    expertise: ["Cloud Architecture", "DevOps", "System Design"],
-    social: {
-      linkedin: "#",
-      twitter: "#",
-      github: "#"
-    }
-  },
-  {
-    name: "Michael Rodriguez",
-    position: "Creative Director",
-    initials: "MR",
-    department: "Design",
-    bio: "Award-winning designer with a passion for user-centered experiences. Michael ensures every solution is both beautiful and functional.",
-    expertise: ["UX/UI", "Branding", "Design Systems"],
-    social: {
-      linkedin: "#",
-      dribbble: "#"
-    }
-  },
-  {
-    name: "Emma Wilson",
-    position: "Head of Growth",
-    initials: "EW",
-    department: "Marketing",
-    bio: "Data-driven marketer with expertise in performance marketing and customer acquisition strategies.",
-    expertise: ["Digital Marketing", "Growth Hacking", "Analytics"],
-    social: {
-      linkedin: "#"
-    }
-  },
-  {
-    name: "David Kim",
-    position: "Lead Developer",
-    initials: "DK",
-    department: "Engineering",
-    bio: "Full-stack developer with deep expertise in modern web technologies and application architecture.",
-    expertise: ["React", "Node.js", "TypeScript"],
-    social: {
-      linkedin: "#",
-      github: "#"
-    }
-  },
-  {
-    name: "Priya Patel",
-    position: "Data Scientist",
-    initials: "PP",
-    department: "AI/ML",
-    bio: "Machine learning expert focused on developing predictive models that drive business value.",
-    expertise: ["Python", "TensorFlow", "Data Analysis"],
-    social: {
-      linkedin: "#"
-    }
-  }
-];
-
-const processData = [
-  {
-    title: "Discovery",
-    subtitle: "Understanding Your Needs",
-    description: "We begin by deeply understanding your business objectives, challenges, and technical requirements through collaborative workshops and research.",
-    activities: [
-      "Stakeholder interviews",
-      "Market research",
-      "Competitive analysis",
-      "Technical assessment"
-    ],
-    deliverables: ["Project Brief", "Requirements Doc", "Technical Feasibility Report"]
-  },
-  {
-    title: "Strategy",
-    subtitle: "Planning for Success",
-    description: "Our team develops a comprehensive strategy that aligns technology solutions with your business goals and user needs.",
-    activities: [
-      "Solution architecture",
-      "Technology selection",
-      "Roadmap development",
-      "Success metrics definition"
-    ],
-    deliverables: ["Technical Specification", "Project Roadmap", "Architecture Diagram"]
-  },
-  {
-    title: "Design",
-    subtitle: "Crafting the Experience",
-    description: "We create intuitive, engaging user experiences backed by thoughtful information architecture and visual design.",
-    activities: [
-      "User flows",
-      "Wireframing",
-      "Prototyping",
-      "UI design"
-    ],
-    deliverables: ["Wireframes", "Design System", "Interactive Prototypes"]
-  },
-  {
-    title: "Development",
-    subtitle: "Building with Precision",
-    description: "Our engineers implement the solution using agile methodologies, ensuring quality at every step through continuous testing and integration.",
-    activities: [
-      "Sprint planning",
-      "Feature development",
-      "Code reviews",
-      "Quality assurance"
-    ],
-    deliverables: ["Development Builds", "Test Reports", "Technical Documentation"]
-  },
-  {
-    title: "Launch",
-    subtitle: "Going Live with Confidence",
-    description: "We manage the deployment process meticulously, ensuring a smooth transition to production with comprehensive support.",
-    activities: [
-      "Staging deployment",
-      "Performance testing",
-      "User training",
-      "Go-live planning"
-    ],
-    deliverables: ["Launch Plan", "Training Materials", "Support Documentation"]
-  },
-  {
-    title: "Optimization",
-    subtitle: "Continuous Improvement",
-    description: "Post-launch, we monitor performance and user feedback to identify opportunities for enhancement and growth.",
-    activities: [
-      "Analytics review",
-      "User feedback analysis",
-      "Performance tuning",
-      "Iterative improvements"
-    ],
-    deliverables: ["Analytics Reports", "Optimization Roadmap", "Enhancement Releases"]
-  }
-];
-
-const testimonials = [
-  {
-    quote: "Core Digitize transformed our e-commerce platform, resulting in a 300% increase in conversion rates and significantly improved customer satisfaction scores.",
-    name: "James Wilson",
-    position: "Digital Director",
-    company: "RetailCorp",
-    initials: "JW"
-  },
-  {
-    quote: "Their technical expertise and strategic approach helped us modernize our legacy systems while minimizing disruption to our operations. Truly exceptional partners.",
-    name: "Lisa Zhang",
-    position: "CIO",
-    company: "FinTech Solutions",
-    initials: "LZ"
-  }
-];

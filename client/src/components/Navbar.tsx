@@ -71,7 +71,8 @@ const Navbar = () => {
                 </div>
             </nav>
 
-            <div className="h-[80px] md:h-[90px]"></div>
+            {/* Reduced the spacing element height to match navbar height */}
+            <div className="h-[30px] md:h-[35px]"></div>
 
             <div className={`fixed top-0 right-0 h-full w-[75%] max-w-[300px] bg-[#060606] shadow-lg border-l border-[#ff5004] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 <div className="flex flex-col items-center justify-center h-full space-y-6">
