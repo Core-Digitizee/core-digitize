@@ -1,145 +1,376 @@
-import { useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, AnimatePresence, useAnimation, Variants } from 'framer-motion';
 import { FiArrowRight, FiChevronRight, FiX, FiCheck, FiExternalLink, FiGithub } from 'react-icons/fi';
+import { useInView } from 'react-intersection-observer';
 
-export default function Portfolio() {
+// Custom hook for staggered animations
+const useStaggeredAnimation = (delay = 0.1) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
+
+  return {
+    ref,
+    controls,
+    variants: {
+      visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+          delay: i * delay,
+          duration: 0.5,
+          ease: "easeOut"
+        }
+      }),
+      hidden: { opacity: 0, y: 30 }
+    }
+  };
+};
+
+// Particle background component
+const ParticleBackground = () => {
+  const floatingVariants: Variants = {
+    float: {
+      y: [0, -15, 0],
+      transition: {
+        duration: 5,
+        repeat: Infinity,
+        repeatType: "reverse" as "reverse",
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
-    <div className="bg-[#060606] text-white overflow-hidden">
-      {/* Hero Section */}
-      <PortfolioHero />
-
-      {/* Portfolio Showcase */}
-      <ProjectShowcase />
-
-      {/* Project Categories */}
-      <ProjectCategories />
-
-      {/* Technology Expertise */}
-      <TechExpertise />
-
-      {/* Client Success Stories */}
-      <ClientSuccess />
-
-      {/* Process Methodology */}
-      <OurProcess />
-
-      {/* CTA Section */}
-      <PortfolioCTA />
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {[...Array(30)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#ff5004]/20"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            width: `${Math.random() * 5 + 2}px`,
+            height: `${Math.random() * 5 + 2}px`,
+          }}
+          variants={floatingVariants}
+          animate="float"
+          custom={i}
+        />
+      ))}
     </div>
   );
-}
+};
+
+// Section wrapper component for consistent styling
+const SectionWrapper = ({ 
+  children, 
+  title, 
+  subtitle, 
+  highlight, 
+  tag,
+  className = ""
+}: {
+  children: React.ReactNode;
+  title: string;
+  subtitle: string;
+  highlight: string;
+  tag: string;
+  className?: string;
+}) => {
+  const { ref, controls, variants } = useStaggeredAnimation();
+
+  return (
+    <section className={`relative py-24 overflow-hidden ${className}`}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <motion.div
+            ref={ref}
+            initial="hidden"
+            animate={controls}
+            variants={variants}
+            custom={0}
+          >
+            <span className="inline-block px-5 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
+              {tag}
+            </span>
+          </motion.div>
+          
+          <motion.h2
+            ref={ref}
+            initial="hidden"
+            animate={controls}
+            variants={variants}
+            custom={1}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">{title}</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">{highlight}</span>
+          </motion.h2>
+          
+          <motion.p
+            ref={ref}
+            initial="hidden"
+            animate={controls}
+            variants={variants}
+            custom={2}
+            className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400"
+          >
+            {subtitle}
+          </motion.p>
+        </div>
+
+        {children}
+      </div>
+    </section>
+  );
+};
 
 const PortfolioHero = () => {
   const [activeTab, setActiveTab] = useState(0);
   const tabs = ['All', 'Web', 'Mobile', 'Enterprise', 'Design'];
+  const controls = useAnimation();
+  const [ref, inView] = useInView();
+
+  // Ensure page starts at top on load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
+
+  const variants = {
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.3
+      }
+    },
+    hidden: { opacity: 0 }
+  };
+
+  const itemVariants = {
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    },
+    hidden: { opacity: 0, y: 30 }
+  };
 
   return (
-    <section className="relative min-h-[80vh] bg-[#060606] overflow-hidden isolate pt-32">
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-0 opacity-30">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmNTAwNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=')]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]" />
+    <section 
+      ref={ref}
+      className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#060606] overflow-hidden isolate pt-20"
+    >
+      {/* Background elements */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#ff5004]/20 filter blur-[100px]"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -50, 0],
+            transition: {
+              duration: 15,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#ff8c00]/20 filter blur-[100px]"
+          animate={{
+            x: [0, -50, 0],
+            y: [0, 50, 0],
+            transition: {
+              duration: 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }
+          }}
+        />
       </div>
 
-      {/* Floating Elements */}
-      <div className="absolute inset-0 z-0">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute border-2 border-[#ff5004]/10 rounded-lg"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 100 + 50}px`,
-              height: `${Math.random() * 100 + 50}px`,
-              animation: `float ${Math.random() * 10 + 5}s infinite`,
-            }}
-          />
-        ))}
-      </div>
+      <ParticleBackground />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center">
+        <motion.div 
+          initial="hidden"
+          animate={controls}
+          variants={variants}
+          className="max-w-7xl mx-auto text-center"
+        >
+          {/* Logo animation */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8 flex justify-center"
+            variants={itemVariants}
+            className="mb-12 flex justify-center"
           >
             <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="w-16 h-16 bg-[#ff5004] rounded-xl flex items-center justify-center"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 200, 
+                damping: 15,
+                delay: 0.2
+              }}
+              whileHover={{ scale: 1.1, rotate: 10 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-24 h-24 bg-gradient-to-br from-[#ff5004] to-[#ff8c00] rounded-2xl flex items-center justify-center shadow-lg shadow-[#ff5004]/40"
             >
-              <span className="text-2xl font-bold text-[#060606]">CD</span>
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-4xl font-bold text-[#060606]"
+              >
+                CD
+              </motion.span>
             </motion.div>
           </motion.div>
 
+          {/* Headline */}
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-5xl md:text-6xl font-medium text-white leading-tight mb-6"
+            variants={itemVariants}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8"
           >
-            <span className="block mb-4">Our Digital</span>
-            <span className="bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004] bg-clip-text text-transparent">
-              Portfolio
-            </span>
+            <motion.span 
+              variants={itemVariants}
+              className="block mb-6"
+            >
+              Crafting Digital
+            </motion.span>
+            <motion.span 
+              variants={itemVariants}
+              className="relative inline-block"
+            >
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ff5004] via-[#ff732e] to-[#ff5004]">
+                Excellence
+              </span>
+              <motion.span 
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] origin-left"
+              />
+            </motion.span>
           </motion.h1>
 
+          {/* Subtitle */}
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-xl text-white/70 leading-relaxed max-w-3xl mx-auto mb-12"
+            variants={itemVariants}
+            className="text-xl md:text-2xl text-white/80 leading-relaxed max-w-4xl mx-auto mb-12"
           >
-            Explore our collection of transformative digital solutions that have driven measurable results for global brands and innovative startups.
+            We transform ideas into powerful digital experiences that drive business growth and engage users.
           </motion.p>
 
-          {/* Interactive Filter Tabs */}
+          {/* Filter Tabs */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-2 mb-16"
+            variants={itemVariants}
+            className="flex flex-wrap justify-center gap-3 mb-16"
           >
             {tabs.map((tab, index) => (
               <motion.button
                 key={index}
                 onClick={() => setActiveTab(index)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ 
+                  y: -3,
+                  backgroundColor: activeTab === index ? 'rgba(255, 80, 4, 0.9)' : 'rgba(255, 255, 255, 0.1)',
+                  boxShadow: "0 4px 15px rgba(255, 80, 4, 0.3)"
+                }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                   activeTab === index 
-                    ? 'bg-[#ff5004] text-white' 
-                    : 'bg-[#ffffff08] text-white/80 hover:text-white'
+                    ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white shadow-lg shadow-[#ff5004]/30' 
+                    : 'bg-[#ffffff08] text-white/80 hover:text-white hover:bg-[#ffffff15]'
                 }`}
+                transition={{ type: "spring", stiffness: 300 }}
               >
                 {tab}
               </motion.button>
             ))}
           </motion.div>
 
-          {/* Portfolio Stats */}
+          {/* Stats */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="flex justify-center gap-8 text-center"
+            variants={variants}
+            className="flex flex-wrap justify-center gap-8 md:gap-16 text-center"
           >
             {[
-              { value: '150+', label: 'Projects Completed' },
+              { value: '150+', label: 'Projects Delivered' },
               { value: '40+', label: 'Industries Served' },
-              { value: '98%', label: 'Client Retention' },
+              { value: '98%', label: 'Client Satisfaction' },
+              { value: '10M+', label: 'Users Impacted' }
             ].map((metric, i) => (
-              <div key={i} className="text-[#ff5004]">
-                <div className="text-2xl font-medium">{metric.value}</div>
-                <div className="text-sm text-white/60">{metric.label}</div>
-              </div>
+              <motion.div 
+                key={i}
+                variants={itemVariants}
+                custom={i}
+                className="text-center"
+              >
+                <div className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#ff5004] to-[#ff8c00] mb-2">
+                  {metric.value}
+                </div>
+                <div className="text-sm md:text-base text-white/60 uppercase tracking-wider">
+                  {metric.label}
+                </div>
+              </motion.div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2 }}
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10"
+      >
+        <div className="flex flex-col items-center">
+          <motion.span 
+            className="text-sm text-white/60 mb-2"
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            Scroll Down
+          </motion.span>
+          <div className="w-6 h-10 border-2 border-[#ff5004]/60 rounded-full flex justify-center overflow-hidden">
+            <motion.div 
+              animate={{ 
+                y: [0, 8, 0],
+                opacity: [0.8, 1, 0.8]
+              }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="w-1 h-3 bg-[#ff5004] rounded-full mt-2"
+            />
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 };
@@ -222,111 +453,92 @@ const ProjectShowcase = () => {
   };
 
   return (
-    <section 
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="relative py-32 bg-[#060606] overflow-hidden"
+    <SectionWrapper
+      title="Featured"
+      highlight="Projects"
+      subtitle="Selected case studies demonstrating our technical expertise and business impact"
+      tag="SHOWCASE"
+      className="bg-gradient-to-b from-[#060606] to-[#0a0a0a]"
     >
-      {/* 3D Parallax Grid */}
-      <div className="absolute inset-0 [background-image:radial-gradient(ellipse_at_center,transparent_65%,rgba(255,80,4,0.03)_100%)] [background-size:60px_60px]" />
-
-      {/* Dynamic Glow */}
-      <motion.div
-        className="absolute pointer-events-none rounded-full"
-        style={{
-          x: useTransform(mouseX, val => val - 300),
-          y: useTransform(mouseY, val => val - 300),
-          width: 600,
-          height: 600,
-          background: "radial-gradient(circle, rgba(255,80,4,0.15) 0%, transparent 70%)",
-          filter: "blur(100px)"
-        }}
-      />
-
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            SHOWCASE
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Featured</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Projects</span>
-          </motion.h2>
-          <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Selected case studies demonstrating our technical expertise and business impact
-          </motion.p>
-        </div>
+      <div 
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        className="relative"
+      >
+        {/* Dynamic Glow */}
+        <motion.div
+          className="absolute pointer-events-none rounded-full"
+          style={{
+            x: useTransform(mouseX, val => val - 300),
+            y: useTransform(mouseY, val => val - 300),
+            width: 600,
+            height: 600,
+            background: "radial-gradient(circle, rgba(255,80,4,0.15) 0%, transparent 70%)",
+            filter: "blur(100px)"
+          }}
+        />
 
         {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ 
-                y: -10,
-                boxShadow: "0 30px 60px -15px rgba(255, 80, 4, 0.3)"
-              }}
-              onClick={() => setSelectedProject(index)}
-              className="relative group overflow-hidden rounded-3xl border border-[#ffffff10] bg-gradient-to-b from-[#161616] to-[#0d0d0d] hover:border-[#ff5004]/50 transition-all cursor-pointer"
-              style={{
-                boxShadow: "inset 0 0 20px rgba(255, 80, 4, 0.1)",
-              }}
-            >
-              {/* Holographic Effect */}
-              <div className="absolute inset-0 [background:linear-gradient(135deg,transparent_0%,rgba(255,80,4,0.03)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              {/* Project Image */}
-              <div className="h-64 overflow-hidden relative">
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#060606] to-transparent opacity-70" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <span className="inline-block px-3 py-1 bg-[#ff5004]/10 text-[#ff5004] rounded-full text-sm mb-2">
-                    {project.category}
-                  </span>
-                  <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-                </div>
-              </div>
-              
-              {/* Project Details */}
-              <div className="p-6">
-                <p className="text-gray-400 mb-4">{project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech, i) => (
-                    <span key={i} className="px-3 py-1 bg-[#ffffff05] rounded-full text-sm text-white/80">
-                      {tech}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project, index) => {
+            const { ref, controls, variants } = useStaggeredAnimation();
+            
+            return (
+              <motion.div
+                key={index}
+                ref={ref}
+                initial="hidden"
+                animate={controls}
+                variants={variants}
+                custom={index % 3}
+                whileHover={{ 
+                  y: -10,
+                  boxShadow: "0 30px 60px -15px rgba(255, 80, 4, 0.3)"
+                }}
+                onClick={() => setSelectedProject(index)}
+                className="relative group overflow-hidden rounded-2xl border border-[#ffffff10] bg-gradient-to-b from-[#161616] to-[#0d0d0d] hover:border-[#ff5004]/50 transition-all cursor-pointer"
+                style={{
+                  boxShadow: "inset 0 0 20px rgba(255, 80, 4, 0.1)",
+                }}
+              >
+                {/* Holographic Effect */}
+                <div className="absolute inset-0 [background:linear-gradient(135deg,transparent_0%,rgba(255,80,4,0.03)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Project Image */}
+                <div className="h-64 overflow-hidden relative">
+                  <img 
+                    src={project.image} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#060606] to-transparent opacity-80" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <span className="inline-block px-3 py-1 bg-[#ff5004]/10 text-[#ff5004] rounded-full text-xs font-medium mb-2">
+                      {project.category}
                     </span>
-                  ))}
+                    <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                  </div>
                 </div>
-                <div className="flex items-center text-[#ff5004] group-hover:text-[#ff6120] transition-colors">
-                  <span>View case study</span>
-                  <FiArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                
+                {/* Project Details */}
+                <div className="p-6">
+                  <p className="text-gray-400 text-sm mb-4">{project.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.technologies.map((tech, i) => (
+                      <span key={i} className="px-2.5 py-1 bg-[#ffffff05] rounded-full text-xs text-white/80">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex items-center text-[#ff5004] group-hover:text-[#ff6120] transition-colors text-sm font-medium">
+                    <span>View case study</span>
+                    <FiArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Project Modal */}
@@ -336,53 +548,54 @@ const ProjectShowcase = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
               onClick={() => setSelectedProject(null)}
             >
               <motion.div 
-                initial={{ scale: 0.9, y: 50 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 50 }}
-                className="relative bg-[#161616] rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+                initial={{ scale: 0.9, y: 50, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.9, y: 50, opacity: 0 }}
+                className="relative bg-[#161616] rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-[#ffffff10] shadow-2xl shadow-[#ff5004]/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button 
                   onClick={() => setSelectedProject(null)}
                   className="absolute top-6 right-6 z-10 p-2 rounded-full bg-[#ffffff10] hover:bg-[#ff5004] transition-colors"
                 >
-                  <FiX className="w-6 h-6" />
+                  <FiX className="w-5 h-5" />
                 </button>
 
                 {selectedProject !== null && (
-                  <div className="grid lg:grid-cols-2 gap-8">
+                  <div className="grid lg:grid-cols-2 gap-0">
                     {/* Left Column - Image */}
                     <div className="lg:sticky lg:top-0 h-full max-lg:order-2">
                       <div className="h-96 lg:h-full w-full relative">
                         <img 
                           src={projects[selectedProject].image} 
                           alt={projects[selectedProject].title}
-                          className="w-full h-full object-cover rounded-t-3xl lg:rounded-l-3xl lg:rounded-tr-none"
+                          className="w-full h-full object-cover rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent lg:bg-gradient-to-r" />
                       </div>
                     </div>
 
                     {/* Right Column - Content */}
-                    <div className="p-8 lg:p-12">
-                      <span className="inline-block px-4 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4">
+                    <div className="p-8 lg:p-10">
+                      <span className="inline-block px-4 py-1.5 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-4 text-xs font-medium">
                         {projects[selectedProject].category}
                       </span>
-                      <h2 className="text-4xl font-bold mb-6">{projects[selectedProject].title}</h2>
-                      <p className="text-xl text-white/80 mb-8">{projects[selectedProject].description}</p>
+                      <h2 className="text-3xl font-bold mb-6">{projects[selectedProject].title}</h2>
+                      <p className="text-lg text-white/80 mb-8">{projects[selectedProject].description}</p>
                       
                       {/* Key Results */}
                       <div className="mb-8">
-                        <h3 className="text-2xl font-semibold mb-4 text-[#ff5004]">Key Results</h3>
+                        <h3 className="text-xl font-semibold mb-4 text-[#ff5004]">Key Results</h3>
                         <ul className="space-y-3">
                           {projects[selectedProject].results.map((result, i) => (
                             <li key={i} className="flex items-start">
-                              <FiCheck className="w-5 h-5 text-[#ff5004] mt-1 mr-3 flex-shrink-0" />
-                              <span className="text-lg text-white/80">{result}</span>
+                              <FiCheck className="w-5 h-5 text-[#ff5004] mt-0.5 mr-3 flex-shrink-0" />
+                              <span className="text-base text-white/80">{result}</span>
                             </li>
                           ))}
                         </ul>
@@ -390,10 +603,10 @@ const ProjectShowcase = () => {
 
                       {/* Technologies */}
                       <div className="mb-8">
-                        <h3 className="text-2xl font-semibold mb-4 text-[#ff5004]">Technologies</h3>
-                        <div className="flex flex-wrap gap-3">
+                        <h3 className="text-xl font-semibold mb-4 text-[#ff5004]">Technologies</h3>
+                        <div className="flex flex-wrap gap-2">
                           {projects[selectedProject].technologies.map((tech, i) => (
-                            <span key={i} className="px-4 py-2 bg-[#ffffff05] rounded-full text-white/80">
+                            <span key={i} className="px-3 py-1.5 bg-[#ffffff05] rounded-full text-sm text-white/80">
                               {tech}
                             </span>
                           ))}
@@ -401,16 +614,16 @@ const ProjectShowcase = () => {
                       </div>
 
                       {/* Project Links */}
-                      <div className="flex gap-4">
+                      <div className="flex flex-wrap gap-3">
                         <motion.a
                           href={projects[selectedProject].link}
                           target="_blank"
                           rel="noopener noreferrer"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="px-6 py-3 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                          className="px-6 py-3 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:from-[#ff6120] hover:to-[#ff9c40] text-white font-medium rounded-lg transition-all flex items-center gap-2 text-sm"
                         >
-                          <FiExternalLink className="w-5 h-5" />
+                          <FiExternalLink className="w-4 h-4" />
                           Live Demo
                         </motion.a>
                         {projects[selectedProject].github && (
@@ -420,9 +633,9 @@ const ProjectShowcase = () => {
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-6 py-3 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                            className="px-6 py-3 border border-[#ff5004]/40 hover:border-[#ff5004] text-white font-medium rounded-lg transition-all flex items-center gap-2 text-sm bg-[#ffffff05]"
                           >
-                            <FiGithub className="w-5 h-5" />
+                            <FiGithub className="w-4 h-4" />
                             View Code
                           </motion.a>
                         )}
@@ -435,7 +648,7 @@ const ProjectShowcase = () => {
           )}
         </AnimatePresence>
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
@@ -516,70 +729,58 @@ const ProjectCategories = () => {
   ];
 
   return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            EXPERTISE AREAS
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Our</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Specializations</span>
-          </motion.h2>
-        </div>
-
-        {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category, index) => (
+    <SectionWrapper
+      title="Our"
+      highlight="Specializations"
+      subtitle="Comprehensive digital solutions tailored to your business needs"
+      tag="EXPERTISE AREAS"
+      className="bg-gradient-to-b from-[#0a0a0a] to-[#060606]"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map((category, index) => {
+          const { ref, controls, variants } = useStaggeredAnimation();
+          
+          return (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
+              ref={ref}
+              initial="hidden"
+              animate={controls}
+              variants={variants}
+              custom={index % 3}
+              whileHover={{ y: -8 }}
+              className="bg-[#161616] rounded-xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
             >
-              <div className="w-16 h-16 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-3xl mb-6 group-hover:bg-[#ff5004]/20 transition-colors">
+              <div className="w-14 h-14 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-2xl mb-6 group-hover:bg-[#ff5004]/20 transition-colors">
                 {category.icon}
               </div>
-              <h3 className="text-2xl font-bold mb-3">{category.title}</h3>
-              <p className="text-white/70 mb-6">{category.description}</p>
+              <h3 className="text-xl font-bold mb-3">{category.title}</h3>
+              <p className="text-white/70 text-sm mb-6">{category.description}</p>
               
               <div className="mb-6">
-                <h4 className="text-sm font-semibold text-[#ff5004] mb-3">KEY OFFERINGS</h4>
-                <ul className="space-y-2">
+                <h4 className="text-xs font-semibold text-[#ff5004] mb-3 uppercase tracking-wider">KEY OFFERINGS</h4>
+                <ul className="space-y-2.5">
                   {category.features.map((feature, i) => (
                     <li key={i} className="flex items-start">
-                      <div className="w-1 h-1 bg-[#ff5004] rounded-full mt-2 mr-3"></div>
-                      <span className="text-white/80">{feature}</span>
+                      <div className="w-1.5 h-1.5 bg-[#ff5004] rounded-full mt-1.5 mr-3 flex-shrink-0"></div>
+                      <span className="text-sm text-white/80">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               
               <div className="flex items-center justify-between pt-4 border-t border-[#ffffff10]">
-                <span className="text-sm text-white/60">{category.projects}+ Projects</span>
-                <button className="text-[#ff5004] hover:text-[#ff6120] flex items-center gap-2 transition-colors">
+                <span className="text-xs text-white/60">{category.projects}+ Projects</span>
+                <button className="text-[#ff5004] hover:text-[#ff6120] flex items-center gap-1.5 transition-colors text-sm font-medium">
                   View Projects
-                  <FiChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <FiChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </motion.div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
@@ -642,69 +843,50 @@ const TechExpertise = () => {
   ];
 
   return (
-    <section className="relative py-32 overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            TECHNOLOGY STACK
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Technical</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Proficiency</span>
-          </motion.h2>
-          <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Our expertise spans the entire technology spectrum, from frontend to infrastructure
-          </motion.p>
-        </div>
-
-        {/* Tech Stack Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {techStacks.map((stack, index) => (
+    <SectionWrapper
+      title="Technical"
+      highlight="Proficiency"
+      subtitle="Our expertise spans the entire technology spectrum, from frontend to infrastructure"
+      tag="TECHNOLOGY STACK"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {techStacks.map((stack, index) => {
+          const { ref, controls, variants } = useStaggeredAnimation();
+          
+          return (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+              ref={ref}
+              initial="hidden"
+              animate={controls}
+              variants={variants}
+              custom={index % 3}
+              className="bg-[#161616] rounded-xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
             >
-              <h3 className="text-2xl font-bold mb-6 text-[#ff5004]">{stack.category}</h3>
-              <div className="space-y-6">
+              <h3 className="text-xl font-bold mb-6 text-[#ff5004]">{stack.category}</h3>
+              <div className="space-y-5">
                 {stack.technologies.map((tech, i) => (
                   <div key={i}>
-                    <div className="flex justify-between mb-2">
+                    <div className="flex justify-between mb-2 text-sm">
                       <span className="text-white/80">{tech.name}</span>
-                      <span className="text-[#ff5004]">{tech.proficiency}%</span>
+                      <span className="text-[#ff5004] font-medium">{tech.proficiency}%</span>
                     </div>
-                    <div className="w-full bg-[#ffffff05] rounded-full h-2">
-                      <div 
+                    <div className="w-full bg-[#ffffff05] rounded-full h-2 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${tech.proficiency}%` }}
+                        transition={{ duration: 1, delay: 0.3 + (i * 0.1) }}
                         className="bg-gradient-to-r from-[#ff5004] to-[#ff8c00] h-2 rounded-full" 
-                        style={{ width: `${tech.proficiency}%` }}
-                      ></div>
+                      />
                     </div>
                   </div>
                 ))}
               </div>
             </motion.div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
@@ -749,61 +931,41 @@ const ClientSuccess = () => {
   ];
 
   return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            CLIENT SUCCESS
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Measurable</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Results</span>
-          </motion.h2>
-          <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Quantifiable impact we've delivered for clients across industries
-          </motion.p>
-        </div>
-
-        {/* Success Stories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {successStories.map((story, index) => (
+    <SectionWrapper
+      title="Measurable"
+      highlight="Results"
+      subtitle="Quantifiable impact we've delivered for clients across industries"
+      tag="CLIENT SUCCESS"
+      className="bg-gradient-to-b from-[#0a0a0a] to-[#060606]"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {successStories.map((story, index) => {
+          const { ref, controls, variants } = useStaggeredAnimation();
+          
+          return (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
+              ref={ref}
+              initial="hidden"
+              animate={controls}
+              variants={variants}
+              custom={index % 3}
+              whileHover={{ y: -8 }}
+              className="bg-[#161616] rounded-xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all group"
             >
-              <div className="w-16 h-16 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-3xl mb-6 group-hover:bg-[#ff5004]/20 transition-colors">
+              <div className="w-14 h-14 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-2xl mb-6 group-hover:bg-[#ff5004]/20 transition-colors">
                 {story.logo}
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-[#ff5004]">{story.title}</h3>
-              <p className="text-white/80 mb-6">{story.description}</p>
+              <h3 className="text-xl font-bold mb-3 text-[#ff5004]">{story.title}</h3>
+              <p className="text-white/80 text-sm mb-6">{story.description}</p>
               <div className="pt-4 border-t border-[#ffffff10]">
-                <span className="text-sm text-white/60">For {story.client}</span>
+                <span className="text-xs text-white/60">For {story.client}</span>
               </div>
             </motion.div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
@@ -848,117 +1010,80 @@ const OurProcess = () => {
   ];
 
   return (
-    <section className="relative py-32 overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <motion.span 
-            className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            METHODOLOGY
-          </motion.span>
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">Our</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5004] to-[#ff8c00]">Process</span>
-          </motion.h2>
-          <motion.p
-            className="max-w-3xl mx-auto text-xl text-gray-400"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            A proven framework that ensures quality, efficiency, and measurable results
-          </motion.p>
-        </div>
-
-        {/* Process Timeline */}
-        <div className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-1/2 h-full w-px bg-gradient-to-b from-[#ff5004] via-[#ff5004]/50 to-transparent hidden lg:block"></div>
-          
-          {/* Process Steps */}
-          <div className="space-y-16 lg:space-y-32">
-            {processSteps.map((step, index) => (
+    <SectionWrapper
+      title="Our"
+      highlight="Process"
+      subtitle="A proven framework that ensures quality, efficiency, and measurable results"
+      tag="METHODOLOGY"
+    >
+      <div className="relative">
+        {/* Timeline Line */}
+        <div className="absolute left-1/2 h-full w-0.5 bg-gradient-to-b from-[#ff5004] via-[#ff5004]/50 to-transparent hidden lg:block"></div>
+        
+        {/* Process Steps */}
+        <div className="space-y-12 lg:space-y-24">
+          {processSteps.map((step, index) => {
+            const { ref, controls, variants } = useStaggeredAnimation(0.2);
+            
+            return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
+                ref={ref}
+                initial="hidden"
+                animate={controls}
+                variants={variants}
+                custom={index}
                 className={`relative flex flex-col lg:flex-row items-center ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
               >
                 {/* Step Content */}
-                <div className={`lg:w-1/2 ${index % 2 === 0 ? 'lg:pr-16' : 'lg:pl-16'} mb-8 lg:mb-0`}>
-                  <div className="bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all">
-                    <div className="flex items-center gap-4 mb-6">
+                <div className={`lg:w-1/2 ${index % 2 === 0 ? 'lg:pr-12' : 'lg:pl-12'} mb-8 lg:mb-0`}>
+                  <motion.div 
+                    whileHover={{ y: -5 }}
+                    className="bg-[#161616] rounded-xl p-6 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
+                  >
+                    <div className="flex items-center gap-4 mb-5">
                       <div className="w-12 h-12 rounded-xl bg-[#ff5004]/10 flex items-center justify-center text-xl">
                         {step.icon}
                       </div>
-                      <span className="text-2xl font-bold text-[#ff5004]">{step.step}</span>
+                      <span className="text-xl font-bold text-[#ff5004]">{step.step}</span>
                     </div>
-                    <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
-                    <p className="text-white/70">{step.description}</p>
-                  </div>
+                    <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                    <p className="text-white/70 text-sm">{step.description}</p>
+                  </motion.div>
                 </div>
                 
                 {/* Step Connector */}
-                <div className="lg:absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-[#ff5004]/10 border-4 border-[#161616] flex items-center justify-center text-2xl z-10">
+                <div className="lg:absolute left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-[#ff5004]/10 border-4 border-[#161616] flex items-center justify-center text-xl z-10">
                   {step.icon}
                 </div>
                 
                 {/* Empty Space for Alignment */}
                 <div className="lg:w-1/2"></div>
               </motion.div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
 const PortfolioCTA = () => {
+  const { ref, controls, variants } = useStaggeredAnimation();
+
   return (
-    <section className="relative py-32 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section className="relative py-24 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="bg-gradient-to-r from-[#ff5004]/10 to-[#ff5004]/5 rounded-3xl p-12 md:p-16 border border-[#ff5004]/20 relative overflow-hidden"
+          ref={ref}
+          initial="hidden"
+          animate={controls}
+          variants={variants}
+          custom={0}
+          className="bg-gradient-to-r from-[#ff5004]/10 to-[#ff5004]/5 rounded-2xl p-8 md:p-12 border border-[#ff5004]/20 relative overflow-hidden"
         >
+          {/* Animated background elements */}
           <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-          <div className="relative z-10 text-center">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">
-              Ready to <span className="text-[#ff5004]">Start</span> Your Project?
-            </h2>
-            <p className="max-w-2xl mx-auto text-xl text-white/70 mb-10">
-              Let's discuss how we can bring your vision to life with our expertise
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-[#ff5004] hover:bg-[#ff6120] text-white font-semibold rounded-xl transition-all"
-              >
-                Schedule Consultation
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border-2 border-[#ff5004]/40 hover:border-[#ff5004] text-white font-semibold rounded-xl transition-all backdrop-blur-lg bg-white/5"
-              >
-                View Pricing
-              </motion.button>
-            </div>
-          </div>
           <motion.div 
             animate={{
               x: [0, 20, 0, -20, 0],
@@ -967,8 +1092,84 @@ const PortfolioCTA = () => {
             }}
             className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-[#ff5004] filter blur-[100px] opacity-20"
           />
+          
+          <div className="relative z-10 text-center">
+            <motion.h2
+              variants={variants}
+              custom={1}
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
+              Ready to <span className="text-[#ff5004]">Start</span> Your Project?
+            </motion.h2>
+            
+            <motion.p
+              variants={variants}
+              custom={2}
+              className="max-w-2xl mx-auto text-lg text-white/70 mb-8"
+            >
+              Let's discuss how we can bring your vision to life with our expertise
+            </motion.p>
+            
+            <motion.div
+              variants={variants}
+              custom={3}
+              className="flex flex-col sm:flex-row gap-3 justify-center"
+            >
+              <motion.a
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                href="#contact"
+                className="px-6 py-3.5 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] hover:from-[#ff6120] hover:to-[#ff9c40] text-white font-medium rounded-lg transition-all text-sm"
+              >
+                Schedule Consultation
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                href="#pricing"
+                className="px-6 py-3.5 border border-[#ff5004]/40 hover:border-[#ff5004] text-white font-medium rounded-lg transition-all text-sm bg-[#ffffff05]"
+              >
+                View Pricing
+              </motion.a>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
   );
 };
+
+export default function Portfolio() {
+  // Ensure page starts at top on load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="bg-[#060606] text-white overflow-hidden">
+      {/* Animated background elements */}
+      <ParticleBackground />
+      
+      {/* Hero Section */}
+      <PortfolioHero />
+
+      {/* Portfolio Showcase */}
+      <ProjectShowcase />
+
+      {/* Project Categories */}
+      <ProjectCategories />
+
+      {/* Technology Expertise */}
+      <TechExpertise />
+
+      {/* Client Success Stories */}
+      <ClientSuccess />
+
+      {/* Process Methodology */}
+      <OurProcess />
+
+      {/* CTA Section */}
+      <PortfolioCTA />
+    </div>
+  );
+}

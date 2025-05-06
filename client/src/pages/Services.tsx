@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useAnimation } from 'framer-motion';
-import { FiArrowRight, FiChevronRight, FiMail, FiPhone, FiUser, FiCheck, FiClock, FiBarChart2, FiDollarSign } from 'react-icons/fi';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { FiArrowRight, FiMail, FiPhone, FiUser } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
-import { Tab } from '@headlessui/react';
 
 // Custom scrollbar styles in a global style component
 const GlobalStyles = () => (
@@ -70,12 +69,15 @@ export default function Services() {
     { id: 'animation', name: 'Animation', color: '#ffd9aa', icon: '🎬' }
   ];
 
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleDepartmentChange = (department: string) => {
     setActiveDepartment(department);
-    const element = document.getElementById(department);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Remove the smooth scroll since we're not actually scrolling to a section anymore
+    setExpandedService(null); // Collapse any expanded services when changing department
   };
 
   const scrollToForm = (service?: string) => {
@@ -100,7 +102,7 @@ export default function Services() {
       </motion.div>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-28">
+      <section className="relative pt-40 pb-20">
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -120,54 +122,38 @@ export default function Services() {
             </p>
           </motion.div>
 
-          {/* Department Navigation */}
+          {/* Department Navigation - Updated Design */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
             className="flex justify-center mb-16 relative"
           >
-            <div className="relative">
+            <div className="relative w-full max-w-4xl">
               {/* Background Glow */}
               <div className="absolute -inset-4 bg-gradient-to-r from-[#ff5004]/20 to-[#ff8c00]/20 rounded-3xl blur-2xl opacity-20 pointer-events-none" />
               
               {/* Navigation Container */}
-              <div className="relative inline-flex bg-[#161616] rounded-2xl p-1 sm:p-2 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
-                {/* Active Background */}
-                <motion.div
-                  className="absolute inset-0 bg-[#ffffff08] rounded-xl"
-                  layoutId="activeDepartment"
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  style={{
-                    backgroundColor: departments.find(d => d.id === activeDepartment)?.color + '20',
-                    width: `${100 / departments.length}%`,
-                    left: `${departments.findIndex(d => d.id === activeDepartment) * (100 / departments.length)}%`
-                  }}
-                />
-                
-                {/* Navigation Items */}
+              <div className="relative grid grid-cols-4 bg-[#161616] rounded-2xl p-1 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
                 {departments.map((department) => (
                   <button
                     key={department.id}
                     onClick={() => handleDepartmentChange(department.id)}
-                    className={`relative px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-medium transition-colors z-10 ${
-                      activeDepartment === department.id ? 'text-white' : 'text-gray-400 hover:text-white'
+                    className={`relative py-4 px-2 sm:px-4 rounded-xl font-medium transition-all z-10 flex flex-col items-center justify-center ${
+                      activeDepartment === department.id 
+                        ? 'text-white' 
+                        : 'text-gray-400 hover:text-white hover:bg-[#ffffff08]'
                     }`}
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                      <span className="text-lg mr-1">{department.icon}</span>
-                      {department.name}
-                      {activeDepartment === department.id && (
-                        <motion.div
-                          animate={{
-                            rotate: [0, 15, -15, 0],
-                            transition: { duration: 1.5, repeat: Infinity }
-                          }}
-                        >
-                          <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </motion.div>
-                      )}
-                    </span>
+                    <span className="text-2xl mb-2">{department.icon}</span>
+                    <span className="text-sm sm:text-base">{department.name}</span>
+                    {activeDepartment === department.id && (
+                      <motion.div
+                        className="absolute bottom-0 h-1 w-1/2 bg-[#ff5004] rounded-t-full"
+                        layoutId="departmentUnderline"
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      />
+                    )}
                   </button>
                 ))}
               </div>
@@ -176,318 +162,65 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="relative py-20 bg-[#0a0a0a]">
+      {/* Services Section - Now shows only active department */}
+      <section className="relative py-10">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
+            className="mb-12"
           >
-            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
-              OUR PROCESS
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-              How We Deliver <span className="text-[#ff5004]">Exceptional Results</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              {departments.find(d => d.id === activeDepartment)?.name} Services
             </h2>
-            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
-              A proven methodology that ensures quality, efficiency, and measurable impact
+            <div className="w-24 h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] mb-6"></div>
+            <p className="text-xl text-white/70 max-w-3xl">
+              {activeDepartment === 'marketing' && "Data-driven marketing strategies that deliver measurable results and maximize ROI"}
+              {activeDepartment === 'media' && "High-quality visual content creation that tells your brand story and engages your audience"}
+              {activeDepartment === 'technical' && "Cutting-edge development solutions that power your digital presence and operations"}
+              {activeDepartment === 'animation' && "Creative motion graphics and animation that brings your ideas to life"}
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-8 relative">
-            {/* Process Line */}
-            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] transform -translate-y-1/2 z-0"></div>
-            
-            {[
-              {
-                title: "Discovery",
-                description: "In-depth analysis of your needs and objectives",
-                icon: <FiBarChart2 className="w-8 h-8" />
-              },
-              {
-                title: "Planning",
-                description: "Strategic roadmap with milestones and deliverables",
-                icon: <FiCheck className="w-8 h-8" />
-              },
-              {
-                title: "Execution",
-                description: "Agile implementation with continuous feedback",
-                icon: <FiClock className="w-8 h-8" />
-              },
-              {
-                title: "Delivery",
-                description: "Quality assurance and performance optimization",
-                icon: <FiDollarSign className="w-8 h-8" />
-              }
-            ].map((step, index) => (
-              <motion.div
+          <div className="grid md:grid-cols-2 gap-8 mb-20">
+            {activeDepartment === 'marketing' && marketingServices.map((service, index) => (
+              <ServiceCard 
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="relative z-10 bg-[#161616] rounded-2xl p-8 border border-[#ffffff10] hover:border-[#ff5004]/30 transition-all"
-              >
-                <div className="w-16 h-16 mb-6 rounded-full bg-gradient-to-br from-[#ff5004] to-[#ff8c00] flex items-center justify-center text-white">
-                  {step.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                <p className="text-white/70">{step.description}</p>
-                <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-[#ff5004] flex items-center justify-center text-xs font-bold">
-                  {index + 1}
-                </div>
-              </motion.div>
+                service={service}
+                color="#ff5004"
+                index={index}
+                scrollToForm={scrollToForm}
+              />
+            ))}
+            {activeDepartment === 'media' && mediaServices.map((service, index) => (
+              <ServiceCard 
+                key={index}
+                service={service}
+                color="#ff9557"
+                index={index}
+                scrollToForm={scrollToForm}
+              />
+            ))}
+            {activeDepartment === 'technical' && technicalServices.map((service, index) => (
+              <ServiceCard 
+                key={index}
+                service={service}
+                color="#ffb780"
+                index={index}
+                scrollToForm={scrollToForm}
+              />
+            ))}
+            {activeDepartment === 'animation' && animationServices.map((service, index) => (
+              <ServiceCard 
+                key={index}
+                service={service}
+                color="#ffd9aa"
+                index={index}
+                scrollToForm={scrollToForm}
+              />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Marketing Department Section */}
-      <DepartmentSection
-        id="marketing"
-        title="Marketing Services"
-        description="Data-driven marketing strategies that deliver measurable results and maximize ROI"
-        color="#ff5004"
-        services={marketingServices}
-        active={activeDepartment === 'marketing'}
-        scrollToForm={scrollToForm}
-      />
-
-      {/* Media Department Section */}
-      <DepartmentSection
-        id="media"
-        title="Media Production Services"
-        description="High-quality visual content creation that tells your brand story and engages your audience"
-        color="#ff9557"
-        services={mediaServices}
-        active={activeDepartment === 'media'}
-        scrollToForm={scrollToForm}
-      />
-
-      {/* Technical Department Section */}
-      <DepartmentSection
-        id="technical"
-        title="Technical Services"
-        description="Cutting-edge development solutions that power your digital presence and operations"
-        color="#ffb780"
-        services={technicalServices}
-        active={activeDepartment === 'technical'}
-        scrollToForm={scrollToForm}
-      />
-
-      {/* Animation Department Section */}
-      <DepartmentSection
-        id="animation"
-        title="Animation Services"
-        description="Creative motion graphics and animation that brings your ideas to life"
-        color="#ffd9aa"
-        services={animationServices}
-        active={activeDepartment === 'animation'}
-        scrollToForm={scrollToForm}
-      />
-
-      {/* Pricing Section */}
-      <section className="relative py-20 bg-[#0a0a0a]">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-6 py-2 bg-[#ff5004]/10 text-[#ff5004] rounded-full mb-6 text-sm font-medium tracking-wider">
-              FLEXIBLE OPTIONS
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-              Transparent <span className="text-[#ff5004]">Pricing Models</span>
-            </h2>
-            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-400">
-              Choose the engagement model that best fits your project needs and budget
-            </p>
-          </motion.div>
-
-          <Tab.Group>
-            <Tab.List className="flex justify-center mb-12">
-              <div className="relative inline-flex bg-[#161616] rounded-2xl p-1 border border-[#ffffff10] shadow-lg shadow-black/50 overflow-hidden">
-                <Tab className={({ selected }) => 
-                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
-                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
-                  }`
-                }>
-                  Project-Based
-                </Tab>
-                <Tab className={({ selected }) => 
-                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
-                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
-                  }`
-                }>
-                  Retainer
-                </Tab>
-                <Tab className={({ selected }) => 
-                  `relative px-6 py-3 rounded-xl font-medium transition-colors z-10 ${
-                    selected ? 'text-white' : 'text-gray-400 hover:text-white'
-                  }`
-                }>
-                  Hourly
-                </Tab>
-                <motion.div
-                  className="absolute inset-0 bg-[#ffffff08] rounded-xl"
-                  layoutId="pricingTab"
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  style={{
-                    backgroundColor: '#ff500420'
-                  }}
-                />
-              </div>
-            </Tab.List>
-            <Tab.Panels>
-              <Tab.Panel>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {projectPricing.map((pricing, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      className={`bg-[#161616] rounded-2xl p-8 border ${
-                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
-                      } transition-all relative overflow-hidden`}
-                    >
-                      {pricing.recommended && (
-                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
-                          RECOMMENDED
-                        </div>
-                      )}
-                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
-                      <div className="mb-6">
-                        <span className="text-4xl font-bold">${pricing.price}</span>
-                        {pricing.price !== 'Custom' && <span className="text-white/60"> / project</span>}
-                      </div>
-                      <ul className="space-y-3 mb-8">
-                        {pricing.features.map((feature, i) => (
-                          <li key={i} className="flex items-start">
-                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
-                            <span className="text-white/80">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => scrollToForm()}
-                        className={`w-full py-3 rounded-lg font-bold ${
-                          pricing.recommended 
-                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
-                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
-                        }`}
-                      >
-                        Get Started
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </div>
-              </Tab.Panel>
-              <Tab.Panel>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {retainerPricing.map((pricing, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      className={`bg-[#161616] rounded-2xl p-8 border ${
-                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
-                      } transition-all relative overflow-hidden`}
-                    >
-                      {pricing.recommended && (
-                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
-                          RECOMMENDED
-                        </div>
-                      )}
-                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
-                      <div className="mb-6">
-                        <span className="text-4xl font-bold">${pricing.price}</span>
-                        <span className="text-white/60"> / month</span>
-                      </div>
-                      <ul className="space-y-3 mb-8">
-                        {pricing.features.map((feature, i) => (
-                          <li key={i} className="flex items-start">
-                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
-                            <span className="text-white/80">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => scrollToForm()}
-                        className={`w-full py-3 rounded-lg font-bold ${
-                          pricing.recommended 
-                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
-                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
-                        }`}
-                      >
-                        Get Started
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </div>
-              </Tab.Panel>
-              <Tab.Panel>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {hourlyPricing.map((pricing, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      className={`bg-[#161616] rounded-2xl p-8 border ${
-                        pricing.recommended ? 'border-[#ff5004]' : 'border-[#ffffff10] hover:border-[#ff5004]/30'
-                      } transition-all relative overflow-hidden`}
-                    >
-                      {pricing.recommended && (
-                        <div className="absolute top-0 right-0 bg-[#ff5004] text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
-                          RECOMMENDED
-                        </div>
-                      )}
-                      <h3 className="text-2xl font-bold mb-4">{pricing.name}</h3>
-                      <div className="mb-6">
-                        <span className="text-4xl font-bold">${pricing.price}</span>
-                        <span className="text-white/60"> / hour</span>
-                      </div>
-                      <ul className="space-y-3 mb-8">
-                        {pricing.features.map((feature, i) => (
-                          <li key={i} className="flex items-start">
-                            <FiCheck className="text-[#ff5004] mt-1 mr-2 flex-shrink-0" />
-                            <span className="text-white/80">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => scrollToForm()}
-                        className={`w-full py-3 rounded-lg font-bold ${
-                          pricing.recommended 
-                            ? 'bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white' 
-                            : 'bg-[#ffffff05] border border-[#ffffff10] text-white hover:border-[#ff5004]'
-                        }`}
-                      >
-                        Get Started
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </div>
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
         </div>
       </section>
 
@@ -627,178 +360,131 @@ export default function Services() {
   );
 }
 
-function DepartmentSection({
-  id,
-  title,
-  description,
+function ServiceCard({
+  service,
   color,
-  services,
-  active,
+  index,
   scrollToForm
 }: {
-  id: string;
-  title: string;
-  description: string;
+  service: any;
   color: string;
-  services: Array<{
-    title: string;
-    description: string;
-    details: string[];
-    benefits: string[];
-    icon?: string;
-    stats?: { label: string; value: string }[];
-  }>;
-  active: boolean;
+  index: number;
   scrollToForm: (service: string) => void;
 }) {
-  const [expandedService, setExpandedService] = useState<number | null>(null);
-  const controls = useAnimation();
-
-  useEffect(() => {
-    if (active) {
-      controls.start("visible");
-    } else {
-      controls.start("hidden");
-    }
-  }, [active, controls]);
-
-  const toggleService = (index: number) => {
-    setExpandedService(expandedService === index ? null : index);
-  };
-
+  const [expanded, setExpanded] = useState(false);
+  
   return (
-    <section id={id} className="relative py-20">
-      <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-            {title}
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] mb-6"></div>
-          <p className="text-xl text-white/70 max-w-3xl">
-            {description}
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              className={`bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] transition-all ${
-                expandedService === index ? 'border-[#ff5004]/50' : 'hover:border-[#ff5004]/30'
-              }`}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+      className={`bg-[#161616] rounded-2xl overflow-hidden border border-[#ffffff10] transition-all ${
+        expanded ? 'border-[#ff5004]/50' : 'hover:border-[#ff5004]/30'
+      }`}
+    >
+      <div 
+        className="p-6 cursor-pointer flex justify-between items-center"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center">
+          {service.icon && (
+            <div 
+              className="w-12 h-12 rounded-lg flex items-center justify-center text-xl mr-4"
+              style={{ backgroundColor: `${color}20` }}
             >
-              <div 
-                className="p-6 cursor-pointer flex justify-between items-center"
-                onClick={() => toggleService(index)}
-              >
-                <div className="flex items-center">
-                  {service.icon && (
-                    <div className="w-12 h-12 rounded-lg bg-[#ffffff05] flex items-center justify-center text-xl mr-4">
-                      {service.icon}
+              {service.icon}
+            </div>
+          )}
+          <h3 className="text-xl font-bold">{service.title}</h3>
+        </div>
+        <motion.div
+          animate={{ rotate: expanded ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="w-8 h-8 rounded-full bg-[#ffffff05] flex items-center justify-center"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </motion.div>
+      </div>
+      
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 space-y-6">
+              <p className="text-white/80">{service.description}</p>
+              
+              {service.stats && (
+                <div className="grid grid-cols-2 gap-4">
+                  {service.stats.map((stat: any, i: number) => (
+                    <div key={i} className="bg-[#ffffff05] p-4 rounded-lg">
+                      <div className="text-2xl font-bold text-[#ff5004] mb-1">{stat.value}</div>
+                      <div className="text-sm text-white/70">{stat.label}</div>
                     </div>
-                  )}
-                  <h3 className="text-xl font-bold">{service.title}</h3>
+                  ))}
                 </div>
-                <motion.div
-                  animate={{ rotate: expandedService === index ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-8 h-8 rounded-full bg-[#ffffff05] flex items-center justify-center"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </motion.div>
+              )}
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    Service Details
+                  </h4>
+                  <ul className="space-y-3">
+                    {service.details.map((detail: string, i: number) => (
+                      <li key={i} className="flex items-start">
+                        <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
+                        <span className="text-white/70">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Key Benefits
+                  </h4>
+                  <ul className="space-y-3">
+                    {service.benefits.map((benefit: string, i: number) => (
+                      <li key={i} className="flex items-start">
+                        <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
+                        <span className="text-white/70">{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
               
-              <AnimatePresence>
-                {expandedService === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-6 pb-6 space-y-6">
-                      <p className="text-white/80">{service.description}</p>
-                      
-                      {service.stats && (
-                        <div className="grid grid-cols-2 gap-4">
-                          {service.stats.map((stat, i) => (
-                            <div key={i} className="bg-[#ffffff05] p-4 rounded-lg">
-                              <div className="text-2xl font-bold text-[#ff5004] mb-1">{stat.value}</div>
-                              <div className="text-sm text-white/70">{stat.label}</div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                            Service Details
-                          </h4>
-                          <ul className="space-y-3">
-                            {service.details.map((detail, i) => (
-                              <li key={i} className="flex items-start">
-                                <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
-                                <span className="text-white/70">{detail}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-medium mb-3 text-[#ff5004] flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Key Benefits
-                          </h4>
-                          <ul className="space-y-3">
-                            {service.benefits.map((benefit, i) => (
-                              <li key={i} className="flex items-start">
-                                <span className="inline-block w-1.5 h-1.5 mt-2 mr-2 bg-[#ff5004] rounded-full"></span>
-                                <span className="text-white/70">{benefit}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                      
-                      <div className="pt-4">
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            scrollToForm(service.title);
-                          }}
-                          className="w-full px-6 py-3 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white font-medium rounded-lg transition-all"
-                        >
-                          Get a Quote for {service.title}
-                        </motion.button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
+              <div className="pt-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    scrollToForm(service.title);
+                  }}
+                  className="w-full px-6 py-3 bg-gradient-to-r from-[#ff5004] to-[#ff8c00] text-white font-medium rounded-lg transition-all"
+                >
+                  Get a Quote for {service.title}
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -1643,132 +1329,6 @@ const animationServices = [
   }
 ];
 
-const projectPricing = [
-  {
-    name: "Starter",
-    price: "2,500",
-    recommended: false,
-    features: [
-      "Small-scale project",
-      "1-2 week timeline",
-      "Basic functionality",
-      "Standard design",
-      "1 revision round",
-      "Email support"
-    ]
-  },
-  {
-    name: "Professional",
-    price: "10,000",
-    recommended: true,
-    features: [
-      "Medium-scale project",
-      "3-6 week timeline",
-      "Advanced features",
-      "Custom design",
-      "3 revision rounds",
-      "Priority support"
-    ]
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    recommended: false,
-    features: [
-      "Large-scale project",
-      "8+ week timeline",
-      "Complex functionality",
-      "Premium design",
-      "Unlimited revisions",
-      "Dedicated account manager"
-    ]
-  }
-];
-
-const retainerPricing = [
-  {
-    name: "Basic",
-    price: "1,500",
-    recommended: false,
-    features: [
-      "20 hours/month",
-      "Standard support",
-      "Email communication",
-      "1-2 day response time",
-      "Basic reporting",
-      "Monthly strategy call"
-    ]
-  },
-  {
-    name: "Growth",
-    price: "3,500",
-    recommended: true,
-    features: [
-      "50 hours/month",
-      "Priority support",
-      "Slack communication",
-      "Same-day response",
-      "Advanced reporting",
-      "Weekly strategy call"
-    ]
-  },
-  {
-    name: "Enterprise",
-    price: "7,500",
-    recommended: false,
-    features: [
-      "100+ hours/month",
-      "24/7 support",
-      "Dedicated manager",
-      "Immediate response",
-      "Custom reporting",
-      "Daily standups"
-    ]
-  }
-];
-
-const hourlyPricing = [
-  {
-    name: "Junior",
-    price: "50",
-    recommended: false,
-    features: [
-      "Entry-level specialist",
-      "1-2 years experience",
-      "Standard quality",
-      "Supervised work",
-      "Basic skillset",
-      "Good for simple tasks"
-    ]
-  },
-  {
-    name: "Senior",
-    price: "100",
-    recommended: true,
-    features: [
-      "Experienced specialist",
-      "5+ years experience",
-      "High quality",
-      "Independent work",
-      "Advanced skillset",
-      "Ideal for most projects"
-    ]
-  },
-  {
-    name: "Expert",
-    price: "200",
-    recommended: false,
-    features: [
-      "Top-tier specialist",
-      "10+ years experience",
-      "Premium quality",
-      "Strategic guidance",
-      "Niche expertise",
-      "Complex projects only"
-    ]
-  }
-];
-
 const caseStudies = [
   {
     title: "E-commerce Platform Redesign",
@@ -1834,3 +1394,7 @@ const teamMembers = [
     expertise: ["3D Animation", "Motion Graphics", "Visual Effects"]
   }
 ];
+
+function setExpandedService(_arg0: null) {
+  throw new Error('Function not implemented.');
+}
